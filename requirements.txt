@@ -1,0 +1,14 @@
+
+# rlkit
+gym==0.17.3
+gym[atari]==0.17.3
+atari_py==0.2.6
+gym_minigrid==1.0.1
+matplotlib==3.0.3
+# torch
+scikit-image==0.15.0
+vizdoom==1.1.7
+crcmod==1.7
+cloudpickle==1.3.0
+git+https://github.com/Neo-X/rlkit.git@surprise
+git+https://github.com/montrealrobotics/doodad.git@surprise
