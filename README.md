@@ -16,7 +16,7 @@ rlkit: https://github.com/Neo-X/rlkit/tree/surprise
 ### Build Instruction
 
 ```
-conda create --name surprise_adapt python=3.7 pip
+conda create --name surprise_adapt python=3.7 pip 
 conda activate surprise_adapt
 pip install -r requirements.txt
 pip install -e ./
@@ -38,9 +38,9 @@ git pull -r
 
 Finally,
 ```
-cd doodad
 pip install -e ./
 cd ../surprise-adaptive-agents
+conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
 ```
 
 Then you will need copy the [`config.py`](https://github.com/Neo-X/doodad/blob/master/doodad/easy_launch/config.py) file locally to `launchers.config.py` and update the paths in the file. 
