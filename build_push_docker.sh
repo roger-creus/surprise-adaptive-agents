@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker build -f Dockerfile -t smirl:latest .
-docker tag smirl:latest $USER/smirl:latest
-docker push $USER/smirl:latest
+docker build -f Dockerfile -t surprise-adapt:latest .
+docker tag surprise-adapt:latest $USER/surprise-adapt:latest
+docker push $USER/surprise_adapt:latest
 

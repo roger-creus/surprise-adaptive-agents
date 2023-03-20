@@ -85,9 +85,10 @@ RUN wget --quiet https://repo.anaconda.com/archive/Anaconda2-2019.10-Linux-x86_6
 
 RUN conda update -y --name base conda && conda clean --all -y
 
-RUN conda create --name smirl python=3.7 pip
+RUN conda create --name surprise-adapt python=3.7 pip pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
+
 RUN echo "source activate smirl" >> ~/.bashrc
-ENV PATH /opt/conda/envs/smirl/bin:$PATH
+ENV PATH /opt/conda/envs/surprise-adapt/bin:$PATH
 
 RUN mkdir /root/playground
 
@@ -135,6 +136,6 @@ RUN ls
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-RUN conda install pytorch==1.4 torchvision=0.5.0 cudatoolkit=10.1 -c pytorch
+# RUN conda install pytorch==1.4 torchvision cudatoolkit=10.1 -c pytorch
 
 RUN ls

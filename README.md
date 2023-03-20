@@ -16,15 +16,31 @@ rlkit: https://github.com/Neo-X/rlkit/tree/surprise
 ### Build Instruction
 
 ```
-conda create --name smirl_code python=3.7 pip
-conda activate smirl_code
+conda create --name surprise_adapt python=3.7 pip
+conda activate surprise_adapt
 pip install -r requirements.txt
 pip install -e ./
 cd ../
+```
+
+If you do not currently have doodad installed
+
+```
 git clone git@github.com:montrealrobotics/doodad.git
 cd doodad
+```
+
+Otherwise
+```
+cd doodad
+git pull -r
+```
+
+Finally,
+```
+cd doodad
 pip install -e ./
-cd ../smirl_code
+cd ../surprise-adaptive-agents
 ```
 
 Then you will need copy the [`config.py`](https://github.com/Neo-X/doodad/blob/master/doodad/easy_launch/config.py) file locally to `launchers.config.py` and update the paths in the file. 
