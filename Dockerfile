@@ -85,9 +85,10 @@ RUN wget --quiet https://repo.anaconda.com/archive/Anaconda2-2019.10-Linux-x86_6
 
 RUN conda update -y --name base conda && conda clean --all -y
 
-RUN conda create --name smirl python=3.7 pip
-RUN echo "source activate smirl" >> ~/.bashrc
-ENV PATH /opt/conda/envs/smirl/bin:$PATH
+RUN conda create --name surprise-adapt python=3.7 pip
+
+RUN echo "source activate surprise-adapt" >> ~/.bashrc
+ENV PATH /opt/conda/envs/surprise-adapt/bin:$PATH
 
 RUN mkdir /root/playground
 
@@ -106,24 +107,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
         swig
 RUN pip install -r requirements.txt
 
-# WORKDIR /root/playground
-# RUN ls -la
-# RUN git clone git@github.com:Neo-X/TerrainRLSim.git
-# ENV TERRAINRL_PATH /root/playground/TerrainRLSim
-# WORKDIR /root/playground/TerrainRLSim
-# RUN wget https://github.com/UBCMOCCA/TerrainRLSim/releases/download/0.8/TerrainRLSim_external_June_21_2019.tar.xz
-# RUN tar -xvf TerrainRLSim_external_June_21_2019.tar.xz
-# RUN apt-get update
-# RUN chmod +x ./deb_deps.sh && ./deb_deps.sh
-# RUN cd external/caffe && make clean && make
-# RUN cp -r external/caffe/build/lib . && cp external/caffe/build/lib/libcaffe.* lib/ && cp external/Bullet/bin/*.so lib/ && cp external/jsoncpp/build/debug/src/lib_json/*.so* lib/
-# RUN cd simAdapter/ && apt-get install swig3.0 python3-dev python3-pip -y && chmod +x ./gen_swig.sh && ./gen_swig.sh
-# RUN ls -la
-# RUN chmod +x ./premake4_linux && ./premake4_linux gmake
-# RUN cd gmake && make config=release64 -j 6
-# RUN pip install -v -e $TERRAINRL_PATH
-# RUN pip install -r requirements.txt
-WORKDIR /root/playground
+
 
 ## Install VizDoom dependancies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -135,6 +119,8 @@ RUN ls
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-RUN conda install pytorch==1.4 torchvision=0.5.0 cudatoolkit=10.1 -c pytorch
+RUN conda install -n surprise-adapt pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
+
+WORKDIR /root/playground
 
 RUN ls
