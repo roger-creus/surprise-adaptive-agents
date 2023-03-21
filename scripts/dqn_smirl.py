@@ -148,9 +148,10 @@ def experiment(doodad_config, variant):
     setup_logger('wrapped_'+variant['env'], variant=variant, log_dir=doodad_config.base_log_dir+"/smirl/"+variant['exp_name']+"/"+timestamp+"/")
     if (variant["log_comet"]):
         try:
-            comet_logger = Experiment(api_key=launchers.config.COMET_API_KEY,
-                                         project_name=launchers.config.COMET_PROJECT_NAME, 
-                                         workspace=launchers.config.COMET_WORKSPACE)
+            from launchers.config import COMET_API_KEY, COMET_PROJECT_NAME, COMET_WORKSPACE
+            comet_logger = Experiment(api_key=COMET_API_KEY,
+                                         project_name=COMET_PROJECT_NAME,
+                                         workspace=COMET_WORKSPACE)
             logger.set_comet_logger(comet_logger)
             comet_logger.set_name(str(variant['env'])+"_"+str(variant['exp_name']))
             print("variant: ", variant)

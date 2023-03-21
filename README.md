@@ -48,6 +48,18 @@ You need to update `BASE_CODE_DIR` to the location you have saved SMiRL_Code.
 Also update `LOCAL_LOG_DIR` to the location you would like the logging data to be saved on your computer.
 You can look at the [doodad](https://github.com/Neo-X/doodad/) for more details on this configuration.
 
+## Logging:
+
+To log with CometML, you need to set the following variables in your `config_private.py` file:
+
+```
+COMET_API_KEY = <YOUR API KEY FROM COMET ML>
+COMET_PROJECT_NAME = <PROJECT NAME>
+COMET_WORKSPACE = <PROJECT WORKSPACE NAME>
+```
+
+You must specify at the command line to use Comet logging by setting: `--log_comet=true` (must be lowercase)
+
 ## Commands:
 
 A basic examples.
