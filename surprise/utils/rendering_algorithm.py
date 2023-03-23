@@ -95,7 +95,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 #                 self.writer.add_scalars(k, v, self.epoch)
 #             logger.record_tabular('current_mem_usage', current_mem_usage())
             
-        return out
+        return
         
     def render_video(self, tag, counter):
         import numpy as np
