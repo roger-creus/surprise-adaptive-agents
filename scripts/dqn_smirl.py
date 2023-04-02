@@ -103,7 +103,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None):
             network = env.network
         elif "smirl_wrapper" in wrapper:
             env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], device=device)
-            
+        elif "surprise_adapt_wrapper" in wrapper:
+            env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], device=device)
         else:
             if not eval:
                 pass
@@ -115,6 +116,28 @@ def add_wrappers(env, variant, device=0, eval=False, network=None):
     print("out obs dim", obs_dim)
     return env, network
 
+
+def add_surprise_adapt(env, variant, device = 0):
+    from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental, GaussianCircularBuffer
+    from surprise.wrappers.base_surprise_adapt import BaseSurpriseAdaptWrapper
+    
+    if ("latent_obs_size" in variant):
+        obs_size = variant["latent_obs_size"]
+    else:
+        obs_size = env.observation_space.low.size
+        
+    if (variant["buffer_type"] == "Bernoulli"):
+        buffer = BernoulliBuffer(obs_size)
+        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=100, **variant)
+        
+    elif (variant["buffer_type"] == "Gaussian"):
+        buffer = GaussianBufferIncremental(obs_size)
+        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=500, **variant)
+    else:
+        print("Non supported prob distribution type: ", variant["buffer_type"])
+        sys.exit()
+    
+    return env
 
 def add_smirl(env, variant, device=0):
     from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental, GaussianCircularBuffer
