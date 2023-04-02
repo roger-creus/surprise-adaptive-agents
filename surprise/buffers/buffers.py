@@ -172,11 +172,9 @@ class GaussianBufferIncremental(BaseBuffer):
         # For numerical stability, clip stds to not be 0
         thresh = 1e-3
         var = np.clip(self._state_var, thresh, None)
-        return -0.5*np.sum(np.log(2*np.pi*np.e*var))
-        
-        
-        
-        
+        return 0.5*np.sum(np.log(2*np.pi*np.e*var))
+
+
 class GaussianCircularBuffer(BaseBuffer):
     def __init__(self, obs_dim, size):
         super().__init__()
