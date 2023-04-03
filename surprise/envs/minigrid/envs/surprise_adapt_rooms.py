@@ -55,16 +55,18 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
     - `MiniGrid-FourRooms-v0`
     """
 
-    def __init__(self, agent_pos=None, goal_pos=None, max_steps=100, **kwargs):
-        self._agent_default_pos = agent_pos
-        self._goal_default_pos = goal_pos
+    def __init__(self, max_steps=100, noisy_room=2, num_doors=1, **kwargs):
+        self._agent_default_pos = None
+        self._goal_default_pos = None
 
         self.room_size = 8
         self.num_rooms = 3
         self.height = self.room_size + 2
-        self.width = (self.room_size + 1) * self.num_rooms  + 1
-
+        self.width = (self.room_size + 1) * self.num_rooms + 1
+        assert noisy_room in (1, 2), "Please select one of (1,2) as the noisy room"
+        self.noisy_room = noisy_room
         self.noisy_floors = None
+        self.num_doors = num_doors
 
         super().__init__(
             width=self.width,
@@ -91,11 +93,11 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
 
         if self.noisy_floors is None:
             self.noisy_floors = []
-            for i in range(self.room_size + 1, self.room_size * 2 + 1):
+            for i in range((self.room_size + 1) * (self.noisy_room-1) + 1, (self.room_size + 1) * self.noisy_room):
                 for j in range(1, self.room_size + 1):
                     try:
                         floor_tile = Floor(color=self._rand_elem(color_names))
-                        self.place_obj(floor_tile, top=(i + 1, j), size=(1, 1), max_tries=5)
+                        self.put_obj(floor_tile, i, j)
                         self.noisy_floors.append(floor_tile)
                     except Exception as e:
                         print(f'Could not place noisy floor tile: {e}')
@@ -121,10 +123,13 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
 
             # Wall and door
             self.grid.vert_wall(x, 1, self.room_size)
-            pos = (x, self._rand_int(1, self.room_size + 1))
-            self.grid.set(*pos, None)
-
-        self._randomize_floor_colors()
+            doors = []
+            for _ in range(self.num_doors):
+                pos = (x, self._rand_int(1, self.room_size + 1))
+                while pos in doors:
+                    pos = (x, self._rand_int(1, self.room_size + 1))
+                self.grid.set(*pos, None)
+                doors.append(pos)
 
         # Randomize the player start position and orientation
         if self._agent_default_pos is not None:
@@ -133,14 +138,16 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
             # assuming random start direction
             self.agent_dir = self._rand_int(0, 4)
         else:
-            self.place_agent(top=(0, 0), size=(self.room_size, self.room_size))
+            self.place_agent(top=(1, 1), size=(self.room_size, self.room_size))
 
         if self._goal_default_pos is not None:
             goal = Goal()
             self.put_obj(goal, *self._goal_default_pos)
             goal.init_pos, goal.cur_pos = self._goal_default_pos
         else:
-            self.place_obj(Goal(), top=(self.room_size * (self.num_rooms-1), 0), size=(self.room_size, self.room_size))
+            self.place_obj(Goal(), top=((self.room_size+1) * (self.num_rooms-1) + 1, 1), size=(self.room_size, self.room_size))
+
+        self._randomize_floor_colors()
 
         self.mission = self._gen_mission()
 
