@@ -48,7 +48,9 @@ def get_env(variant):
     else: 
         import gym
         env = gym.make(variant['env'])
-#     else:
+        env.__init__(**variant["env_kwargs"])
+
+    #     else:
 #         print("Non supported env type: ", variant["env"])
 #         sys.exit()
         
