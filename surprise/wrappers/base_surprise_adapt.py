@@ -58,7 +58,7 @@ class BaseSurpriseAdaptWrapper(gym.Env):
     def init_surprise_window(self):
         self.surprise_counter = 0
         self.surprise_window = deque()
-        self.alpha_t = 1 if np.random.binomial(1, 0.5) == 1 else -1
+        self.alpha_t = 1 if np.random.binomial(1, 0.5) == 1 else 0
 
     def step(self, action):
         # Take Action
@@ -71,7 +71,7 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
         
-        rew = (-1)**self.alpha_t * surprise
+        rew = ((-1)**self.alpha_t) * surprise
         
         # remove old elements from the surprise window
         if self.surprise_counter > self.surprise_window_len:
@@ -84,11 +84,9 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         # Add observation to buffer
         self._buffer.add(self.encode_obs(obs)) # this adds the raw observations to the buffer no? shouldnt we add the augmented obs?
         if (self._obs_out_label is None):
-            info['surpirse'] = surprise
             info['surprise_adapt_reward'] = rew
             info["theta_entropy"] = self._buffer.entropy()
         else:
-            info[self._obs_out_label + 'surpirse'] = surprise
             info[self._obs_out_label + 'surprise_adapt_reward'] = rew
             info[self._obs_out_label + "theta_entropy"] = self._buffer.entropy()
         if (self._smirl_rew_scale is not None):
@@ -98,6 +96,8 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         elif self._add_true_rew:
             rew = (rew) + env_rew
             
+        info['surpirse'] = surprise
+        info["alpha"] = self.alpha_t
         
         # update surprise momentum
         surpirse_change = [1 if self.surprise_window[i+1] > self.surprise_window[i] else -1 for i in range(len(self.surprise_window)-1)]
