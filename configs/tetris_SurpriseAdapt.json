@@ -31,7 +31,7 @@
 			}},
     	{ "surprise_adapt_wrapper": {
     		"buffer_type": "Bernoulli",
-            "surprise_window_len": 5
+            "surprise_window_len": 4
         }}
     ],
     "log_comet": false,

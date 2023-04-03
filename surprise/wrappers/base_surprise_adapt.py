@@ -79,7 +79,7 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         self.surprise_counter += 1
             
         # add new element to the surprise window
-        self.surprise_window.append(rew)
+        self.surprise_window.append(surprise)
         
         # Add observation to buffer
         self._buffer.add(self.encode_obs(obs)) # this adds the raw observations to the buffer no? shouldnt we add the augmented obs?
@@ -98,8 +98,10 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         elif self._add_true_rew:
             rew = (rew) + env_rew
             
+        
         # update surprise momentum
-        self.alpha_t = np.sign(sum([self.surprise_window[i+1] - self.surprise_window[i] for i in range(len(self.surprise_window)-1)]))
+        surpirse_change = [1 if self.surprise_window[i+1] > self.surprise_window[i] else -1 for i in range(len(self.surprise_window)-1)]
+        self.alpha_t =  1 if np.sign(sum(surpirse_change)) > 0 else 0
         
         # augment next state
         obs = self.get_obs(obs)
