@@ -25,8 +25,11 @@
     },
     "wrappers": [
     	{"soft_reset_wrapper": true},
-        {"rendering_observation": {}},
-        {"FlattenObservationWrapper":  {}},
+    	{"rendering_observation":
+		{
+			"resize": [118,40,1]
+		}},
+      {"FlattenObservationWrapper":  {}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
