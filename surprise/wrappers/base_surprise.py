@@ -62,10 +62,10 @@ class BaseSurpriseWrapper(gym.Env):
         # Add observation to buffer
         self._buffer.add(self.encode_obs(obs))
         if (self._obs_out_label is None):
-            info['state_entropy_smirl'] = - rew
+            info['surprise'] = - rew
             info["theta_entropy"] = self._buffer.entropy()
         else:
-            info[self._obs_out_label + 'state_entropy_smirl'] = - rew
+            info[self._obs_out_label + 'surprise'] = - rew
             info[self._obs_out_label + "theta_entropy"] = self._buffer.entropy()
 #         print (info)
         if (self._smirl_rew_scale is not None):

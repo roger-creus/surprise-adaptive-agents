@@ -96,7 +96,7 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         elif self._add_true_rew:
             rew = (rew) + env_rew
             
-        info['surpirse'] = surprise
+        info['surprise'] = surprise
         info["alpha"] = self.alpha_t
         
         # update surprise momentum
