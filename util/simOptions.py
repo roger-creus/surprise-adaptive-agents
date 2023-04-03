@@ -357,7 +357,7 @@ def getOptions(_args=None):
     parser.add_option("--run_mode",
               action="store", dest="doodad_run_mode", default='local',
               type='choice',
-              choices=['local', 'local_docker', 'ssh', 'ec2', 'local_singularity', 'slurm_singularity'],
+              choices=['local', 'local_docker', 'ssh', 'ec2', 'local_singularity', 'slurm_singularity', 'here_no_doodad'],
               metavar="STRING", 
               help="Method for running code for doodad")
     

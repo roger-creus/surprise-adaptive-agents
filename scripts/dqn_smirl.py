@@ -58,6 +58,14 @@ def add_wrappers(env, variant, device=0, eval=False, network=None):
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper, \
         ChannelFirstWrapper, ObsHistoryWrapper
     from surprise.wrappers.VAE_wrapper import VAEWrapper
+    from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
+    from gym_minigrid.minigrid import MiniGridEnv
+
+    if isinstance(env, MiniGridEnv):
+        # env = RGBImgPartialObsWrapper(env)
+        env = ImgObsWrapper(env)
+
+
     obs_dim = env.observation_space.low.shape
     print("obs dim", obs_dim)
     for wrapper in variant["wrappers"]:
@@ -173,8 +181,8 @@ def experiment(doodad_config, variant):
         try:
             from launchers.config import COMET_API_KEY, COMET_PROJECT_NAME, COMET_WORKSPACE
             comet_logger = Experiment(api_key=COMET_API_KEY,
-                                         project_name=COMET_PROJECT_NAME,
-                                         workspace=COMET_WORKSPACE)
+                                      project_name=COMET_PROJECT_NAME,
+                                      workspace=COMET_WORKSPACE)
             logger.set_comet_logger(comet_logger)
             comet_logger.set_name(str(variant['env'])+"_"+str(variant['exp_name']))
             print("variant: ", variant)
@@ -287,6 +295,6 @@ if __name__ == "__main__":
     sweep_ops={}
     if ( 'tuningConfig' in settings):
         sweep_ops = json.load(open(settings['tuningConfig'], "r"))
-        
+
     run_sweep(experiment, sweep_ops=sweep_ops, variant=settings, repeats=settings['random_seeds'],
           meta_threads=settings['meta_sim_threads'])
