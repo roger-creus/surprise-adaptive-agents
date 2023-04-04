@@ -427,3 +427,15 @@ class ObsHistoryWrapper(gym.Env):
         
     def render(self, mode=None):
         return self._env.render(mode=mode)
+
+
+from gym.wrappers import TransformObservation
+
+
+class RescaleImageWrapper(TransformObservation):
+    def __init__(self, env):
+        super().__init__(env, self._rgb_rescale)
+
+    @staticmethod
+    def _rgb_rescale(x):
+        return x/255
