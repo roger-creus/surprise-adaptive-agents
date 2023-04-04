@@ -428,6 +428,16 @@ class ObsHistoryWrapper(gym.Env):
         
     def render(self, mode=None):
         return self._env.render(mode=mode)
+
+from gym_minigrid.wrappers import ImgObsWrapper
+
+class MiniGridImgObsWrapper(ImgObsWrapper):
+
+    def observation(self, obs):
+        return super().observation(obs)/255
+
+
+
         
         
 

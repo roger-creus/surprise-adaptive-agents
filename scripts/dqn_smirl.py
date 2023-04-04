@@ -58,14 +58,13 @@ def get_env(variant):
 
 def add_wrappers(env, variant, device=0, eval=False, network=None):
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper, \
-        ChannelFirstWrapper, ObsHistoryWrapper
+        ChannelFirstWrapper, ObsHistoryWrapper, MiniGridImgObsWrapper
     from surprise.wrappers.VAE_wrapper import VAEWrapper
-    from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
+    # from gym_minigrid.wrappers import ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
 
     if isinstance(env, MiniGridEnv):
-        # env = RGBImgPartialObsWrapper(env)
-        env = ImgObsWrapper(env)
+        env = MiniGridImgObsWrapper(env)
 
 
     obs_dim = env.observation_space.low.shape
