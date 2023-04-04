@@ -13,6 +13,8 @@ class BaseSurpriseAdaptWrapper(gym.Env):
                  buffer, 
                  time_horizon,
                  surprise_window_len,
+                 alpha_t = None,
+                 flip_alpha=False,
                  add_true_rew=False,
                  smirl_rew_scale=None, 
                  buffer_type=None,
@@ -52,13 +54,20 @@ class BaseSurpriseAdaptWrapper(gym.Env):
             )
 
         self.surprise_window_len = surprise_window_len
-        
+        assert self.surprise_window_len == -1 or self.surprise_window_len % 2 == 0
+
+        self.flip_alpha = flip_alpha
+
+        self.alpha_t = alpha_t
+
         self.reset()
 
-    def init_surprise_window(self):
+    def init_surprise_window(self, reset_alpha=True):
         self.surprise_counter = 0
         self.surprise_window = deque()
-        self.alpha_t = 1 if np.random.binomial(1, 0.5) == 1 else 0
+
+        if reset_alpha is True:
+            self.alpha_t = np.random.binomial(1, 0.5)
 
     def step(self, action):
         # Take Action
@@ -74,13 +83,19 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         rew = ((-1)**self.alpha_t) * surprise
         
         # remove old elements from the surprise window
-        if self.surprise_counter > self.surprise_window_len:
-            self.surprise_window.popleft()
+        if self.surprise_window_len != -1: 
+            if self.surprise_counter > self.surprise_window_len:
+                self.surprise_window.popleft()
+
+            # add new element to the surprise window
+            self.surprise_window.append(surprise)
+
+        else:
+            if self.flip_alpha == True and self.surprise_counter % 25 == 0:
+                self.alpha_t = 1 if self.alpha_t == 0 else 0
+
         self.surprise_counter += 1
-            
-        # add new element to the surprise window
-        self.surprise_window.append(surprise)
-        
+
         # Add observation to buffer
         self._buffer.add(self.encode_obs(obs)) # this adds the raw observations to the buffer no? shouldnt we add the augmented obs?
         if (self._obs_out_label is None):
@@ -99,9 +114,10 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         info['surprise'] = surprise
         info["alpha"] = self.alpha_t
         
-        # update surprise momentum
-        surpirse_change = [1 if self.surprise_window[i+1] > self.surprise_window[i] else -1 for i in range(len(self.surprise_window)-1)]
-        self.alpha_t =  1 if np.sign(sum(surpirse_change)) > 0 else 0
+        if self.surprise_window_len != -1:
+            # update surprise momentum
+            surprise_change = [1 if self.surprise_window[i+1] > self.surprise_window[i] else -1 for i in range(len(self.surprise_window)-1)]
+            self.alpha_t =  1 if np.sign(sum(surprise_change)) > 0 else 0
         
         # augment next state
         obs = self.get_obs(obs)
@@ -140,13 +156,13 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         '''
         return self._num_steps >= self._time_horizon
 
-    def reset(self):
+    def reset(self, reset_alpha=True):
         '''
         Reset the wrapped env and the buffer
         '''
         
         # reset the surprise window, which works at episode-level
-        self.init_surprise_window()
+        self.init_surprise_window(reset_alpha=reset_alpha)
         
         obs = self._env.reset()
 #         print ("surprise obs shape1, ", obs.shape)

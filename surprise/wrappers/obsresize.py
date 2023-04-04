@@ -291,6 +291,7 @@ class RenderingObservationWrapper(gym.Env):
 #         print (info["rendering"].shape)
         return obs, env_rew, envdone, info
     
+
     def reset(self):
         '''
         Reset the wrapped env and the buffer
@@ -327,7 +328,7 @@ class SoftResetWrapper(gym.Env):
         
         info["life_length_avg"] = self._last_death
         if (envdone):
-            obs_ = self.reset()
+            obs_ = self.reset(reset_alpha=False)
             ### Trick to make "death" more surprising...
 #             info["life_length"] = self._last_death
             info["death"] = 1
@@ -338,15 +339,16 @@ class SoftResetWrapper(gym.Env):
         
         self._last_death = self._last_death + 1
         envdone = self._time >= self._max_time
+
         return obs, env_rew, envdone, info
-    
-    def reset(self):
+
+    def reset(self, reset_alpha=True):
         '''
         Reset the wrapped env and the buffer
         '''
         self._time = 0
         self._last_death = 0
-        obs = self._env.reset()
+        obs = self._env.reset(reset_alpha=reset_alpha)
         return obs
     
     def render(self, mode=None):

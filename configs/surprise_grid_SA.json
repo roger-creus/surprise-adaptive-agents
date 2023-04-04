@@ -28,12 +28,11 @@
     	{"rendering_observation": {}},
         { "surprise_adapt_wrapper": {
     		"buffer_type": "Gaussian",
-            "surprise_window_len": 6
+            "surprise_window_len": 14
         }}
     ],
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
-    	"reward_func": null
     }
 }
