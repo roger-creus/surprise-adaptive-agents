@@ -56,13 +56,13 @@ def get_env(variant):
 
 def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=False):
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper, \
-        ChannelFirstWrapper, ObsHistoryWrapper
+        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
 
     if isinstance(env, MiniGridEnv):
-        # env = RGBImgPartialObsWrapper(env)
+        env = RGBImgPartialObsWrapper(env)
         env = ImgObsWrapper(env)
 
 
@@ -113,6 +113,10 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             from surprise.wrappers.ICM_wrapper import ICMWrapper
             env = ICMWrapper(env=env, eval=eval, **wrapper["ICMWrapper"], device=device)
             network = env.network
+        elif "smirl_wrapper" in wrapper:
+            env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], device=device)
+        elif "rescale_rgb" in wrapper:
+            env = RescaleImageWrapper(env=env)
         else:
             if not eval:
                 pass
