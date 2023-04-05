@@ -42,6 +42,7 @@
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
+        "num_doors": 8,
         "noisy_room": 1
     }
 }

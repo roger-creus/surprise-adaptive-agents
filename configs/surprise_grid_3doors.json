@@ -26,12 +26,14 @@
     "wrappers": [
     	{"soft_reset_wrapper": true},
         {"resize_observation_wrapper": {
-	        "new_size": [7,7,3],
-	        "new_shape": [7,7,3],
-	        "grayscale": false
+                "new_size": [7,7,3],
+                "new_shape": [7,7,3],
+                "grayscale": false
         }},
+
         {"rescale_rgb":  true},
-    	{"rendering_observation":
+
+        {"rendering_observation":
 		{
 			"resize": [118,40,1]
 		}},
@@ -42,6 +44,7 @@
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
-        "noisy_room": 1
+        "num_doors": 3
+
     }
 }
