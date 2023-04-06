@@ -11,6 +11,7 @@ from rlkit.data_management.replay_buffer import ReplayBuffer
 from rlkit.samplers.data_collector import PathCollector
 from rlkit.core import logger
 from util.utils import current_mem_usage
+import matplotlib.pyplot as plt
 
 def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
     ### image format (episodes, img_width, img_height, colour_channels)
@@ -111,7 +112,19 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         if ("vae_reconstruction" in path[0]['env_infos'][0]):
             video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
             display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
-            
+
+        if ("agent_pos" in path[0]['env_infos'][0]):
+            width = path[0]['env_infos'][0]['grid_width']
+            height = path[0]['env_infos'][0]['grid_height']
+            heat_map = np.zeros((height, width))
+            for col, row in [y['agent_pos'] for x in path for y in x['env_infos']]:
+                heat_map[row, col] += 1
+
+            cl = logger.get_comet_logger()
+            logdir = logger.get_snapshot_dir()  +"eval_heatmap"  + str(counter) + ".png"
+            plt.imsave(logdir,heat_map)
+            if (cl is not None):
+                cl.log_image(image_data=logdir, overwrite=True, image_format="png")
         video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
         display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
             
