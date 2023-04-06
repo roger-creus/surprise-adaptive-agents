@@ -254,7 +254,7 @@ class ChannelFirstWrapper(gym.Env):
         return self._env.render(mode=mode)
 
 
-class RenderingObservationWrapper(gym.Env):
+class RenderingObservationWrapper(gym.Wrapper):
     
     @classu.hidden_member_initialize
     def __init__(self, env, swap=None, rescale=None, resize=None):
@@ -265,7 +265,8 @@ class RenderingObservationWrapper(gym.Env):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
-        
+        super().__init__(env)
+
         # Gym spaces
         self.action_space = env.action_space
         self.observation_space = env.observation_space
@@ -290,6 +291,7 @@ class RenderingObservationWrapper(gym.Env):
 #         print (info["rendering"].shape)
         return obs, env_rew, envdone, info
     
+
     def reset(self):
         '''
         Reset the wrapped env and the buffer
@@ -301,7 +303,9 @@ class RenderingObservationWrapper(gym.Env):
         
         return self._env.render(mode=mode)
     
-class SoftResetWrapper(gym.Env):
+
+
+class SoftResetWrapper(gym.Wrapper):
     
     def __init__(self, env, max_time):
         '''
@@ -311,6 +315,7 @@ class SoftResetWrapper(gym.Env):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
+        super().__init__(env)
         
         self._env = env
         self._time = 0
@@ -320,12 +325,15 @@ class SoftResetWrapper(gym.Env):
         self.action_space = env.action_space
         self.observation_space = env.observation_space
 
+        self.reset_alpha = True
+
     def step(self, action):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
         
         info["life_length_avg"] = self._last_death
         if (envdone):
+            self.reset_alpha = False
             obs_ = self.reset()
             ### Trick to make "death" more surprising...
 #             info["life_length"] = self._last_death
@@ -337,14 +345,20 @@ class SoftResetWrapper(gym.Env):
         
         self._last_death = self._last_death + 1
         envdone = self._time >= self._max_time
+
         return obs, env_rew, envdone, info
-    
+
     def reset(self):
         '''
         Reset the wrapped env and the buffer
         '''
         self._time = 0
         self._last_death = 0
+        if self.reset_alpha:
+            self.alpha_t = np.random.binomial(1, 0.5)
+        else:
+            self.reset_alpha = True
+
         obs = self._env.reset()
         return obs
     
@@ -431,6 +445,11 @@ class ObsHistoryWrapper(gym.Env):
 
 from gym.wrappers import TransformObservation
 
+
+class AddAlphaWrapper(gym.Wrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.alpha_t = None
 
 class RescaleImageWrapper(TransformObservation):
     def __init__(self, env):
