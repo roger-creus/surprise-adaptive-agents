@@ -4,8 +4,9 @@ from gym.spaces import Box
 import pdb
 import util.class_util as classu
 from collections import deque
+from IPython import embed
 
-class BaseSurpriseAdaptWrapper(gym.Env):
+class BaseSurpriseAdaptWrapper(gym.Wrapper):
     
     @classu.hidden_member_initialize
     def __init__(self, 
@@ -13,7 +14,6 @@ class BaseSurpriseAdaptWrapper(gym.Env):
                  buffer, 
                  time_horizon,
                  surprise_window_len,
-                 alpha_t = None,
                  flip_alpha=False,
                  add_true_rew=False,
                  smirl_rew_scale=None, 
@@ -28,6 +28,7 @@ class BaseSurpriseAdaptWrapper(gym.Env):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
+        super().__init__(env)
 
         theta = self._buffer.get_params()
         self._num_steps = 0
@@ -58,16 +59,11 @@ class BaseSurpriseAdaptWrapper(gym.Env):
 
         self.flip_alpha = flip_alpha
 
-        self.alpha_t = alpha_t
-
         self.reset()
 
-    def init_surprise_window(self, reset_alpha=True):
+    def init_surprise_window(self):
         self.surprise_counter = 0
         self.surprise_window = deque()
-
-        if reset_alpha is True:
-            self.alpha_t = np.random.binomial(1, 0.5)
 
     def step(self, action):
         # Take Action
@@ -156,13 +152,13 @@ class BaseSurpriseAdaptWrapper(gym.Env):
         '''
         return self._num_steps >= self._time_horizon
 
-    def reset(self, reset_alpha=True):
+    def reset(self):
         '''
         Reset the wrapped env and the buffer
         '''
         
         # reset the surprise window, which works at episode-level
-        self.init_surprise_window(reset_alpha=reset_alpha)
+        self.init_surprise_window()
         
         obs = self._env.reset()
 #         print ("surprise obs shape1, ", obs.shape)

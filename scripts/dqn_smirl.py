@@ -56,7 +56,7 @@ def get_env(variant):
 
 def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=False):
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper, \
-        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper
+        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
@@ -117,6 +117,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], device=device)
         elif "rescale_rgb" in wrapper:
             env = RescaleImageWrapper(env=env)
+        elif "add_alpha" in wrapper:
+            env = AddAlphaWrapper(env=env)
         else:
             if not eval:
                 pass
@@ -228,7 +230,7 @@ def experiment(doodad_config, variant):
     
 #     base_env2 = RenderingObservationWrapper(base_env2)
     expl_env, network = add_wrappers(base_env, variant, device=ptu.device)
-    eval_env, _ = add_wrappers(base_env2, variant, flip_alpha = True, device=ptu.device, eval=True, network=network)
+    eval_env, _ = add_wrappers(base_env2, variant, device=ptu.device, eval=True, network=network)
     if ("vae_wrapper" in variant["wrappers"]):
         eval_env._network = base_env._network
     

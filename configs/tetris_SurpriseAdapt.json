@@ -24,6 +24,7 @@
         "render": true
     },
     "wrappers": [
+        {"add_alpha" : true},
     	{"soft_reset_wrapper": true},
     	{"rendering_observation": 
 			{
