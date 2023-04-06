@@ -122,7 +122,8 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
             cl = logger.get_comet_logger()
             logdir = logger.get_snapshot_dir()  +"eval_heatmap"  + str(counter) + ".png"
-            plt.imsave(logdir,heat_map)
+            plt.figure(figsize=(width * 4, height * 4))
+            plt.imsave(logdir,heat_map, interpolation='nearest')
             if (cl is not None):
                 cl.log_image(image_data=logdir, overwrite=True, image_format="png")
         video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
