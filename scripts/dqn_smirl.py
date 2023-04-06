@@ -19,6 +19,18 @@ def get_network(network_args, obs_dim, action_dim):
         print ("Using conv")
         qf = VizdoomFeaturizer(dim=action_dim, **network_args)
         target_qf = VizdoomFeaturizer(dim=action_dim, **network_args)
+    elif network_args['type'] == "cnn":
+        from rlkit.torch.conv_networks import CNN
+        qf = CNN(input_width=obs_dim[1],
+                  input_height=obs_dim[0],
+                  input_channels=obs_dim[2],
+                  output_size=action_dim,
+                  **network_args)
+        target_qf = CNN(input_width=obs_dim[1],
+                  input_height=obs_dim[0],
+                  input_channels=obs_dim[2],
+                  output_size=action_dim,
+                  **network_args)
     else:
         from rlkit.torch.networks import Mlp
         qf = Mlp(
@@ -71,6 +83,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None):
     obs_dim = env.observation_space.low.shape
     print("obs dim", obs_dim)
     for wrapper in variant["wrappers"]:
+        print(wrapper)
+        print("obs dim", obs_dim)
         if "soft_reset_wrapper" in wrapper:
             env = SoftResetWrapper(env=env, max_time=500)
         elif "FlattenObservationWrapper" in wrapper:
