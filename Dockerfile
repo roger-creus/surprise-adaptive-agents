@@ -121,6 +121,10 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 RUN conda install -n surprise-adapt pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
 RUN conda install -n surprise-adapt x264=='1!152.20180717' ffmpeg=4.0.2 -c conda-forge
+
+ENV IMAGEIO_FFMPEG_EXE="/usr/bin/ffmpeg"
+
+
 WORKDIR /root/playground
 
 ENV IMAGEIO_FFMPEG_EXE="/usr/bin/ffmpeg"
