@@ -290,6 +290,8 @@ class RenderingObservationWrapper(gym.Wrapper):
         if self._render_agent_obs is not None and self._render_agent_obs:
             if (self._resize_agent_obs is not None):
                 resize_obs = cv2.resize(obs, dsize=tuple(self._resize_agent_obs[:2]), interpolation=cv2.INTER_AREA)
+            else:
+                resize_obs = obs
             x, y, z = resize_obs.shape
             agent_obs = np.zeros((x, render_obs.shape[1], z))
             agent_obs[0:x, 0:y, 0:z] = resize_obs
