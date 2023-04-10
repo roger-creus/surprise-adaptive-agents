@@ -123,4 +123,5 @@ RUN conda install -n surprise-adapt pytorch torchvision torchaudio pytorch-cuda=
 RUN conda install -n surprise-adapt x264=='1!152.20180717' ffmpeg=4.0.2 -c conda-forge
 WORKDIR /root/playground
 
+ENV IMAGEIO_FFMPEG_EXE="/usr/bin/ffmpeg"
 RUN ls
