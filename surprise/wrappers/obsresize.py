@@ -254,10 +254,11 @@ class ChannelFirstWrapper(gym.Env):
         return self._env.render(mode=mode)
 
 
-class RenderingObservationWrapper(gym.Env):
+class RenderingObservationWrapper(gym.Wrapper):
     
     @classu.hidden_member_initialize
-    def __init__(self, env, swap=None, rescale=None, resize=None):
+    def __init__(self, env, swap=None, rescale=None, resize=None, render_agent_obs=None,
+                 resize_agent_obs=None, rescale_agent_obs=None):
         '''
         params
         ======
@@ -265,7 +266,8 @@ class RenderingObservationWrapper(gym.Env):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
-        
+        super().__init__(env)
+
         # Gym spaces
         self.action_space = env.action_space
         self.observation_space = env.observation_space
@@ -274,22 +276,32 @@ class RenderingObservationWrapper(gym.Env):
         # Take Action
         import copy
         import numpy as np
-        
+
         obs, env_rew, envdone, info = self._env.step(action)
-        info["rendering"] = self._env.render(mode="rgb_array")
-        
-        if (self._resize is not None): 
-            info["rendering"] = cv2.resize(info["rendering"], dsize=tuple(self._resize[:2]), interpolation=cv2.INTER_AREA)
+        render_obs = self._env.render(mode="rgb_array")
+
+        if (self._resize is not None):
+            render_obs = cv2.resize(render_obs, dsize=tuple(self._resize[:2]), interpolation=cv2.INTER_AREA)
         if self._rescale is not None:
-#                 print ("info[\"rendering\"]", info["rendering"])
-                info["rendering"] = np.array(info["rendering"] * self._rescale, dtype='uint8')
+            render_obs = np.array(render_obs * self._rescale, dtype='uint8')
         if self._swap is not None:
-            info["rendering"] = copy.deepcopy(np.moveaxis(info["rendering"], *self._swap))
-#         print ("rendering mean: ", np.mean(info["rendering"]))
-#         print (info["rendering"].shape)
-#         print (info["rendering"].shape)
+            render_obs = copy.deepcopy(np.moveaxis(render_obs, *self._swap))
+
+        if self._render_agent_obs is not None and self._render_agent_obs:
+            if (self._resize_agent_obs is not None):
+                resize_obs = cv2.resize(obs, dsize=tuple(self._resize_agent_obs[:2]), interpolation=cv2.INTER_AREA)
+            else:
+                resize_obs = obs
+            x, y, z = resize_obs.shape
+            agent_obs = np.zeros((x, render_obs.shape[1], z))
+            agent_obs[0:x, 0:y, 0:z] = resize_obs
+            if self._rescale_agent_obs is not None:
+                agent_obs = np.array(agent_obs * self._rescale_agent_obs, dtype='uint8')
+            render_obs = np.concatenate([render_obs, agent_obs], axis=0)
+        info['rendering'] = render_obs
         return obs, env_rew, envdone, info
     
+
     def reset(self):
         '''
         Reset the wrapped env and the buffer
@@ -301,7 +313,9 @@ class RenderingObservationWrapper(gym.Env):
         
         return self._env.render(mode=mode)
     
-class SoftResetWrapper(gym.Env):
+
+
+class SoftResetWrapper(gym.Wrapper):
     
     def __init__(self, env, max_time):
         '''
@@ -311,6 +325,7 @@ class SoftResetWrapper(gym.Env):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
+        super().__init__(env)
         
         self._env = env
         self._time = 0
@@ -320,12 +335,15 @@ class SoftResetWrapper(gym.Env):
         self.action_space = env.action_space
         self.observation_space = env.observation_space
 
+        self.reset_alpha = True
+
     def step(self, action):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
         
         info["life_length_avg"] = self._last_death
         if (envdone):
+            self.reset_alpha = False
             obs_ = self.reset()
             ### Trick to make "death" more surprising...
 #             info["life_length"] = self._last_death
@@ -337,14 +355,20 @@ class SoftResetWrapper(gym.Env):
         
         self._last_death = self._last_death + 1
         envdone = self._time >= self._max_time
+
         return obs, env_rew, envdone, info
-    
+
     def reset(self):
         '''
         Reset the wrapped env and the buffer
         '''
         self._time = 0
         self._last_death = 0
+        if self.reset_alpha:
+            self.alpha_t = np.random.binomial(1, 0.5)
+        else:
+            self.reset_alpha = True
+
         obs = self._env.reset()
         return obs
     
@@ -431,6 +455,11 @@ class ObsHistoryWrapper(gym.Env):
 
 from gym.wrappers import TransformObservation
 
+
+class AddAlphaWrapper(gym.Wrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.alpha_t = None
 
 class RescaleImageWrapper(TransformObservation):
     def __init__(self, env):
