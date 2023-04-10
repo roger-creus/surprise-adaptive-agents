@@ -6,8 +6,9 @@ try:
     from comet_ml import Experiment
 except: 
     pass
+import gym
 
-def get_network(network_args, obs_dim, action_dim):
+def get_network(network_args, obs_dim, action_dim, unflattened_obs_dim=None):
     
     
     if (network_args["type"] == "conv_mixed"):
@@ -20,17 +21,11 @@ def get_network(network_args, obs_dim, action_dim):
         qf = VizdoomFeaturizer(dim=action_dim, **network_args)
         target_qf = VizdoomFeaturizer(dim=action_dim, **network_args)
     elif network_args['type'] == "cnn":
-        from rlkit.torch.conv_networks import CNN
-        qf = CNN(input_width=obs_dim[1],
-                  input_height=obs_dim[0],
-                  input_channels=obs_dim[2],
-                  output_size=action_dim,
-                  **network_args)
-        target_qf = CNN(input_width=obs_dim[1],
-                  input_height=obs_dim[0],
-                  input_channels=obs_dim[2],
-                  output_size=action_dim,
-                  **network_args)
+        from surprise.utils.networks import MixedIdentMlpCNN
+        network_args.pop('type')
+        assert unflattened_obs_dim is not None
+        qf = MixedIdentMlpCNN(action_dim=action_dim, obs_dim=unflattened_obs_dim, **network_args)
+        target_qf = MixedIdentMlpCNN(action_dim=action_dim, obs_dim=unflattened_obs_dim, **network_args)
     else:
         from rlkit.torch.networks import Mlp
         qf = Mlp(
@@ -70,7 +65,7 @@ def get_env(variant):
 
 def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=False):
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper, \
-        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper
+        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper, FlattenDictObservationWrapper
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
@@ -133,6 +128,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = RescaleImageWrapper(env=env)
         elif "add_alpha" in wrapper:
             env = AddAlphaWrapper(env=env)
+        elif "flatten_dict_observation" in wrapper:
+            env = FlattenDictObservationWrapper(env)
         else:
             if not eval:
                 pass
@@ -140,8 +137,10 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
                 print("wrapper not known: ", wrapper)
                 sys.exit()
         
-    obs_dim = env.observation_space.low.shape
-    print("out obs dim", obs_dim)
+    if isinstance(env.observation_space, gym.spaces.Dict):
+        obs_dim = {key: obs.low.shape for key, obs in env.observation_space.spaces.items()}
+    else:
+        obs_dim = env.observation_space.low.shape
     return env, network
 
 
@@ -247,12 +246,17 @@ def experiment(doodad_config, variant):
     eval_env, _ = add_wrappers(base_env2, variant, device=ptu.device, eval=True, network=network)
     if ("vae_wrapper" in variant["wrappers"]):
         eval_env._network = base_env._network
-    
+
+    from surprise.wrappers.obsresize import FlattenDictObservationWrapper
+    if isinstance(expl_env, FlattenDictObservationWrapper):
+        unflatten_obs_dim = {key: obs.low.shape for key, obs in expl_env.unwrapped.observation_space.spaces.items()}
+    else:
+        unflatten_obs_dim = None
     obs_dim = expl_env.observation_space.low.shape
     print("Final obs dim", obs_dim)
     action_dim = eval_env.action_space.n
     print("Action dimension: ", action_dim)
-    qf, target_qf = get_network(variant["network_args"], obs_dim, action_dim)
+    qf, target_qf = get_network(variant["network_args"], obs_dim, action_dim, unflatten_obs_dim)
     qf_criterion = nn.MSELoss()
     eval_policy = ArgmaxDiscretePolicy(qf)
     if "prob_random_action" in variant:
