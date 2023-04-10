@@ -120,7 +120,7 @@ RUN ls
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 RUN conda install -n surprise-adapt pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
-
+RUN conda install -n surprise-adapt-pytorch x264=='1!152.20180717' ffmpeg=4.0.2 -c conda-forge
 WORKDIR /root/playground
 
 RUN ls
