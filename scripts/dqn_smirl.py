@@ -49,16 +49,15 @@ def get_env(variant):
         import gym
         env = gym.make(variant['env'])
         env.__init__(**variant["env_kwargs"])
-
-    #     else:
+#     else:
 #         print("Non supported env type: ", variant["env"])
 #         sys.exit()
         
     return env
 
-def add_wrappers(env, variant, device=0, eval=False, network=None):
+def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=False):
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper, \
-        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper
+        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
@@ -71,7 +70,11 @@ def add_wrappers(env, variant, device=0, eval=False, network=None):
     obs_dim = env.observation_space.low.shape
     print("obs dim", obs_dim)
     for wrapper in variant["wrappers"]:
-        if "soft_reset_wrapper" in wrapper:
+        if "smirl_wrapper" in wrapper:
+            env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], device=device)
+        elif "surprise_adapt_wrapper" in wrapper:
+            env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], device=device, flip_alpha=flip_alpha)
+        elif "soft_reset_wrapper" in wrapper:
             env = SoftResetWrapper(env=env, max_time=500)
         elif "FlattenObservationWrapper" in wrapper:
             from surprise.wrappers.obsresize import FlattenObservationWrapper
@@ -115,6 +118,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None):
             env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], device=device)
         elif "rescale_rgb" in wrapper:
             env = RescaleImageWrapper(env=env)
+        elif "add_alpha" in wrapper:
+            env = AddAlphaWrapper(env=env)
         else:
             if not eval:
                 pass
@@ -126,6 +131,28 @@ def add_wrappers(env, variant, device=0, eval=False, network=None):
     print("out obs dim", obs_dim)
     return env, network
 
+
+def add_surprise_adapt(env, variant, device = 0, flip_alpha=False):
+    from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental, GaussianCircularBuffer
+    from surprise.wrappers.base_surprise_adapt import BaseSurpriseAdaptWrapper
+    
+    if ("latent_obs_size" in variant):
+        obs_size = variant["latent_obs_size"]
+    else:
+        obs_size = env.observation_space.low.size
+        
+    if (variant["buffer_type"] == "Bernoulli"):
+        buffer = BernoulliBuffer(obs_size)
+        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=100, flip_alpha=flip_alpha,**variant)
+        
+    elif (variant["buffer_type"] == "Gaussian"):
+        buffer = GaussianBufferIncremental(obs_size)
+        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=500, flip_alpha=flip_alpha, **variant)
+    else:
+        print("Non supported prob distribution type: ", variant["buffer_type"])
+        sys.exit()
+    
+    return env
 
 def add_smirl(env, variant, device=0):
     from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental, GaussianCircularBuffer
