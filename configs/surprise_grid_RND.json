@@ -8,6 +8,7 @@
     },
     "replay_buffer_size": 100000,
     "algorithm_kwargs": {
+        "render_agent_pos": true,
         "num_epochs":3000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
