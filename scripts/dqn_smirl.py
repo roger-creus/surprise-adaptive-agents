@@ -83,7 +83,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
         elif "surprise_adapt_wrapper" in wrapper:
             env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], device=device, flip_alpha=flip_alpha)
         elif "soft_reset_wrapper" in wrapper:
-            env = SoftResetWrapper(env=env, max_time=500)
+            env = SoftResetWrapper(env=env, **wrapper["soft_reset_wrapper"])
         elif "FlattenObservationWrapper" in wrapper:
             from surprise.wrappers.obsresize import FlattenObservationWrapper
             env = FlattenObservationWrapper(env=env, **wrapper["FlattenObservationWrapper"])

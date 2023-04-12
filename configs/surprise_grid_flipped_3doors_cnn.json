@@ -38,7 +38,7 @@
         "render": true
     },
     "wrappers": [
-    	{"soft_reset_wrapper": true},
+    	{"soft_reset_wrapper": {"max_time": 500}},
         {"rescale_rgb":  true},
         {"resize_observation_wrapper": {
             "new_size": [7,7,3],
