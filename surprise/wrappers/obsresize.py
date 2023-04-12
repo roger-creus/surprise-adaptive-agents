@@ -337,6 +337,7 @@ class SoftResetWrapper(gym.Wrapper):
     def step(self, action):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
+        self._time += 1
         
         info["life_length_avg"] = self._last_death
         if (envdone):
@@ -352,6 +353,8 @@ class SoftResetWrapper(gym.Wrapper):
         
         self._last_death = self._last_death + 1
         envdone = self._time >= self._max_time
+        if envdone:
+            self._time = 0
 
         return obs, env_rew, envdone, info
 
@@ -359,7 +362,6 @@ class SoftResetWrapper(gym.Wrapper):
         '''
         Reset the wrapped env and the buffer
         '''
-        self._time = 0
         self._last_death = 0
         if self.reset_alpha:
             self.alpha_t = np.random.binomial(1, 0.5)
