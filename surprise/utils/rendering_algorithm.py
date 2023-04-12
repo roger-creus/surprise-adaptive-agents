@@ -106,6 +106,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                                                for y in x['env_infos']])
             self._end_epoch(epoch)
 
+
         
 #         algo_log = OrderedDict()
 #         append_log(algo_log, self.expl_data_collector.get_diagnostics(), prefix='exploration/')
@@ -129,9 +130,11 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
         cl = logger.get_comet_logger()
         logdir = logger.get_snapshot_dir()  + tag + str(counter) + ".png"
-        plt.figure(figsize=(grid_width * 4, grid_height * 4))
-        plt.imshow(heat_map, interpolation='nearest')
-        plt.savefig(logdir)
+        fig = plt.figure(num=1, clear=True, figsize=(grid_width * 4, grid_height * 4))
+        ax = fig.add_subplot(111)
+        ax.imshow(heat_map, interpolation='nearest')
+        fig.savefig(logdir)
+
         if (cl is not None):
             cl.log_image(image_data=logdir, overwrite=True, image_format="png")
 
