@@ -33,7 +33,10 @@
         {"rescale_rgb":  true},
     	{"rendering_observation":
 		{
-			"resize": [118,40,1]
+			"resize": [118,40,1],
+            "render_agent_obs": true,
+            "resize_agent_obs": [56, 56, 3],
+            "rescale_agent_obs": 255
 		}},
         { "smirl_wrapper": {
     		"buffer_type": "Gaussian"

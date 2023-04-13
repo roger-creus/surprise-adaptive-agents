@@ -258,7 +258,8 @@ class ChannelFirstWrapper(gym.Env):
 class RenderingObservationWrapper(gym.Wrapper):
     
     @classu.hidden_member_initialize
-    def __init__(self, env, swap=None, rescale=None, resize=None):
+    def __init__(self, env, swap=None, rescale=None, resize=None, render_agent_obs=None,
+                 resize_agent_obs=None, rescale_agent_obs=None):
         '''
         params
         ======
@@ -276,20 +277,29 @@ class RenderingObservationWrapper(gym.Wrapper):
         # Take Action
         import copy
         import numpy as np
-        
+
         obs, env_rew, envdone, info = self._env.step(action)
-        info["rendering"] = self._env.render(mode="rgb_array")
-        
-        if (self._resize is not None): 
-            info["rendering"] = cv2.resize(info["rendering"], dsize=tuple(self._resize[:2]), interpolation=cv2.INTER_AREA)
+        render_obs = self._env.render(mode="rgb_array")
+
+        if (self._resize is not None):
+            render_obs = cv2.resize(render_obs, dsize=tuple(self._resize[:2]), interpolation=cv2.INTER_AREA)
         if self._rescale is not None:
-#                 print ("info[\"rendering\"]", info["rendering"])
-                info["rendering"] = np.array(info["rendering"] * self._rescale, dtype='uint8')
+            render_obs = np.array(render_obs * self._rescale, dtype='uint8')
         if self._swap is not None:
-            info["rendering"] = copy.deepcopy(np.moveaxis(info["rendering"], *self._swap))
-#         print ("rendering mean: ", np.mean(info["rendering"]))
-#         print (info["rendering"].shape)
-#         print (info["rendering"].shape)
+            render_obs = copy.deepcopy(np.moveaxis(render_obs, *self._swap))
+
+        if self._render_agent_obs is not None and self._render_agent_obs:
+            if (self._resize_agent_obs is not None):
+                resize_obs = cv2.resize(obs, dsize=tuple(self._resize_agent_obs[:2]), interpolation=cv2.INTER_AREA)
+            else:
+                resize_obs = obs
+            x, y, z = resize_obs.shape
+            agent_obs = np.zeros((x, render_obs.shape[1], z))
+            agent_obs[0:x, 0:y, 0:z] = resize_obs
+            if self._rescale_agent_obs is not None:
+                agent_obs = np.array(agent_obs * self._rescale_agent_obs, dtype='uint8')
+            render_obs = np.concatenate([render_obs, agent_obs], axis=0)
+        info['rendering'] = render_obs
         return obs, env_rew, envdone, info
     
 
