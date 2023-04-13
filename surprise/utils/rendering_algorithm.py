@@ -33,9 +33,10 @@ def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
 
 class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
-    def __init__(self, render_agent_pos=False, *args, **kwargs):
+    def __init__(self, render_agent_pos=False, log_episode_alphas=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_agent_pos = render_agent_pos
+        self.log_episode_alphas = log_episode_alphas
 
     def _train(self):
         
@@ -53,6 +54,11 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         if self.render_agent_pos:
             eval_agent_pos_history = deque(maxlen=100000)
             train_agent_pos_history = deque(maxlen=100000)
+            
+        if self.log_episode_alphas:
+            train_episode_alphas = deque(maxlen=100000)
+            eval_episode_alphas = deque(maxlen=100000)
+            
         for epoch in gt.timed_for(
                 range(self._start_epoch, self.num_epochs),
                 save_itrs=True,
@@ -86,7 +92,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 gt.stamp('training', unique=False)
                 self.training_mode(False)
             
-            if ((epoch % 25) == 0):
+            if ((epoch % 1) == 0):
                 print("Rendering video")
                 self.render_video("eval_video_", counter=epoch)
 
@@ -95,6 +101,12 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                     self.render_heatmap(train_agent_pos_history, epoch, "train_heatmap_")
                 eval_agent_pos_history = deque(maxlen=100000)
                 train_agent_pos_history = deque(maxlen=100000)
+                
+                if self.log_episode_alphas and len(eval_episode_alphas) > 0:
+                    self.log_alphas(eval_episode_alphas, epoch, "eval_alphas")
+                    self.log_alphas(train_episode_alphas, epoch, "train_alphas")
+                train_episode_alphas = deque(maxlen=100000)
+                eval_episode_alphas = deque(maxlen=100000)
 
             if self.render_agent_pos:
                 eval_epoch_paths = self.eval_data_collector.get_epoch_paths()
@@ -104,9 +116,15 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                                                for y in x['env_infos']])
                 train_agent_pos_history.extend([y['agent_pos'] for x in train_epoch_paths
                                                for y in x['env_infos']])
+                
+            if self.log_episode_alphas:
+                eval_epoch_paths = self.eval_data_collector.get_epoch_paths()
+                train_epoch_paths = self.expl_data_collector.get_epoch_paths()
+                
+                eval_episode_alphas.extend([y['alpha'] for x in eval_epoch_paths for y in x['env_infos']])
+                train_episode_alphas.extend([y['alpha'] for x in train_epoch_paths for y in x['env_infos']])
+                
             self._end_epoch(epoch)
-
-
         
 #         algo_log = OrderedDict()
 #         append_log(algo_log, self.expl_data_collector.get_diagnostics(), prefix='exploration/')
@@ -120,6 +138,26 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 #             logger.record_tabular('current_mem_usage', current_mem_usage())
             
         return
+    
+    def log_alphas(self, agent_alpha_history, counter, tag):
+        import numpy as np
+        from IPython import embed
+
+        alphas = np.array(agent_alpha_history).reshape(-1, 100)
+        mean_alpha_per_step = np.mean(alphas, axis = 0)
+        x_axis = np.arange(len(mean_alpha_per_step))
+        std_alpha_per_step = np.std(alphas, axis = 0)
+        
+        cl = logger.get_comet_logger()
+        logdir = logger.get_snapshot_dir()  + tag + str(counter) + ".png"
+        
+        plt.figure()
+        plt.plot(x_axis, mean_alpha_per_step)
+        plt.fill_between(x_axis, mean_alpha_per_step - std_alpha_per_step, mean_alpha_per_step + std_alpha_per_step, alpha=0.5)
+        plt.savefig(logdir)
+        
+        if (cl is not None):
+            cl.log_image(image_data=logdir, overwrite=True, image_format="png")
 
     def render_heatmap(self, agent_pos_history, counter, tag):
         import numpy as np
