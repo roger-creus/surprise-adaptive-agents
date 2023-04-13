@@ -1,4 +1,6 @@
 from collections import deque
+from IPython import embed
+
 
 from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 # from torch.utils.tensorboard import SummaryWriter
@@ -57,7 +59,6 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             
         if self.log_episode_alphas:
             train_episode_alphas = deque(maxlen=100000)
-            eval_episode_alphas = deque(maxlen=100000)
             
         for epoch in gt.timed_for(
                 range(self._start_epoch, self.num_epochs),
@@ -92,7 +93,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 gt.stamp('training', unique=False)
                 self.training_mode(False)
             
-            if ((epoch % 1) == 0):
+            if ((epoch % 5) == 0):
                 print("Rendering video")
                 self.render_video("eval_video_", counter=epoch)
 
@@ -102,26 +103,21 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 eval_agent_pos_history = deque(maxlen=100000)
                 train_agent_pos_history = deque(maxlen=100000)
                 
-                if self.log_episode_alphas and len(eval_episode_alphas) > 0:
-                    self.log_alphas(eval_episode_alphas, epoch, "eval_alphas")
-                    self.log_alphas(train_episode_alphas, epoch, "train_alphas")
+                if self.log_episode_alphas and len(train_episode_alphas) > 0:
+                    self.log_alphas(train_episode_alphas, epoch, "train_alphas_")
                 train_episode_alphas = deque(maxlen=100000)
-                eval_episode_alphas = deque(maxlen=100000)
 
-            if self.render_agent_pos:
+            if self.render_agent_pos or self.log_episode_alphas:
                 eval_epoch_paths = self.eval_data_collector.get_epoch_paths()
                 train_epoch_paths = self.expl_data_collector.get_epoch_paths()
 
+            if self.render_agent_pos:
                 eval_agent_pos_history.extend([y['agent_pos'] for x in eval_epoch_paths
                                                for y in x['env_infos']])
                 train_agent_pos_history.extend([y['agent_pos'] for x in train_epoch_paths
                                                for y in x['env_infos']])
                 
             if self.log_episode_alphas:
-                eval_epoch_paths = self.eval_data_collector.get_epoch_paths()
-                train_epoch_paths = self.expl_data_collector.get_epoch_paths()
-                
-                eval_episode_alphas.extend([y['alpha'] for x in eval_epoch_paths for y in x['env_infos']])
                 train_episode_alphas.extend([y['alpha'] for x in train_epoch_paths for y in x['env_infos']])
                 
             self._end_epoch(epoch)
@@ -139,25 +135,27 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             
         return
     
-    def log_alphas(self, agent_alpha_history, counter, tag):
+    def log_alphas(self, agent_alpha_history, counter, tag, **kwargs):
         import numpy as np
-        from IPython import embed
 
-        alphas = np.array(agent_alpha_history).reshape(-1, 100)
-        mean_alpha_per_step = np.mean(alphas, axis = 0)
-        x_axis = np.arange(len(mean_alpha_per_step))
-        std_alpha_per_step = np.std(alphas, axis = 0)
+        alphas = np.array(agent_alpha_history).reshape(-1, 500)
+        alphas = alphas[np.random.choice(alphas.shape[0], 5, replace=False)]
+        mean_alphas = np.mean(alphas, axis=0)
+        std_alphas = np.std(alphas, axis=0)
+        x_axis = np.arange(500)
         
         cl = logger.get_comet_logger()
         logdir = logger.get_snapshot_dir()  + tag + str(counter) + ".png"
         
         plt.figure()
-        plt.plot(x_axis, mean_alpha_per_step)
-        plt.fill_between(x_axis, mean_alpha_per_step - std_alpha_per_step, mean_alpha_per_step + std_alpha_per_step, alpha=0.5)
+        plt.plot(x_axis, mean_alphas)
+        plt.fill_between(x_axis, mean_alphas - std_alphas, mean_alphas + std_alphas, alpha=0.5)
         plt.savefig(logdir)
         
         if (cl is not None):
             cl.log_image(image_data=logdir, overwrite=True, image_format="png")
+
+        plt.close()
 
     def render_heatmap(self, agent_pos_history, counter, tag):
         import numpy as np
@@ -180,13 +178,29 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
     def render_video(self, tag, counter):
         import numpy as np
         import pdb
-#         log.debug("{}".format("render_video_and_add_to_tensorboard"))
         
         path = self.eval_data_collector.collect_new_paths(
             self.max_path_length,
             self.num_eval_steps_per_epoch,
             discard_incomplete_paths=True
         )
+
+        # plotting the eval alphas for the 2 episodes
+        eval_alphas = np.array([y['alpha'] for x in path for y in x['env_infos']]).reshape(-1, 500)
+        x_axis = np.arange(500)
+        
+        cl = logger.get_comet_logger()
+        logdir = logger.get_snapshot_dir()  + "eval_alphas_" + str(counter) + ".png"
+        
+        plt.figure()
+        plt.plot(x_axis, eval_alphas[0])
+        plt.plot(x_axis, eval_alphas[1])
+        plt.savefig(logdir)
+
+        if (cl is not None):
+            cl.log_image(image_data=logdir, overwrite=True, image_format="png")
+        
+        plt.close()
         
         if ("vae_reconstruction" in path[0]['env_infos'][0]):
             video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
