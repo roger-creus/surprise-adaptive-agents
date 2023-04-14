@@ -151,6 +151,10 @@ class ResizeObservationWrapper(gym.Wrapper):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
+<<<<<<< HEAD
+=======
+        
+>>>>>>> main
         super().__init__(env)
 
         self.num_steps = 0

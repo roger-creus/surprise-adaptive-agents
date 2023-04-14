@@ -58,6 +58,9 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         assert self.surprise_window_len == -1 or self.surprise_window_len % 2 == 0
 
         self.flip_alpha = flip_alpha
+        
+        if self.flip_alpha == True:
+            self.surprise_window_len = 10
 
         self.reset()
 
@@ -80,16 +83,12 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         rew = ((-1)**self.alpha_t) * surprise
         
         # remove old elements from the surprise window
-        if self.surprise_window_len != -1: 
+        if self.surprise_window_len != -1 or self.flip_alpha == True:
             if self.surprise_counter > self.surprise_window_len:
                 self.surprise_window.popleft()
 
             # add new element to the surprise window
             self.surprise_window.append(surprise)
-
-        else:
-            if self.flip_alpha == True and self.surprise_counter % 25 == 0:
-                self.alpha_t = 1 if self.alpha_t == 0 else 0
 
         self.surprise_counter += 1
 
@@ -111,7 +110,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         info['surprise'] = surprise
         info["alpha"] = self.alpha_t
         
-        if self.surprise_window_len != -1:
+        if self.surprise_window_len != -1 or self.flip_alpha == True:
             # update surprise momentum
             surprise_change = [1 if self.surprise_window[i+1] > self.surprise_window[i] else -1 for i in range(len(self.surprise_window)-1)]
             self.alpha_t =  1 if np.sign(sum(surprise_change)) > 0 else 0

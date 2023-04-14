@@ -8,8 +8,7 @@
     },
     "replay_buffer_size": 1000000,
     "algorithm_kwargs": {
-        "render_agent_pos": true,
-        "num_epochs":3000,
+        "num_epochs":9000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
@@ -25,8 +24,17 @@
         "render": true
     },
     "wrappers": [
+        {"add_alpha" : true},
     	{"soft_reset_wrapper": true},
-    	{"rendering_observation":
+        {"resize_observation_wrapper": {
+                "new_size": [7,7,3],
+                "new_shape": [7,7,3],
+                "grayscale": false
+        }},
+
+        {"rescale_rgb":  true},
+
+        {"rendering_observation":
 		{
 			"resize": [118,40,1],
             "render_agent_obs": true,
@@ -35,12 +43,13 @@
 		}},
         { "surprise_adapt_wrapper": {
     		"buffer_type": "Gaussian",
-            "surprise_window_len": 4
+            "surprise_window_len" : -1
         }}
     ],
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
-    	"see_through_walls": true
+        "num_doors": 8
+
     }
 }
