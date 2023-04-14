@@ -479,6 +479,7 @@ class FlattenDictObservationWrapper(gym.Wrapper):
         env (gym.Env) : environment to wrap
         '''
         self._obs_keys = [key for key in self.env.observation_space.spaces.keys()]
+        self.unflattened_observation_space = self.observation_space
         self.observation_space = Box(
             np.concatenate([x.low.flatten() for x in self.env.observation_space.spaces.values()]),
             np.concatenate([x.high.flatten() for x in self.env.observation_space.spaces.values()])
@@ -501,3 +502,7 @@ class FlattenDictObservationWrapper(gym.Wrapper):
     def encode_obs(self, obs):
         obs_ = np.concatenate([np.array(obs[x]).flatten() for x in self._obs_keys])
         return obs_
+
+    def render(self, mode='human', **kwargs):
+        return self.env.render(mode=mode, **kwargs)
+

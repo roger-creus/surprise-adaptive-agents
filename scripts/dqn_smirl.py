@@ -55,7 +55,10 @@ def get_env(variant):
     else: 
         import gym
         env = gym.make(variant['env'])
-        env.__init__(**variant["env_kwargs"])
+        try:
+            env.__init__(**variant["env_kwargs"])
+        except KeyError:
+            pass
 
     #     else:
 #         print("Non supported env type: ", variant["env"])
@@ -247,10 +250,9 @@ def experiment(doodad_config, variant):
     if ("vae_wrapper" in variant["wrappers"]):
         eval_env._network = base_env._network
 
-    from surprise.wrappers.obsresize import FlattenDictObservationWrapper
-    if isinstance(expl_env, FlattenDictObservationWrapper):
-        unflatten_obs_dim = {key: obs.low.shape for key, obs in expl_env.unwrapped.observation_space.spaces.items()}
-    else:
+    try:
+        unflatten_obs_dim = {key: obs.low.shape for key, obs in expl_env.unflattened_observation_space.spaces.items()}
+    except Exception:
         unflatten_obs_dim = None
     obs_dim = expl_env.observation_space.low.shape
     print("Final obs dim", obs_dim)
