@@ -121,6 +121,8 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 train_episode_alphas.extend([y['alpha'] for x in train_epoch_paths for y in x['env_infos']])
                 
             self._end_epoch(epoch)
+
+
         
 #         algo_log = OrderedDict()
 #         append_log(algo_log, self.expl_data_collector.get_diagnostics(), prefix='exploration/')
