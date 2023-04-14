@@ -249,7 +249,7 @@ class ChannelFirstWrapper(gym.Env):
         obs = self.env.reset()
         obs = self.resize_obs(obs)
         return obs
-    
+
     def render(self, mode=None):
         return self._env.render(mode=mode)
 
@@ -468,3 +468,40 @@ class RescaleImageWrapper(TransformObservation):
     @staticmethod
     def _rgb_rescale(x):
         return x/255
+
+
+from PIL import Image, ImageDraw, ImageFont
+
+class AddTextInfoToRendering(gym.Wrapper):
+
+    def __init__(self, env, log_returns=False):
+        super().__init__(env)
+        self.returns = 0 if log_returns else None
+
+    def step(self, action):
+        obs, rew, done, info = self.env.step(action)
+        if self.returns is not None:
+            self.returns += rew
+        render_obs = info['rendering']
+        import os
+        font_path = os.path.join(cv2.__path__[0], 'qt', 'fonts', 'DejaVuSans.ttf')
+        font = ImageFont.truetype(font_path, size=8)
+
+        im = Image.fromarray(render_obs)
+        draw = ImageDraw.Draw(im)
+
+        draw.text((int(render_obs.shape[1]/2), int(render_obs.shape[0]/2)),
+                     f"rew: {rew:.2f}", fill=(255, 255, 255), font=font)
+        if self.returns is not None:
+            draw = ImageDraw.Draw(im)
+            draw.text((int(render_obs.shape[1] / 2), int(render_obs.shape[0] / 2)+10),
+                         f"ret: {self.returns:.2f}", fill=(255, 255, 255), font=font)
+        info['rendering'] = np.array(im)
+        return obs, rew, done, info
+
+    def reset(self):
+        obs = self.env.reset()
+        if self.returns is not None:
+            self.returns = 0
+        return obs
+

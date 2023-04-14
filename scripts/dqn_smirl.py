@@ -57,7 +57,8 @@ def get_env(variant):
 
 def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=False):
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper, \
-        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper
+        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper, \
+        AddTextInfoToRendering
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
@@ -120,6 +121,10 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = RescaleImageWrapper(env=env)
         elif "add_alpha" in wrapper:
             env = AddAlphaWrapper(env=env)
+        elif "flatten_dict_observation" in wrapper:
+            env = FlattenDictObservationWrapper(env)
+        elif "add_text_info_to_rendering" in wrapper and eval:
+            env = AddTextInfoToRendering(env=env, **wrapper["add_text_info_to_rendering"])
         else:
             if not eval:
                 pass
@@ -135,23 +140,23 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
 def add_surprise_adapt(env, variant, device = 0, flip_alpha=False):
     from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental, GaussianCircularBuffer
     from surprise.wrappers.base_surprise_adapt import BaseSurpriseAdaptWrapper
-    
+
     if ("latent_obs_size" in variant):
         obs_size = variant["latent_obs_size"]
     else:
         obs_size = env.observation_space.low.size
-        
+
     if (variant["buffer_type"] == "Bernoulli"):
         buffer = BernoulliBuffer(obs_size)
         env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=100, flip_alpha=flip_alpha,**variant)
-        
+
     elif (variant["buffer_type"] == "Gaussian"):
         buffer = GaussianBufferIncremental(obs_size)
         env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=500, flip_alpha=flip_alpha, **variant)
     else:
         print("Non supported prob distribution type: ", variant["buffer_type"])
         sys.exit()
-    
+
     return env
 
 def add_smirl(env, variant, device=0):
@@ -234,7 +239,7 @@ def experiment(doodad_config, variant):
     eval_env, _ = add_wrappers(base_env2, variant, device=ptu.device, eval=True, network=network)
     if ("vae_wrapper" in variant["wrappers"]):
         eval_env._network = base_env._network
-    
+
     obs_dim = expl_env.observation_space.low.shape
     print("Final obs dim", obs_dim)
     action_dim = eval_env.action_space.n
