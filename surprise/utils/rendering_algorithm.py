@@ -1,4 +1,4 @@
-
+from collections import deque
 
 from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 # from torch.utils.tensorboard import SummaryWriter
@@ -11,6 +11,7 @@ from rlkit.data_management.replay_buffer import ReplayBuffer
 from rlkit.samplers.data_collector import PathCollector
 from rlkit.core import logger
 from util.utils import current_mem_usage
+import matplotlib.pyplot as plt
 
 def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
     ### image format (episodes, img_width, img_height, colour_channels)
@@ -31,8 +32,11 @@ def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
         cl.log_image(image_data=logdir+str(counter)+".mp4", overwrite=True, image_format="mp4")
 
 class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
-    
-    
+
+    def __init__(self, render_agent_pos=False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.render_agent_pos = render_agent_pos
+
     def _train(self):
         
 #         pdb.set_trace()
@@ -46,6 +50,9 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             self.replay_buffer.add_paths(init_expl_paths)
             self.expl_data_collector.end_epoch(-1)
 
+        if self.render_agent_pos:
+            eval_agent_pos_history = deque(maxlen=100000)
+            train_agent_pos_history = deque(maxlen=100000)
         for epoch in gt.timed_for(
                 range(self._start_epoch, self.num_epochs),
                 save_itrs=True,
@@ -82,7 +89,24 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             if ((epoch % 25) == 0):
                 print("Rendering video")
                 self.render_video("eval_video_", counter=epoch)
+
+                if self.render_agent_pos and len(eval_agent_pos_history) > 0 :
+                    self.render_heatmap(eval_agent_pos_history, epoch, "eval_heatmap_")
+                    self.render_heatmap(train_agent_pos_history, epoch, "train_heatmap_")
+                eval_agent_pos_history = deque(maxlen=100000)
+                train_agent_pos_history = deque(maxlen=100000)
+
+            if self.render_agent_pos:
+                eval_epoch_paths = self.eval_data_collector.get_epoch_paths()
+                train_epoch_paths = self.expl_data_collector.get_epoch_paths()
+
+                eval_agent_pos_history.extend([y['agent_pos'] for x in eval_epoch_paths
+                                               for y in x['env_infos']])
+                train_agent_pos_history.extend([y['agent_pos'] for x in train_epoch_paths
+                                               for y in x['env_infos']])
             self._end_epoch(epoch)
+
+
         
 #         algo_log = OrderedDict()
 #         append_log(algo_log, self.expl_data_collector.get_diagnostics(), prefix='exploration/')
@@ -96,7 +120,25 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 #             logger.record_tabular('current_mem_usage', current_mem_usage())
             
         return
-        
+
+    def render_heatmap(self, agent_pos_history, counter, tag):
+        import numpy as np
+        _, (grid_width, grid_height) = agent_pos_history[0]
+        heat_map = np.zeros((grid_height, grid_width))
+        for (col, row), _ in agent_pos_history:
+            heat_map[row, col] += 1
+
+        cl = logger.get_comet_logger()
+        logdir = logger.get_snapshot_dir()  + tag + str(counter) + ".png"
+        fig = plt.figure(num=1, clear=True, figsize=(grid_width * 4, grid_height * 4))
+        ax = fig.add_subplot(111)
+        ax.imshow(heat_map, interpolation='nearest')
+        fig.savefig(logdir)
+
+        if (cl is not None):
+            cl.log_image(image_data=logdir, overwrite=True, image_format="png")
+
+
     def render_video(self, tag, counter):
         import numpy as np
         import pdb
@@ -111,7 +153,8 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         if ("vae_reconstruction" in path[0]['env_infos'][0]):
             video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
             display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
-            
+
+
         video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
         display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
             

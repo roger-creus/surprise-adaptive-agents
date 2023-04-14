@@ -83,7 +83,7 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
 
     def step(self, action):
         obs, reward, done, info = super().step(action)
-
+        info.update({'agent_pos': (self.agent_pos, (self.width, self.height))})
         self._randomize_floor_colors()
 
         return obs, reward, done, info
