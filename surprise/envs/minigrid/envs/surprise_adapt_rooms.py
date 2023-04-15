@@ -69,12 +69,17 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
         self.noisy_prob = noisy_prob
 
         self.agent_view = agent_view
+        if self.agent_view == "center":
+            see_through_walls = True
+        else:
+            see_through_walls = False
         self.num_doors = num_doors
 
         super().__init__(
             width=self.width,
             height=self.height,
             max_steps=max_steps,
+            see_through_walls=see_through_walls,
             **kwargs,
         )
         self.actions = SurpriseAdaptRoomsEnv.Actions
