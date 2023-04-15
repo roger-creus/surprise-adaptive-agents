@@ -59,7 +59,7 @@ class BaseSurpriseWrapper(gym.Env):
         surprise = -self._buffer.logprob(self.encode_obs(obs))
         # For numerical stability, clip stds to not be 0
         thresh = 300
-        surprise = np.clip(rew, a_min=-thresh, a_max=thresh)
+        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
         # Add observation to buffer
         if self.minimize:
             rew = -surprise
