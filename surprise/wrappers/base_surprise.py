@@ -12,6 +12,7 @@ class BaseSurpriseWrapper(gym.Env):
                  buffer, 
                  time_horizon, 
                  add_true_rew=False,
+                 minimize=True,
                  smirl_rew_scale=None, 
                  buffer_type=None,
                  latent_obs_size=None,
@@ -45,7 +46,7 @@ class BaseSurpriseWrapper(gym.Env):
                      np.ones(1)*time_horizon)
                 )
             )
-
+        self.minimize = minimize
         self.reset()
 
     def step(self, action):
@@ -55,17 +56,22 @@ class BaseSurpriseWrapper(gym.Env):
 
 
         # Get wrapper outputs
-        rew = self._buffer.logprob(self.encode_obs(obs))
+        surprise = -self._buffer.logprob(self.encode_obs(obs))
         # For numerical stability, clip stds to not be 0
         thresh = 300
-        rew = np.clip(rew, a_min=-thresh, a_max=thresh)
+        surprise = np.clip(rew, a_min=-thresh, a_max=thresh)
         # Add observation to buffer
+        if self.minimize:
+            rew = -surprise
+        else:
+            rew = surprise
+
         self._buffer.add(self.encode_obs(obs))
         if (self._obs_out_label is None):
-            info['surprise'] = - rew
+            info['surprise'] = surprise
             info["theta_entropy"] = self._buffer.entropy()
         else:
-            info[self._obs_out_label + 'surprise'] = - rew
+            info[self._obs_out_label + 'surprise'] = surprise
             info[self._obs_out_label + "theta_entropy"] = self._buffer.entropy()
 #         print (info)
         if (self._smirl_rew_scale is not None):
