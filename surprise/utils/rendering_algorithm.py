@@ -107,7 +107,8 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             self._end_epoch(epoch)
 
 
-        
+
+
 #         algo_log = OrderedDict()
 #         append_log(algo_log, self.expl_data_collector.get_diagnostics(), prefix='exploration/')
         

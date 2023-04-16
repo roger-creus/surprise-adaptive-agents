@@ -1,6 +1,6 @@
 import numpy as np
 import gym
-from gym.spaces import Box
+from gym.spaces import Box, Dict
 import pdb
 import util.class_util as classu
 
@@ -13,7 +13,7 @@ class BaseSurpriseWrapper(gym.Env):
                  time_horizon, 
                  add_true_rew=False,
                  minimize=True,
-                 smirl_rew_scale=None, 
+                 smirl_rew_scale=None,
                  buffer_type=None,
                  latent_obs_size=None,
                  obs_label=None,
@@ -34,19 +34,28 @@ class BaseSurpriseWrapper(gym.Env):
         # Gym spaces
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
-        self.observation_space = Box(
-                np.concatenate(
-                    (self.env_obs_space.low.flatten(), 
-                     np.zeros(theta.shape), 
-                     np.zeros(1))
-                ),
-                np.concatenate(
-                    (self.env_obs_space.high.flatten(), 
-                     np.ones(theta.shape), 
-                     np.ones(1)*time_horizon)
+        if self._obs_out_label is None:
+            self.observation_space = Box(
+                    np.concatenate(
+                        (self.env_obs_space.low.flatten(),
+                         np.zeros(theta.shape),
+                         np.zeros(1))
+                    ),
+                    np.concatenate(
+                        (self.env_obs_space.high.flatten(),
+                         np.ones(theta.shape),
+                         np.ones(1)*time_horizon)
+                    )
                 )
-            )
+        else:
+            self.observation_space = Dict({
+                self._obs_label: Box(self.env_obs_space.low, self.env_obs_space.high),
+                self._obs_out_label: Box(np.concatenate((np.zeros(theta.shape), np.zeros(1))),
+                                         np.concatenate((np.zeros(theta.shape), np.zeros(1))))
+            })
+
         self.minimize = minimize
+
         self.reset()
 
     def step(self, action):
@@ -99,11 +108,6 @@ class BaseSurpriseWrapper(gym.Env):
         if (self._obs_out_label is None):
             obs = np.concatenate([np.array(obs).flatten(), np.array(theta).flatten(), num_samples])
         else:
-#             print ("obs: ", obs)
-#             import matplotlib.pyplot as plt
-#             print ("obs: ", obs)
-#             plt.imshow(np.reshape(obs["observation"], (64,48,4)))
-#             plt.show()
             obs[self._obs_out_label] = np.concatenate([np.array(theta).flatten(), num_samples])
         
         return obs
