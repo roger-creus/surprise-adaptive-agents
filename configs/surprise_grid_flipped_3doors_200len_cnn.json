@@ -1,0 +1,77 @@
+{
+    "algorithm":"SAC",
+    "version":"normal",
+    "layer_size":256,
+    "network_args":
+    {
+    	"type": "cnn",
+        "cnn_keys": ["observation"],
+        "ident_keys": [],
+        "mlp_keys": ["theta"],
+        "mlp_kwargs": {
+          "hidden_sizes": [128, 64],
+          "output_size":  32
+        },
+        "cnn_kwargs": {
+                "output_size": 64,
+                "n_channels": [16, 32, 64],
+                "kernel_sizes": [3,3,3],
+                "strides": [1,1,1],
+                "paddings": [0,0,0]
+                  }
+    },
+    "replay_buffer_size": 1000000,
+    "algorithm_kwargs": {
+        "render_agent_pos": true,
+        "episode_length":500,
+        "num_epochs":6000,
+        "num_eval_steps_per_epoch":1000,
+        "num_trains_per_train_loop":1000,
+        "num_expl_steps_per_train_loop":1000,
+        "min_num_steps_before_training":1000,
+        "max_path_length":1000,
+        "batch_size":256
+    },
+    "trainer_kwargs": {
+        "discount":0.99,
+        "learning_rate":3E-4
+    },
+    "render_kwargs":{
+        "render": true
+    },
+    "wrappers": [
+        {"soft_reset_wrapper": {"max_time": 200}},
+        {"rescale_rgb":  true},
+        {"resize_observation_wrapper": {
+            "new_size": [7,7,3],
+            "new_shape": [7,7,3],
+            "grayscale": false
+        }},
+        {"channel_first_observation_wrapper":  {}},
+        {"rendering_observation":
+		{
+			"resize": [118,40,1],
+            "render_agent_obs": true,
+            "resize_agent_obs": [56, 56, 3],
+            "rescale_agent_obs": 255,
+            "permute_agent_obs": [1,2,0]
+		}},
+        {"dict_obs_wrapper": {
+    		"obs_key": "observation"
+    		}
+    	},
+    	{"smirl_wrapper": {
+    		"buffer_type": "Gaussian",
+    		"obs_label": "observation",
+    		"obs_out_label": "theta"
+    	}},
+        {"flatten_dict_observation":  true}
+    ],
+    "log_comet": false,
+    "env": "MiniGrid-SurpriseAdaptRooms-v0",
+    "env_kwargs": {
+        "num_doors": 3,
+        "max_steps": 200,
+        "noisy_room": 1
+    }
+}

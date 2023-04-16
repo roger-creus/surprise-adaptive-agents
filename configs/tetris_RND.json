@@ -8,6 +8,7 @@
     },
     "replay_buffer_size": 100000,
     "algorithm_kwargs": {
+        "episode_length":100,
         "num_epochs":3000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
@@ -24,7 +25,7 @@
         "render": true
     },
     "wrappers": [
-    	{"soft_reset_wrapper": true},
+    	{"soft_reset_wrapper": {"max_time": 500}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}

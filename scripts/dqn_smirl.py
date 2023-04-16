@@ -6,10 +6,15 @@ try:
     from comet_ml import Experiment
 except: 
     pass
+import gym
 
+<<<<<<< HEAD
 from IPython import embed
 
 def get_network(network_args, obs_dim, action_dim):
+=======
+def get_network(network_args, obs_dim, action_dim, unflattened_obs_dim=None):
+>>>>>>> main
     
     
     if (network_args["type"] == "conv_mixed"):
@@ -21,6 +26,12 @@ def get_network(network_args, obs_dim, action_dim):
         print ("Using conv")
         qf = VizdoomFeaturizer(dim=action_dim, **network_args)
         target_qf = VizdoomFeaturizer(dim=action_dim, **network_args)
+    elif network_args['type'] == "cnn":
+        from surprise.utils.networks import MixedIdentMlpCNN
+        network_args.pop('type')
+        assert unflattened_obs_dim is not None
+        qf = MixedIdentMlpCNN(action_dim=action_dim, obs_dim=unflattened_obs_dim, **network_args)
+        target_qf = MixedIdentMlpCNN(action_dim=action_dim, obs_dim=unflattened_obs_dim, **network_args)
     else:
         from rlkit.torch.networks import Mlp
         qf = Mlp(
@@ -50,8 +61,12 @@ def get_env(variant):
     else: 
         import gym
         env = gym.make(variant['env'])
-        env.__init__(**variant["env_kwargs"])
-#     else:
+        try:
+            env.__init__(**variant["env_kwargs"])
+        except KeyError:
+            pass
+
+    #     else:
 #         print("Non supported env type: ", variant["env"])
 #         sys.exit()
         
@@ -59,7 +74,7 @@ def get_env(variant):
 
 def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=False):
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper, \
-        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper
+        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper, FlattenDictObservationWrapper
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
@@ -77,7 +92,11 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
         elif "surprise_adapt_wrapper" in wrapper:
             env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], ep_length=variant["algorithm_kwargs"]["episode_length"], device=device, flip_alpha=flip_alpha)
         elif "soft_reset_wrapper" in wrapper:
+<<<<<<< HEAD
             env = SoftResetWrapper(env=env, max_time=variant["algorithm_kwargs"]["episode_length"])
+=======
+            env = SoftResetWrapper(env=env, **wrapper["soft_reset_wrapper"])
+>>>>>>> main
         elif "FlattenObservationWrapper" in wrapper:
             from surprise.wrappers.obsresize import FlattenObservationWrapper
             env = FlattenObservationWrapper(env=env, **wrapper["FlattenObservationWrapper"])
@@ -122,6 +141,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = RescaleImageWrapper(env=env)
         elif "add_alpha" in wrapper:
             env = AddAlphaWrapper(env=env)
+        elif "flatten_dict_observation" in wrapper:
+            env = FlattenDictObservationWrapper(env)
         else:
             if not eval:
                 pass
@@ -129,31 +150,38 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
                 print("wrapper not known: ", wrapper)
                 sys.exit()
         
-    obs_dim = env.observation_space.low.shape
-    print("out obs dim", obs_dim)
+    if isinstance(env.observation_space, gym.spaces.Dict):
+        obs_dim = {key: obs.low.shape for key, obs in env.observation_space.spaces.items()}
+    else:
+        obs_dim = env.observation_space.low.shape
     return env, network
 
 
 def add_surprise_adapt(env, variant, ep_length = 500, device = 0, flip_alpha=False):
     from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental, GaussianCircularBuffer
     from surprise.wrappers.base_surprise_adapt import BaseSurpriseAdaptWrapper
-    
+
     if ("latent_obs_size" in variant):
         obs_size = variant["latent_obs_size"]
     else:
         obs_size = env.observation_space.low.size
-        
+
     if (variant["buffer_type"] == "Bernoulli"):
         buffer = BernoulliBuffer(obs_size)
+<<<<<<< HEAD
         env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha,**variant)
         
+=======
+        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=100, flip_alpha=flip_alpha,**variant)
+
+>>>>>>> main
     elif (variant["buffer_type"] == "Gaussian"):
         buffer = GaussianBufferIncremental(obs_size)
         env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant)
     else:
         print("Non supported prob distribution type: ", variant["buffer_type"])
         sys.exit()
-    
+
     return env
 
 def add_smirl(env, variant, ep_length = 500, device=0):
@@ -236,12 +264,16 @@ def experiment(doodad_config, variant):
     eval_env, _ = add_wrappers(base_env2, variant, flip_alpha = True, device=ptu.device, eval=True, network=network)
     if ("vae_wrapper" in variant["wrappers"]):
         eval_env._network = base_env._network
-    
+
+    try:
+        unflatten_obs_dim = {key: obs.low.shape for key, obs in expl_env.unflattened_observation_space.spaces.items()}
+    except Exception:
+        unflatten_obs_dim = None
     obs_dim = expl_env.observation_space.low.shape
     print("Final obs dim", obs_dim)
     action_dim = eval_env.action_space.n
     print("Action dimension: ", action_dim)
-    qf, target_qf = get_network(variant["network_args"], obs_dim, action_dim)
+    qf, target_qf = get_network(variant["network_args"], obs_dim, action_dim, unflatten_obs_dim)
     qf_criterion = nn.MSELoss()
     eval_policy = ArgmaxDiscretePolicy(qf)
     if "prob_random_action" in variant:

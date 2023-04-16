@@ -204,7 +204,7 @@ class ResizeObservationWrapper(gym.Wrapper):
         return self._env.render(mode=mode)
     
     
-class ChannelFirstWrapper(gym.Env):
+class ChannelFirstWrapper(gym.Wrapper):
     def __init__(self, env, swap=(2,0)):
         '''
         params
@@ -213,21 +213,20 @@ class ChannelFirstWrapper(gym.Env):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
+        super().__init__(env)
         
-        self.swap=swap
+        self.swap = swap
 
-        self.env = env
         self.num_steps = 0
 
         # Gym spaces
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
-#         self.observation_space = env.observation_space
-        self.observation_space = Box(
-                np.moveaxis(np.zeros(env.observation_space.low.shape), *self.swap),
-                np.moveaxis(np.ones(env.observation_space.low.shape), *self.swap)
-            )
 
+        self.observation_space = Box(
+                np.moveaxis(np.zeros(self.env.observation_space.low.shape), *self.swap),
+                np.moveaxis(np.ones(self.env.observation_space.low.shape), *self.swap)
+            )
 
     def step(self, action):
         # Take Action
@@ -249,16 +248,13 @@ class ChannelFirstWrapper(gym.Env):
         obs = self.env.reset()
         obs = self.resize_obs(obs)
         return obs
-    
-    def render(self, mode=None):
-        return self._env.render(mode=mode)
 
 
 class RenderingObservationWrapper(gym.Wrapper):
     
     @classu.hidden_member_initialize
     def __init__(self, env, swap=None, rescale=None, resize=None, render_agent_obs=None,
-                 resize_agent_obs=None, rescale_agent_obs=None):
+                 resize_agent_obs=None, rescale_agent_obs=None, permute_agent_obs=None):
         '''
         params
         ======
@@ -287,14 +283,15 @@ class RenderingObservationWrapper(gym.Wrapper):
         if self._swap is not None:
             render_obs = copy.deepcopy(np.moveaxis(render_obs, *self._swap))
 
+        new_obs = obs
         if self._render_agent_obs is not None and self._render_agent_obs:
+            if self._permute_agent_obs:
+                new_obs = np.transpose(new_obs, self._permute_agent_obs)
             if (self._resize_agent_obs is not None):
-                resize_obs = cv2.resize(obs, dsize=tuple(self._resize_agent_obs[:2]), interpolation=cv2.INTER_AREA)
-            else:
-                resize_obs = obs
-            x, y, z = resize_obs.shape
+                new_obs = cv2.resize(new_obs, dsize=tuple(self._resize_agent_obs[:2]), interpolation=cv2.INTER_AREA)
+            x, y, z = new_obs.shape
             agent_obs = np.zeros((x, render_obs.shape[1], z))
-            agent_obs[0:x, 0:y, 0:z] = resize_obs
+            agent_obs[0:x, 0:y, 0:z] = new_obs
             if self._rescale_agent_obs is not None:
                 agent_obs = np.array(agent_obs * self._rescale_agent_obs, dtype='uint8')
             render_obs = np.concatenate([render_obs, agent_obs], axis=0)
@@ -340,6 +337,7 @@ class SoftResetWrapper(gym.Wrapper):
     def step(self, action):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
+        self._time += 1
         
         info["life_length_avg"] = self._last_death
         if (envdone):
@@ -355,6 +353,8 @@ class SoftResetWrapper(gym.Wrapper):
         
         self._last_death = self._last_death + 1
         envdone = self._time >= self._max_time
+        if envdone:
+            self._time = 0
 
         return obs, env_rew, envdone, info
 
@@ -362,7 +362,6 @@ class SoftResetWrapper(gym.Wrapper):
         '''
         Reset the wrapped env and the buffer
         '''
-        self._time = 0
         self._last_death = 0
         if self.reset_alpha:
             self.alpha_t = np.random.binomial(1, 0.5)
@@ -469,3 +468,42 @@ class RescaleImageWrapper(TransformObservation):
     @staticmethod
     def _rgb_rescale(x):
         return x/255
+
+
+class FlattenDictObservationWrapper(gym.Wrapper):
+
+    def __init__(self, env):
+        super().__init__(env)
+        '''
+        params
+        ======
+        env (gym.Env) : environment to wrap
+        '''
+        self._obs_keys = [key for key in self.env.observation_space.spaces.keys()]
+        self.unflattened_observation_space = self.observation_space
+        self.observation_space = Box(
+            np.concatenate([x.low.flatten() for x in self.env.observation_space.spaces.values()]),
+            np.concatenate([x.high.flatten() for x in self.env.observation_space.spaces.values()])
+        )
+
+    def step(self, action):
+        # Take Action
+        obs, rew, done, info = super().step(action)
+        obs = self.encode_obs(obs)
+        return obs, rew, done, info
+
+    def reset(self):
+        '''
+        Reset the wrapped env and the buffer
+        '''
+        obs = super().reset()
+        obs = self.encode_obs(obs)
+        return obs
+
+    def encode_obs(self, obs):
+        obs_ = np.concatenate([np.array(obs[x]).flatten() for x in self._obs_keys])
+        return obs_
+
+    def render(self, mode='human', **kwargs):
+        return self.env.render(mode=mode, **kwargs)
+
