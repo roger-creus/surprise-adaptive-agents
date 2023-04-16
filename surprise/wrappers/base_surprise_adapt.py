@@ -14,7 +14,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
                  buffer, 
                  time_horizon,
                  surprise_window_len,
-                 surprise_change_threshold=0.01,
+                 surprise_change_threshold=0.0,
                  flip_alpha=False,
                  momentum=False,
                  add_true_rew=False,
