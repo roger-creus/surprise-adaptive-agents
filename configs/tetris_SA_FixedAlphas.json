@@ -27,7 +27,7 @@
     },
     "wrappers": [
         {"add_alpha" : true},
-    	{"soft_reset_wrapper": {"max_time": 500}},
+    	{"soft_reset_wrapper": {"max_time": 100}},
     	{"rendering_observation": 
 			{
 				"resize": [64,48,1]
