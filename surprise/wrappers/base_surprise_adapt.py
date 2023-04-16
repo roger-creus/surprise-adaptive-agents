@@ -14,6 +14,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
                  buffer, 
                  time_horizon,
                  surprise_window_len,
+                 surprise_change_threshold=0.01,
                  flip_alpha=False,
                  momentum=False,
                  add_true_rew=False,
@@ -56,6 +57,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
             )
 
         self.surprise_window_len = surprise_window_len
+        self.surprise_change_threshold = surprise_change_threshold
         assert self.surprise_window_len == -1 or self.surprise_window_len % 2 == 0
 
         self.momentum = momentum
@@ -113,9 +115,15 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         
         if self.surprise_window_len != -1 or self.flip_alpha == True:
             # update surprise momentum
-            surprise_change = [1 if self.surprise_window[i+1] > self.surprise_window[i] else -1 for i in range(len(self.surprise_window)-1)]
-            if self.momentum:
-                self.alpha_t =  0 if np.sign(sum(surprise_change)) > 0 else 1
+            surprise_change = [0 if (np.abs(self.surprise_window[i+1]-self.surprise_window[i])/np.abs(self.surprise_window[i])
+                                     < self.surprise_change_threshold)
+                                     & (np.sign(self.surprise_window[i+1]) == np.sign(self.surprise_window[i]))
+                               else 1 if self.surprise_window[i+1] > self.surprise_window[i] else -1
+                                for i in range(len(self.surprise_window)-1)]
+            if sum(surprise_change) == 0:
+                self.alpha_t = np.random.rand() < 0.5
+            elif self.momentum:
+                self.alpha_t = 0 if np.sign(sum(surprise_change)) > 0 else 1
             else:
                 self.alpha_t = 1 if np.sign(sum(surprise_change)) > 0 else 0
         
