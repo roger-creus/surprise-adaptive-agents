@@ -139,7 +139,7 @@ class DictObservationWrapper(gym.Env):
         return self._env.render(mode=mode)
     
     
-class ResizeObservationWrapper(gym.Env):
+class ResizeObservationWrapper(gym.Wrapper):
     
     @classu.hidden_member_initialize
     def __init__(self, env, new_size=(48,64,3), new_shape=(64,48,3), grayscale=False, 
@@ -152,6 +152,7 @@ class ResizeObservationWrapper(gym.Env):
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
         
+        super().__init__(env)
 
         self.num_steps = 0
 
