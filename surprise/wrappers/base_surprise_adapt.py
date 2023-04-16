@@ -4,7 +4,6 @@ from gym.spaces import Box
 import pdb
 import util.class_util as classu
 from collections import deque
-from IPython import embed
 
 class BaseSurpriseAdaptWrapper(gym.Wrapper):
     

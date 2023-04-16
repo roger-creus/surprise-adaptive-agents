@@ -7,6 +7,8 @@ try:
 except: 
     pass
 
+from IPython import embed
+
 def get_network(network_args, obs_dim, action_dim):
     
     
@@ -71,11 +73,11 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
     print("obs dim", obs_dim)
     for wrapper in variant["wrappers"]:
         if "smirl_wrapper" in wrapper:
-            env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], device=device)
+            env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], ep_length=variant["algorithm_kwargs"]["episode_length"], device=device)
         elif "surprise_adapt_wrapper" in wrapper:
-            env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], device=device, flip_alpha=flip_alpha)
+            env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], ep_length=variant["algorithm_kwargs"]["episode_length"], device=device, flip_alpha=flip_alpha)
         elif "soft_reset_wrapper" in wrapper:
-            env = SoftResetWrapper(env=env, max_time=500)
+            env = SoftResetWrapper(env=env, max_time=variant["algorithm_kwargs"]["episode_length"])
         elif "FlattenObservationWrapper" in wrapper:
             from surprise.wrappers.obsresize import FlattenObservationWrapper
             env = FlattenObservationWrapper(env=env, **wrapper["FlattenObservationWrapper"])
@@ -132,7 +134,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
     return env, network
 
 
-def add_surprise_adapt(env, variant, device = 0, flip_alpha=False):
+def add_surprise_adapt(env, variant, ep_length = 500, device = 0, flip_alpha=False):
     from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental, GaussianCircularBuffer
     from surprise.wrappers.base_surprise_adapt import BaseSurpriseAdaptWrapper
     
@@ -143,18 +145,18 @@ def add_surprise_adapt(env, variant, device = 0, flip_alpha=False):
         
     if (variant["buffer_type"] == "Bernoulli"):
         buffer = BernoulliBuffer(obs_size)
-        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=100, flip_alpha=flip_alpha,**variant)
+        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha,**variant)
         
     elif (variant["buffer_type"] == "Gaussian"):
         buffer = GaussianBufferIncremental(obs_size)
-        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=500, flip_alpha=flip_alpha, **variant)
+        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant)
     else:
         print("Non supported prob distribution type: ", variant["buffer_type"])
         sys.exit()
     
     return env
 
-def add_smirl(env, variant, device=0):
+def add_smirl(env, variant, ep_length = 500, device=0):
     from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental, GaussianCircularBuffer
     from surprise.wrappers.base_surprise import BaseSurpriseWrapper
     
@@ -165,12 +167,12 @@ def add_smirl(env, variant, device=0):
         
     if (variant["buffer_type"] == "Bernoulli"):
         buffer = BernoulliBuffer(obs_size)
-        env = BaseSurpriseWrapper(env, buffer, time_horizon=100, **variant)
+        env = BaseSurpriseWrapper(env, buffer, time_horizon=ep_length, **variant)
         
     elif (variant["buffer_type"] == "Gaussian"):
 #         buffer = GaussianCircularBuffer(obs_size, size=500)
         buffer = GaussianBufferIncremental(obs_size)
-        env = BaseSurpriseWrapper(env, buffer, time_horizon=500, **variant)
+        env = BaseSurpriseWrapper(env, buffer, time_horizon=ep_length, **variant)
     else:
         print("Non supported prob distribution type: ", variant["smirl"]["buffer_type"])
         sys.exit()

@@ -1,6 +1,4 @@
 from collections import deque
-from IPython import embed
-
 
 from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 # from torch.utils.tensorboard import SummaryWriter
@@ -35,11 +33,13 @@ def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
 
 class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
-    def __init__(self, render_agent_pos=False, log_episode_alphas=False, *args, **kwargs):
+    def __init__(self, render_agent_pos=False, log_episode_alphas=False, episode_length = 500, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_agent_pos = render_agent_pos
         self.log_episode_alphas = log_episode_alphas
-
+        
+        self.episode_length = episode_length
+        
     def _train(self):
         
 #         pdb.set_trace()
@@ -93,7 +93,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 gt.stamp('training', unique=False)
                 self.training_mode(False)
             
-            if ((epoch % 5) == 0):
+            if ((epoch % 25) == 0):
                 print("Rendering video")
                 self.render_video("eval_video_", counter=epoch)
 
@@ -140,24 +140,25 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
     def log_alphas(self, agent_alpha_history, counter, tag, **kwargs):
         import numpy as np
 
-        alphas = np.array(agent_alpha_history).reshape(-1, 500)
+        alphas = np.array(agent_alpha_history).reshape(-1, self.episode_length)
         alphas = alphas[np.random.choice(alphas.shape[0], 5, replace=False)]
         mean_alphas = np.mean(alphas, axis=0)
         std_alphas = np.std(alphas, axis=0)
-        x_axis = np.arange(500)
+        x_axis = np.arange(self.episode_length)
         
         cl = logger.get_comet_logger()
         logdir = logger.get_snapshot_dir()  + tag + str(counter) + ".png"
         
-        plt.figure()
+        plt.figure(num=1, clear=True)
         plt.plot(x_axis, mean_alphas)
         plt.fill_between(x_axis, mean_alphas - std_alphas, mean_alphas + std_alphas, alpha=0.5)
         plt.savefig(logdir)
         
         if (cl is not None):
             cl.log_image(image_data=logdir, overwrite=True, image_format="png")
-
+            
         plt.close()
+        plt.clf()
 
     def render_heatmap(self, agent_pos_history, counter, tag):
         import numpy as np
@@ -188,8 +189,8 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         )
 
         # plotting the eval alphas for the 2 episodes
-        eval_alphas = np.array([y['alpha'] for x in path for y in x['env_infos']]).reshape(-1, 500)
-        x_axis = np.arange(500)
+        eval_alphas = np.array([y['alpha'] for x in path for y in x['env_infos']]).reshape(-1, self.episode_length)
+        x_axis = np.arange(self.episode_length)
         
         cl = logger.get_comet_logger()
         logdir = logger.get_snapshot_dir()  + "eval_alphas_" + str(counter) + ".png"

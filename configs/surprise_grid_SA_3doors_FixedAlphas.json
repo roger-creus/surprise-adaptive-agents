@@ -10,6 +10,7 @@
     "algorithm_kwargs": {
         "log_episode_alphas" : true,
         "render_agent_pos": true,
+        "episode_length":500,
         "num_epochs":3000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
@@ -27,7 +28,7 @@
     },
     "wrappers": [
         {"add_alpha" : true},
-    	{"soft_reset_wrapper": true},
+    	{"soft_reset_wrapper": {"max_time": 500}},
         {"resize_observation_wrapper": {
                 "new_size": [7,7,3],
                 "new_shape": [7,7,3],
