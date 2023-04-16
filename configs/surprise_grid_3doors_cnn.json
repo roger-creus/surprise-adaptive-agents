@@ -4,11 +4,24 @@
     "layer_size":256,
     "network_args":
     {
-    	"type": "flat"
+    	"type": "cnn",
+        "cnn_keys": ["observation"],
+        "ident_keys": [],
+        "mlp_keys": ["theta"],
+        "mlp_kwargs": {
+          "hidden_sizes": [128, 64],
+          "output_size":  32
+        },
+        "cnn_kwargs": {
+                "output_size": 64,
+                "n_channels": [16, 32, 64],
+                "kernel_sizes": [3,3,3],
+                "strides": [1,1,1],
+                "paddings": [0,0,0]
+                  }
     },
-    "replay_buffer_size": 100000,
+    "replay_buffer_size": 1000000,
     "algorithm_kwargs": {
-        "render_agent_pos": true,
         "num_epochs":3000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
@@ -26,47 +39,35 @@
     },
     "wrappers": [
     	{"soft_reset_wrapper": {"max_time": 500}},
-        {"resize_observation_wrapper": {
-	        "new_size": [7,7,3],
-	        "new_shape": [7,7,3],
-	        "grayscale": false
-        }},
         {"rescale_rgb":  true},
-    	{"rendering_observation":
+        {"resize_observation_wrapper": {
+            "new_size": [7,7,3],
+            "new_shape": [7,7,3],
+            "grayscale": false
+        }},
+        {"channel_first_observation_wrapper":  {}},
+        {"rendering_observation":
 		{
 			"resize": [118,40,1],
             "render_agent_obs": true,
             "resize_agent_obs": [56, 56, 3],
-            "rescale_agent_obs": 255
+            "rescale_agent_obs": 255,
+            "permute_agent_obs": [1,2,0]
 		}},
-      {"FlattenObservationWrapper":  {}},
-    	{"dict_obs_wrapper": {
+        {"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
     	},
-    	{"RNDWrapper": {
-    		"stuff": true,
-    		"encoding_size": 64,
-    		"network_type": "flat",
-    		"obs_key": "observation",
-    		"network": null,
-    		"hist_size": 100000
-    		}
-    		},
-		{ "smirl_wrapper": {
+    	{"smirl_wrapper": {
     		"buffer_type": "Gaussian",
-    		"add_true_rew": "only",
     		"obs_label": "observation",
     		"obs_out_label": "theta"
-        }},
-    	{"dict_to_obs_wrapper": {
-    		"obs_keys": ["observation"],
-    		"obs_size": 147
-    	}}
+    	}},
+        {"flatten_dict_observation":  true}
     ],
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
-    	"reward_func": null
+        "num_doors": 3
     }
 }

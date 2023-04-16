@@ -1,6 +1,6 @@
 {
 "wrappers": [[
-    	{"soft_reset_wrapper": true},
+    	{"soft_reset_wrapper": {"max_time": 500}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
@@ -52,7 +52,7 @@
     	}}
     ],
     [
-    	{"soft_reset_wrapper": true},
+    	{"soft_reset_wrapper": {"max_time": 500}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
