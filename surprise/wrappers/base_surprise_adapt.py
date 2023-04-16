@@ -15,6 +15,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
                  time_horizon,
                  surprise_window_len,
                  flip_alpha=False,
+                 momentum=False,
                  add_true_rew=False,
                  smirl_rew_scale=None, 
                  buffer_type=None,
@@ -57,6 +58,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         self.surprise_window_len = surprise_window_len
         assert self.surprise_window_len == -1 or self.surprise_window_len % 2 == 0
 
+        self.momentum = momentum
         self.flip_alpha = flip_alpha
         
         if self.flip_alpha == True:
@@ -112,7 +114,10 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         if self.surprise_window_len != -1 or self.flip_alpha == True:
             # update surprise momentum
             surprise_change = [1 if self.surprise_window[i+1] > self.surprise_window[i] else -1 for i in range(len(self.surprise_window)-1)]
-            self.alpha_t =  1 if np.sign(sum(surprise_change)) > 0 else 0
+            if self.momentum:
+                self.alpha_t =  0 if np.sign(sum(surprise_change)) > 0 else 1
+            else:
+                self.alpha_t = 1 if np.sign(sum(surprise_change)) > 0 else 0
         
         # augment next state
         obs = self.get_obs(obs)
