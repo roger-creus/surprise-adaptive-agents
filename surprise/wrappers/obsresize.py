@@ -151,7 +151,6 @@ class ResizeObservationWrapper(gym.Wrapper):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
-        
         super().__init__(env)
 
         self.num_steps = 0
@@ -460,6 +459,7 @@ class AddAlphaWrapper(gym.Wrapper):
     def __init__(self, env):
         super().__init__(env)
         self.alpha_t = None
+
 
 class RescaleImageWrapper(TransformObservation):
     def __init__(self, env):
