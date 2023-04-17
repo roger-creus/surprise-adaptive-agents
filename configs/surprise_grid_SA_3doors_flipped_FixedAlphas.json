@@ -50,8 +50,10 @@
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
         "num_doors": 3,
-        "noisy_room": 1,
-        "max_steps" : 500
+        "max_steps": 500,
+        "noisy_prob": 0.15,
+        "agent_view": "center",
+        "noisy_room": 1
 
     }
 }

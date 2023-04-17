@@ -47,7 +47,6 @@
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
         "num_doors": 3,
-        "agent_view_size": 3,
-        "max_steps": 500
+        "agent_view_size": 3
     }
 }
