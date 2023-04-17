@@ -33,12 +33,12 @@ def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
 
 class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
-    def __init__(self, render_agent_pos=False, log_episode_alphas=False, episode_length = 500, *args, **kwargs):
+    def __init__(self, render_agent_pos=False, log_episode_alphas=False, max_steps = 200, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_agent_pos = render_agent_pos
         self.log_episode_alphas = log_episode_alphas
         
-        self.episode_length = episode_length
+        self.episode_length = max_steps
         
     def _train(self):
         

@@ -10,7 +10,6 @@
     "algorithm_kwargs": {
         "log_episode_alphas" : true,
         "render_agent_pos": true,
-        "episode_length":500,
         "num_epochs":3000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
@@ -51,7 +50,8 @@
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
         "num_doors": 3,
-        "noisy_room": 1
+        "noisy_room": 1,
+        "max_steps" : 500
 
     }
 }

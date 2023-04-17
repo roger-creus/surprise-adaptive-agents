@@ -8,15 +8,7 @@ except:
     pass
 import gym
 
-<<<<<<< HEAD
-from IPython import embed
-
-def get_network(network_args, obs_dim, action_dim):
-=======
 def get_network(network_args, obs_dim, action_dim, unflattened_obs_dim=None):
->>>>>>> main
-    
-    
     if (network_args["type"] == "conv_mixed"):
         from surprise.envs.vizdoom.networks import VizdoomQF
         qf = VizdoomQF(actions=action_dim, **network_args)
@@ -88,15 +80,11 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
     print("obs dim", obs_dim)
     for wrapper in variant["wrappers"]:
         if "smirl_wrapper" in wrapper:
-            env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], ep_length=variant["algorithm_kwargs"]["episode_length"], device=device)
+            env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device)
         elif "surprise_adapt_wrapper" in wrapper:
-            env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], ep_length=variant["algorithm_kwargs"]["episode_length"], device=device, flip_alpha=flip_alpha)
+            env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device, flip_alpha=flip_alpha)
         elif "soft_reset_wrapper" in wrapper:
-<<<<<<< HEAD
-            env = SoftResetWrapper(env=env, max_time=variant["algorithm_kwargs"]["episode_length"])
-=======
-            env = SoftResetWrapper(env=env, **wrapper["soft_reset_wrapper"])
->>>>>>> main
+            env = SoftResetWrapper(env=env, max_time=variant["env_kwargs"]["max_steps"])
         elif "FlattenObservationWrapper" in wrapper:
             from surprise.wrappers.obsresize import FlattenObservationWrapper
             env = FlattenObservationWrapper(env=env, **wrapper["FlattenObservationWrapper"])
@@ -135,8 +123,6 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             from surprise.wrappers.ICM_wrapper import ICMWrapper
             env = ICMWrapper(env=env, eval=eval, **wrapper["ICMWrapper"], device=device)
             network = env.network
-        elif "smirl_wrapper" in wrapper:
-            env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], device=device)
         elif "rescale_rgb" in wrapper:
             env = RescaleImageWrapper(env=env)
         elif "add_alpha" in wrapper:
@@ -168,13 +154,8 @@ def add_surprise_adapt(env, variant, ep_length = 500, device = 0, flip_alpha=Fal
 
     if (variant["buffer_type"] == "Bernoulli"):
         buffer = BernoulliBuffer(obs_size)
-<<<<<<< HEAD
         env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha,**variant)
         
-=======
-        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=100, flip_alpha=flip_alpha,**variant)
-
->>>>>>> main
     elif (variant["buffer_type"] == "Gaussian"):
         buffer = GaussianBufferIncremental(obs_size)
         env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant)
@@ -261,7 +242,7 @@ def experiment(doodad_config, variant):
     
 #     base_env2 = RenderingObservationWrapper(base_env2)
     expl_env, network = add_wrappers(base_env, variant, device=ptu.device)
-    eval_env, _ = add_wrappers(base_env2, variant, flip_alpha = True, device=ptu.device, eval=True, network=network)
+    eval_env, _ = add_wrappers(base_env2, variant, device=ptu.device, eval=True, network=network)
     if ("vae_wrapper" in variant["wrappers"]):
         eval_env._network = base_env._network
 
@@ -307,6 +288,7 @@ def experiment(doodad_config, variant):
         variant['replay_buffer_size'],
         expl_env,
     )
+    
     algorithm = TorchBatchRLRenderAlgorithm(
         trainer=trainer,
         exploration_env=expl_env,
@@ -314,7 +296,7 @@ def experiment(doodad_config, variant):
         exploration_data_collector=expl_path_collector,
         evaluation_data_collector=eval_path_collector,
         replay_buffer=replay_buffer,
-        **variant['algorithm_kwargs']
+        **{**variant['algorithm_kwargs'], **{"max_steps": variant["env_kwargs"]["max_steps"]}}
     )
     algorithm.to(ptu.device)
     algorithm.train()

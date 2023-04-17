@@ -8,7 +8,6 @@
     },
     "replay_buffer_size": 1000000,
     "algorithm_kwargs": {
-        "episode_length":500,
         "num_epochs":3000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
@@ -48,6 +47,7 @@
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
         "num_doors": 3,
-        "agent_view_size": 3
+        "agent_view_size": 3,
+        "max_steps": 500
     }
 }
