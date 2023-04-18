@@ -33,10 +33,13 @@ def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
 
 class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
-    def __init__(self, render_agent_pos=False, *args, **kwargs):
+    def __init__(self, render_agent_pos=False, log_episode_alphas=False, max_steps = 200, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_agent_pos = render_agent_pos
-
+        self.log_episode_alphas = log_episode_alphas
+        
+        self.episode_length = max_steps
+        
     def _train(self):
         
 #         pdb.set_trace()
@@ -53,6 +56,10 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         if self.render_agent_pos:
             eval_agent_pos_history = deque(maxlen=100000)
             train_agent_pos_history = deque(maxlen=100000)
+            
+        if self.log_episode_alphas:
+            train_episode_alphas = deque(maxlen=100000)
+            
         for epoch in gt.timed_for(
                 range(self._start_epoch, self.num_epochs),
                 save_itrs=True,
@@ -95,15 +102,24 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                     self.render_heatmap(train_agent_pos_history, epoch, "train_heatmap_")
                 eval_agent_pos_history = deque(maxlen=100000)
                 train_agent_pos_history = deque(maxlen=100000)
+                
+                if self.log_episode_alphas and len(train_episode_alphas) > 0:
+                    self.log_alphas(train_episode_alphas, epoch, "train_alphas_")
+                train_episode_alphas = deque(maxlen=100000)
 
-            if self.render_agent_pos:
+            if self.render_agent_pos or self.log_episode_alphas:
                 eval_epoch_paths = self.eval_data_collector.get_epoch_paths()
                 train_epoch_paths = self.expl_data_collector.get_epoch_paths()
 
+            if self.render_agent_pos:
                 eval_agent_pos_history.extend([y['agent_pos'] for x in eval_epoch_paths
                                                for y in x['env_infos']])
                 train_agent_pos_history.extend([y['agent_pos'] for x in train_epoch_paths
                                                for y in x['env_infos']])
+                
+            if self.log_episode_alphas:
+                train_episode_alphas.extend([y['alpha'] for x in train_epoch_paths for y in x['env_infos']])
+                
             self._end_epoch(epoch)
 
 
@@ -121,6 +137,29 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 #             logger.record_tabular('current_mem_usage', current_mem_usage())
             
         return
+    
+    def log_alphas(self, agent_alpha_history, counter, tag, **kwargs):
+        import numpy as np
+
+        alphas = np.array(agent_alpha_history).reshape(-1, self.episode_length)
+        alphas = alphas[np.random.choice(alphas.shape[0], 5, replace=False)]
+        mean_alphas = np.mean(alphas, axis=0)
+        std_alphas = np.std(alphas, axis=0)
+        x_axis = np.arange(self.episode_length)
+        
+        cl = logger.get_comet_logger()
+        logdir = logger.get_snapshot_dir()  + tag + str(counter) + ".png"
+        
+        plt.figure(num=1, clear=True)
+        plt.plot(x_axis, mean_alphas)
+        plt.fill_between(x_axis, mean_alphas - std_alphas, mean_alphas + std_alphas, alpha=0.5)
+        plt.savefig(logdir)
+        
+        if (cl is not None):
+            cl.log_image(image_data=logdir, overwrite=True, image_format="png")
+            
+        plt.close()
+        plt.clf()
 
     def render_heatmap(self, agent_pos_history, counter, tag):
         import numpy as np
@@ -143,13 +182,29 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
     def render_video(self, tag, counter):
         import numpy as np
         import pdb
-#         log.debug("{}".format("render_video_and_add_to_tensorboard"))
         
         path = self.eval_data_collector.collect_new_paths(
             self.max_path_length,
             self.num_eval_steps_per_epoch,
             discard_incomplete_paths=True
         )
+
+        # plotting the eval alphas for the 2 episodes
+        eval_alphas = np.array([y['alpha'] for x in path for y in x['env_infos']]).reshape(-1, self.episode_length)
+        x_axis = np.arange(self.episode_length)
+        
+        cl = logger.get_comet_logger()
+        logdir = logger.get_snapshot_dir()  + "eval_alphas_" + str(counter) + ".png"
+        
+        plt.figure()
+        plt.plot(x_axis, eval_alphas[0])
+        plt.plot(x_axis, eval_alphas[1])
+        plt.savefig(logdir)
+
+        if (cl is not None):
+            cl.log_image(image_data=logdir, overwrite=True, image_format="png")
+        
+        plt.close()
         
         if ("vae_reconstruction" in path[0]['env_infos'][0]):
             video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
