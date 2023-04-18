@@ -512,9 +512,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 class AddTextInfoToRendering(gym.Wrapper):
 
-    def __init__(self, env, log_returns=False):
+    def __init__(self, env, log_returns=False, log_alphas=False):
         super().__init__(env)
         self.returns = 0 if log_returns else None
+        self.log_alphas = log_alphas
 
     def step(self, action):
         obs, rew, done, info = self.env.step(action)
@@ -534,6 +535,10 @@ class AddTextInfoToRendering(gym.Wrapper):
             draw = ImageDraw.Draw(im)
             draw.text((int(render_obs.shape[1] / 2), int(render_obs.shape[0] / 2)+10),
                          f"ret: {self.returns:.2f}", fill=(255, 255, 255), font=font)
+        if self.log_alphas:
+            draw = ImageDraw.Draw(im)
+            draw.text((int(render_obs.shape[1] / 2), int(render_obs.shape[0] / 2)+20),
+                         f"alpha: {self.env.alpha_t}", fill=(255, 255, 255), font=font)
         info['rendering'] = np.array(im)
         return obs, rew, done, info
 

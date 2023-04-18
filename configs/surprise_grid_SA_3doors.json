@@ -46,14 +46,16 @@
         { "surprise_adapt_wrapper": {
     		"buffer_type": "Gaussian",
             "surprise_window_len" : 10
+        }},
+          {"add_text_info_to_rendering":  {
+            "log_returns": true,
+            "log_alphas": true
         }}
     ],
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
         "num_doors": 3,
-        "max_steps": 500,
-        "noisy_prob": 0.15,
-        "agent_view": "center"
+        "max_steps": 500
     }
 }
