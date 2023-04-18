@@ -64,7 +64,10 @@
     		"obs_label": "observation",
     		"obs_out_label": "theta"
     	}},
-        {"flatten_dict_observation":  true}
+        {"flatten_dict_observation":  true},
+        {"add_text_info_to_rendering":  {
+            "log_returns": true
+        }}
     ],
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",

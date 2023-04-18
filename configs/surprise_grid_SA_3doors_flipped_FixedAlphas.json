@@ -44,6 +44,10 @@
         { "surprise_adapt_wrapper": {
     		"buffer_type": "Gaussian",
             "surprise_window_len" : -1
+        }},
+        {"add_text_info_to_rendering":  {
+            "log_returns": true,
+            "log_alphas": true
         }}
     ],
     "log_comet": false,

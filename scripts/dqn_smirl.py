@@ -66,7 +66,8 @@ def get_env(variant):
 
 def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=False):
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper, \
-        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper, FlattenDictObservationWrapper
+        ChannelFirstWrapper, ObsHistoryWrapper, RescaleImageWrapper, AddAlphaWrapper, \
+        FlattenDictObservationWrapper, AddTextInfoToRendering
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
@@ -129,6 +130,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = AddAlphaWrapper(env=env)
         elif "flatten_dict_observation" in wrapper:
             env = FlattenDictObservationWrapper(env)
+        elif "add_text_info_to_rendering" in wrapper and eval:
+            env = AddTextInfoToRendering(env=env, **wrapper["add_text_info_to_rendering"])
         else:
             if not eval:
                 pass

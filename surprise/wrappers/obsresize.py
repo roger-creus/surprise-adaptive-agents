@@ -214,7 +214,7 @@ class ChannelFirstWrapper(gym.Wrapper):
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
         super().__init__(env)
-        
+
         self.swap = swap
 
         self.num_steps = 0
@@ -338,7 +338,7 @@ class SoftResetWrapper(gym.Wrapper):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
         self._time += 1
-        
+
         info["life_length_avg"] = self._last_death
         if (envdone):
             self.reset_alpha = False
@@ -507,3 +507,43 @@ class FlattenDictObservationWrapper(gym.Wrapper):
     def render(self, mode='human', **kwargs):
         return self.env.render(mode=mode, **kwargs)
 
+
+from PIL import Image, ImageDraw, ImageFont
+
+class AddTextInfoToRendering(gym.Wrapper):
+
+    def __init__(self, env, log_returns=False, log_alphas=False):
+        super().__init__(env)
+        self.returns = 0 if log_returns else None
+        self.log_alphas = log_alphas
+
+    def step(self, action):
+        obs, rew, done, info = self.env.step(action)
+        if self.returns is not None:
+            self.returns += rew
+        render_obs = info['rendering']
+        import os
+        font_path = os.path.join(cv2.__path__[0], 'qt', 'fonts', 'DejaVuSans.ttf')
+        font = ImageFont.truetype(font_path, size=8)
+
+        im = Image.fromarray(render_obs)
+        draw = ImageDraw.Draw(im)
+
+        draw.text((int(render_obs.shape[1]/2), int(render_obs.shape[0]/2)),
+                     f"rew: {rew:.2f}", fill=(255, 255, 255), font=font)
+        if self.returns is not None:
+            draw = ImageDraw.Draw(im)
+            draw.text((int(render_obs.shape[1] / 2), int(render_obs.shape[0] / 2)+10),
+                         f"ret: {self.returns:.2f}", fill=(255, 255, 255), font=font)
+        if self.log_alphas:
+            draw = ImageDraw.Draw(im)
+            draw.text((int(render_obs.shape[1] / 2), int(render_obs.shape[0] / 2)+20),
+                         f"alpha: {self.env.alpha_t}", fill=(255, 255, 255), font=font)
+        info['rendering'] = np.array(im)
+        return obs, rew, done, info
+
+    def reset(self):
+        obs = self.env.reset()
+        if self.returns is not None:
+            self.returns = 0
+        return obs
