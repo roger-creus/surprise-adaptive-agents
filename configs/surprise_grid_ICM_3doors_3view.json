@@ -62,7 +62,10 @@
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation"],
     		"obs_size": 243
-    	}}
+    	}},
+        {"add_text_info_to_rendering":  {
+            "log_returns": true
+        }}
     ],
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",

@@ -4,7 +4,6 @@ from gym.spaces import Box
 import pdb
 import util.class_util as classu
 from collections import deque
-from IPython import embed
 
 class BaseSurpriseAdaptWrapper(gym.Wrapper):
     
@@ -76,6 +75,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
         info['task_reward'] = env_rew
+        info["alpha"] = self.alpha_t
 
         # Compute surprise as the negative log probability of the observation
         surprise = - self._buffer.logprob(self.encode_obs(obs))

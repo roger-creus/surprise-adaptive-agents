@@ -8,8 +8,9 @@
     },
     "replay_buffer_size": 1000000,
     "algorithm_kwargs": {
+        "log_episode_alphas" : true,
         "render_agent_pos": true,
-        "num_epochs":3000,
+        "num_epochs":9000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
@@ -45,12 +46,16 @@
         { "surprise_adapt_wrapper": {
     		"buffer_type": "Gaussian",
             "surprise_window_len" : 10
+        }},
+          {"add_text_info_to_rendering":  {
+            "log_returns": true,
+            "log_alphas": true
         }}
     ],
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
-        "num_doors": 3
-
+        "num_doors": 3,
+        "max_steps": 500
     }
 }

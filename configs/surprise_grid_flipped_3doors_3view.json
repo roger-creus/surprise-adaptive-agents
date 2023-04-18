@@ -41,6 +41,9 @@
 		}},
         { "smirl_wrapper": {
     		"buffer_type": "Gaussian"
+        }},
+        {"add_text_info_to_rendering":  {
+            "log_returns": true
         }}
     ],
     "log_comet": false,
