@@ -51,7 +51,8 @@
 
 
         {"add_text_info_to_rendering":  {
-            "log_returns": true
+            "log_returns": true,
+            "log_alphas": true
         }}
     ],
     "log_comet": false,

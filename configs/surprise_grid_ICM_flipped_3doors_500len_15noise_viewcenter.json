@@ -65,7 +65,8 @@
     		"obs_size": 147
     	}},
       {"add_text_info_to_rendering":  {
-        "log_returns": true
+        "log_returns": true,
+        "log_alphas": true
       }}
 
     ],
