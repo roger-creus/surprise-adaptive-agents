@@ -53,10 +53,11 @@ def get_env(variant):
     else: 
         import gym
         env = gym.make(variant['env'])
-        try:
-            env.__init__(**variant["env_kwargs"])
-        except KeyError:
-            pass
+        if variant['env'] != "Carnival-v0":
+            try:
+                env.__init__(**variant["env_kwargs"])
+            except KeyError:
+                pass
 
     #     else:
 #         print("Non supported env type: ", variant["env"])
@@ -245,7 +246,7 @@ def experiment(doodad_config, variant):
     
 #     base_env2 = RenderingObservationWrapper(base_env2)
     expl_env, network = add_wrappers(base_env, variant, device=ptu.device)
-    eval_env, _ = add_wrappers(base_env2, variant, device=ptu.device, eval=True, network=network)
+    eval_env, _ = add_wrappers(base_env2, variant, flip_alpha = True, device=ptu.device, eval=True, network=network)
     if ("vae_wrapper" in variant["wrappers"]):
         eval_env._network = base_env._network
 
