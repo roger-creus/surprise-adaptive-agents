@@ -49,8 +49,6 @@
             "momentum": true,
             "surprise_change_threshold": 0.01
         }},
-
-
         {"add_text_info_to_rendering":  {
             "log_returns": true,
             "log_alphas": true

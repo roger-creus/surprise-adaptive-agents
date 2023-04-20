@@ -512,10 +512,12 @@ from PIL import Image, ImageDraw, ImageFont
 
 class AddTextInfoToRendering(gym.Wrapper):
 
-    def __init__(self, env, log_returns=False, log_alphas=False):
+    def __init__(self, env, log_returns=False, log_alphas=False, text_color=(255, 255, 255), text_pos=None):
         super().__init__(env)
         self.returns = 0 if log_returns else None
         self.log_alphas = log_alphas
+        self.text_color = text_color
+        self.text_pos = text_pos
 
     def step(self, action):
         obs, rew, done, info = self.env.step(action)
@@ -529,16 +531,22 @@ class AddTextInfoToRendering(gym.Wrapper):
         im = Image.fromarray(render_obs)
         draw = ImageDraw.Draw(im)
 
-        draw.text((int(render_obs.shape[1]/2), int(render_obs.shape[0]/2)),
-                     f"rew: {rew:.2f}", fill=(255, 255, 255), font=font)
+        if self.text_pos is None:
+            x = int(render_obs.shape[1] / 2)
+            y = int(render_obs.shape[0] / 2)
+        else:
+            x, y = self.text_pos
+
+        draw.text((x, y), f"rew: {rew:.2f}", fill=tuple(self.text_color), font=font)
+        
         if self.returns is not None:
             draw = ImageDraw.Draw(im)
-            draw.text((int(render_obs.shape[1] / 2), int(render_obs.shape[0] / 2)+10),
-                         f"ret: {self.returns:.2f}", fill=(255, 255, 255), font=font)
+            draw.text((x, y+10), f"ret: {self.returns:.2f}", fill=tuple(self.text_color), font=font)
+        
         if self.log_alphas:
             draw = ImageDraw.Draw(im)
-            draw.text((int(render_obs.shape[1] / 2), int(render_obs.shape[0] / 2)+20),
-                         f"alpha: {self.env.alpha_t}", fill=(255, 255, 255), font=font)
+            draw.text((x, y+20), f"alpha: {self.env.alpha_t * 1}", fill=tuple(self.text_color), font=font)
+        
         info['rendering'] = np.array(im)
         return obs, rew, done, info
 
