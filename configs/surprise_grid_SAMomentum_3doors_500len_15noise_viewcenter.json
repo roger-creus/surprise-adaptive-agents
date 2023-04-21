@@ -46,6 +46,7 @@
         { "surprise_adapt_wrapper": {
                 "buffer_type": "Gaussian",
             "surprise_window_len" : 10,
+            "flip_alpha_strategy": "SA",
             "momentum": true
 
         }},

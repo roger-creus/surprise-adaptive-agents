@@ -10,12 +10,12 @@
     "algorithm_kwargs": {
         "render_agent_pos": false,
         "log_episode_alphas" : true,
-        "num_epochs":9000,
-        "num_eval_steps_per_epoch":400,
+        "num_epochs":7000,
+        "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
         "min_num_steps_before_training":1000,
-        "max_path_length":400,
+        "max_path_length":1000,
         "batch_size":256
     },
     "trainer_kwargs": {
@@ -27,7 +27,7 @@
     },
     "wrappers": [
         {"add_alpha" : true},
-    	{"soft_reset_wrapper": {"max_time": 100}},
+    	{"soft_reset_wrapper": {"max_time": 500}},
     	{"rendering_observation": 
 			{
 				"resize": [64,48,1]
@@ -35,6 +35,7 @@
         { "surprise_adapt_wrapper": {
             "buffer_type": "Bernoulli",
             "surprise_window_len": 10,
+            "flip_alpha_strategy": "SA",
             "momentum": true,
             "surprise_change_threshold": 0.01
         }},
@@ -49,6 +50,7 @@
     "env": "Tetris",
     "env_kwargs": {
     	"reward_func": null,
-        "max_steps": 100
+        "max_steps": 500,
+        "episode_length": 500
     }
 }
