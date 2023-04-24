@@ -8,6 +8,8 @@ except:
     pass
 import gym
 
+from IPython import embed
+
 def get_network(network_args, obs_dim, action_dim, unflattened_obs_dim=None):
     if (network_args["type"] == "conv_mixed"):
         from surprise.envs.vizdoom.networks import VizdoomQF
@@ -249,11 +251,14 @@ def experiment(doodad_config, variant):
     
     # this is only for SA with Fixed Alphas during training to flip alphas according to SA in eval only
     flip_alpha_eval = False
-    if "surprise_adapt_wrapper" in variant["wrappers"]:
-        window_len = variant["wrappers"]["surprise_adapt_wrapper"]["surprise_window_len"]
-        flip_strategy = variant["wrappers"]["surprise_adapt_wrapper"]["flip_alpha_strategy"]
-        if window_len == -1 and flip_alpha_strategy == "SA":
-            flip_alpha_eval = True
+
+    for wrapper in variant["wrappers"]:
+        if "surprise_adapt_wrapper" in wrapper:
+            wr = wrapper["surprise_adapt_wrapper"]
+            window_len = wr["surprise_window_len"]
+            flip_strategy = wr["flip_alpha_strategy"]
+            if window_len == -1 and flip_strategy == "SA":
+                flip_alpha_eval = True
 
     eval_env, _ = add_wrappers(base_env2, variant, flip_alpha = flip_alpha_eval, device=ptu.device, eval=True, network=network)
     if ("vae_wrapper" in variant["wrappers"]):

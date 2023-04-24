@@ -62,9 +62,10 @@
     		"obs_out_label": "theta",
 			"smirl_rew_scale": 0.005,
     		"latent_obs_size": 520,
-			"surprise_window_len": 10,
+			"surprise_window_len" : 25,
+            "flip_alpha_strategy": "SA",
             "momentum": true,
-            "surprise_change_threshold": 0.01
+            "surprise_change_threshold": 0.001
         }},
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation", "theta"]

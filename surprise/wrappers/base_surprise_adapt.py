@@ -91,7 +91,10 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         # remove old elements from the surprise window
         if self.flip_alpha_strategy == "SA" or self.flip_alpha == True:
             if self.surprise_counter > self.surprise_window_len:
-                self.surprise_window.popleft()
+                try:
+                    self.surprise_window.popleft()
+                except:
+                    pass
 
             # add new element to the surprise window
             self.surprise_window.append(surprise)

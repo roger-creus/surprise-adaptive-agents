@@ -37,7 +37,7 @@
             "surprise_window_len": 10,
             "flip_alpha_strategy": "SA",
             "momentum": true,
-            "surprise_change_threshold": 0.01
+            "surprise_change_threshold": 0.1
         }},
         {"add_text_info_to_rendering":  {
             "log_returns": true,

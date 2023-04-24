@@ -62,8 +62,8 @@
     		"obs_out_label": "theta",
 			"smirl_rew_scale": 0.005,
     		"latent_obs_size": 520,
-			"surprise_window_len" : -1,
-            "flip_alpha_strategy": "SA",
+			"surprise_window_len" : 75,
+            "flip_alpha_strategy": "fixed_length",
             "momentum": true,
             "surprise_change_threshold": 0.001
         }},

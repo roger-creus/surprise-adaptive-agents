@@ -35,7 +35,7 @@
         { "surprise_adapt_wrapper": {
             "buffer_type": "Bernoulli",
             "flip_alpha_strategy": "fixed_length",
-            "surprise_window_len": 20
+            "surprise_window_len": 75
         }},
         {"add_text_info_to_rendering":  {
             "log_returns": true,
