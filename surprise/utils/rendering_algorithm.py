@@ -190,7 +190,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         )
 
         # plotting the eval alphas for the 2 episodes
-        if self.log_alphas:
+        if self.log_episode_alphas:
             eval_alphas = np.array([y['alpha'] for x in path for y in x['env_infos']]).reshape(-1, self.episode_length)
             x_axis = np.arange(self.episode_length)
             
