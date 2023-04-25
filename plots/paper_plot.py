@@ -5,7 +5,7 @@ import os
 from IPython import embed
 
 # read json file
-with open('tetris_task_reward.json') as f:
+with open('/home/roger/Desktop/surprise-adaptive-agents/plots/tetris_surprise_eval.json') as f:
     data = json.load(f)
 
 runs_name = [d["name"] for d in data]
@@ -19,12 +19,18 @@ for run in range(len(x_axis)):
     clean_name = clean_name.replace("_500len", "")
     clean_name = clean_name.replace("SA_", "")
     clean_name = clean_name.replace("Tetris_", "")
+
+    if clean_name == "SA":
+        clean_name = "S-Adapt"
+    
+    if clean_name == "SMiRL":
+        clean_name = "S-Min"
     
     plt.plot(x_axis[run], y_axis[run], label=clean_name)
 
 
-plt.title("Tetris Task Reward")
+plt.title("Tetris Surprise")
 plt.xlabel("Epochs")
-plt.ylabel("Task Reward")
+plt.ylabel("Surprise")
 plt.legend()
-plt.savefig('tetris_reward.png')
+plt.savefig('tetris_surprise.png')
