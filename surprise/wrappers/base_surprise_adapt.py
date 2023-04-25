@@ -140,6 +140,10 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         # flip alpha randomly at each step
         elif self.flip_alpha_strategy == "random":
             self.alpha_t = (np.random.rand() < 0.5) * 1
+
+        # fixed alphas during training
+        elif self.flip_alpha_strategy == "SA_fixedAlphas":
+            pass
         else:
             print("This switching alpha strategy is not supported.")
 

@@ -63,7 +63,7 @@
 			"smirl_rew_scale": 0.005,
     		"latent_obs_size": 520,
 			"surprise_window_len" : -1,
-            "flip_alpha_strategy": "SA",
+            "flip_alpha_strategy": "SA_fixedAlphas",
             "momentum": true,
             "surprise_change_threshold": 0.001
         }},

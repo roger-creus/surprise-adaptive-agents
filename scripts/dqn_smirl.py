@@ -255,9 +255,8 @@ def experiment(doodad_config, variant):
     for wrapper in variant["wrappers"]:
         if "surprise_adapt_wrapper" in wrapper:
             wr = wrapper["surprise_adapt_wrapper"]
-            window_len = wr["surprise_window_len"]
             flip_strategy = wr["flip_alpha_strategy"]
-            if window_len == -1 and flip_strategy == "SA":
+            if flip_strategy == "SA_fixedAlphas":
                 flip_alpha_eval = True
 
     eval_env, _ = add_wrappers(base_env2, variant, flip_alpha = flip_alpha_eval, device=ptu.device, eval=True, network=network)

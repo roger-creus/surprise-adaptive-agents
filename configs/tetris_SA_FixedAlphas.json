@@ -34,7 +34,7 @@
 			}},
         { "surprise_adapt_wrapper": {
             "buffer_type": "Bernoulli",
-            "flip_alpha_strategy": "SA",
+            "flip_alpha_strategy": "SA_fixedAlphas",
             "surprise_window_len": -1,
             "momentum": true,
             "surprise_change_threshold": 0.1
