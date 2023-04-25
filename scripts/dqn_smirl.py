@@ -8,6 +8,8 @@ except:
     pass
 import gym
 
+from IPython import embed
+
 def get_network(network_args, obs_dim, action_dim, unflattened_obs_dim=None):
     if (network_args["type"] == "conv_mixed"):
         from surprise.envs.vizdoom.networks import VizdoomQF
@@ -53,10 +55,11 @@ def get_env(variant):
     else: 
         import gym
         env = gym.make(variant['env'])
-        try:
-            env.__init__(**variant["env_kwargs"])
-        except KeyError:
-            pass
+        if variant['env'] != "Carnival-v0":
+            try:
+                env.__init__(**variant["env_kwargs"])
+            except KeyError:
+                pass
 
     #     else:
 #         print("Non supported env type: ", variant["env"])
@@ -83,7 +86,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
         if "smirl_wrapper" in wrapper:
             env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device)
         elif "surprise_adapt_wrapper" in wrapper:
-            env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device, flip_alpha=flip_alpha)
+            env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device, flip_alpha=flip_alpha, flip_alpha_strategy=wrapper["surprise_adapt_wrapper"]["flip_alpha_strategy"])
         elif "soft_reset_wrapper" in wrapper:
             env = SoftResetWrapper(env=env, max_time=variant["env_kwargs"]["max_steps"])
         elif "FlattenObservationWrapper" in wrapper:
@@ -146,7 +149,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
     return env, network
 
 
-def add_surprise_adapt(env, variant, ep_length = 500, device = 0, flip_alpha=False):
+def add_surprise_adapt(env, variant, ep_length = 500, device = 0, flip_alpha=False, flip_alpha_strategy="SA"):
     from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental, GaussianCircularBuffer
     from surprise.wrappers.base_surprise_adapt import BaseSurpriseAdaptWrapper
 
@@ -157,7 +160,7 @@ def add_surprise_adapt(env, variant, ep_length = 500, device = 0, flip_alpha=Fal
 
     if (variant["buffer_type"] == "Bernoulli"):
         buffer = BernoulliBuffer(obs_size)
-        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha,**variant)
+        env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant)
         
     elif (variant["buffer_type"] == "Gaussian"):
         buffer = GaussianBufferIncremental(obs_size)
@@ -245,7 +248,18 @@ def experiment(doodad_config, variant):
     
 #     base_env2 = RenderingObservationWrapper(base_env2)
     expl_env, network = add_wrappers(base_env, variant, device=ptu.device)
-    eval_env, _ = add_wrappers(base_env2, variant, device=ptu.device, eval=True, network=network)
+    
+    # this is only for SA with Fixed Alphas during training to flip alphas according to SA in eval only
+    flip_alpha_eval = False
+
+    for wrapper in variant["wrappers"]:
+        if "surprise_adapt_wrapper" in wrapper:
+            wr = wrapper["surprise_adapt_wrapper"]
+            flip_strategy = wr["flip_alpha_strategy"]
+            if flip_strategy == "SA_fixedAlphas":
+                flip_alpha_eval = True
+
+    eval_env, _ = add_wrappers(base_env2, variant, flip_alpha = flip_alpha_eval, device=ptu.device, eval=True, network=network)
     if ("vae_wrapper" in variant["wrappers"]):
         eval_env._network = base_env._network
 

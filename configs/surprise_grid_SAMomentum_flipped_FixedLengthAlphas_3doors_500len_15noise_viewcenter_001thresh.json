@@ -8,9 +8,9 @@
     },
     "replay_buffer_size": 1000000,
     "algorithm_kwargs": {
-        "log_episode_alphas" : true,
         "render_agent_pos": true,
-        "num_epochs":9000,
+        "log_episode_alphas" : true,
+        "num_epochs":6000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
@@ -26,8 +26,8 @@
         "render": true
     },
     "wrappers": [
-        {"add_alpha" : true},
-    	{"soft_reset_wrapper": {"max_time": 500}},
+        {"add_alpha": true},
+        {"soft_reset_wrapper": {"max_time": 500}},
         {"resize_observation_wrapper": {
                 "new_size": [7,7,3],
                 "new_shape": [7,7,3],
@@ -36,7 +36,7 @@
 
         {"rescale_rgb":  true},
 
-        {"rendering_observation":
+    	{"rendering_observation":
 		{
 			"resize": [118,40,1],
             "render_agent_obs": true,
@@ -44,10 +44,14 @@
             "rescale_agent_obs": 255
 		}},
         { "surprise_adapt_wrapper": {
-    		"buffer_type": "Gaussian",
-            "surprise_window_len" : -1,
-            "flip_alpha_strategy": "SA"
+            "buffer_type": "Gaussian",
+            "surprise_window_len" : 100,
+            "flip_alpha_strategy": "fixed_length",
+            "momentum": true,
+            "surprise_change_threshold": 0.01
         }},
+
+
         {"add_text_info_to_rendering":  {
             "log_returns": true,
             "log_alphas": true
@@ -56,8 +60,9 @@
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
-        "num_doors": 8,
+        "num_doors": 3,
         "max_steps": 500,
+        "noisy_room": 1,
         "noisy_prob": 0.15,
         "agent_view": "center"
     }

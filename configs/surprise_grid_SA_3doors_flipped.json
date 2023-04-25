@@ -45,7 +45,8 @@
 		}},
         { "surprise_adapt_wrapper": {
     		"buffer_type": "Gaussian",
-            "surprise_window_len" : 10
+            "surprise_window_len" : 10,
+            "flip_alpha_strategy": "SA"
         }},
         {"add_text_info_to_rendering":  {
             "log_returns": true,
