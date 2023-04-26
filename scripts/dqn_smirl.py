@@ -273,19 +273,24 @@ def experiment(doodad_config, variant):
     print("Action dimension: ", action_dim)
     qf, target_qf = get_network(variant["network_args"], obs_dim, action_dim, unflatten_obs_dim)
     qf_criterion = nn.MSELoss()
-    eval_policy = ArgmaxDiscretePolicy(qf)
-    if "prob_random_action" in variant:
-        expl_policy = PolicyWrappedWithExplorationStrategy(
-            EpsilonGreedy(expl_env.action_space, prob_random_action=variant["prob_random_action"], 
-                          prob_end=variant["prob_end"],
-                          steps=variant["steps"]),
-            eval_policy,
-        )
-    else:  
-        expl_policy = PolicyWrappedWithExplorationStrategy(
-            EpsilonGreedy(expl_env.action_space, prob_random_action=0.8, prob_end=0.05),
-            eval_policy,
-        )
+    if variant['algorithm'] == 'random':
+        from rlkit.policies.simple import RandomPolicy
+        eval_policy = RandomPolicy()
+        expl_policy = RandomPolicy()
+    else:
+        eval_policy = ArgmaxDiscretePolicy(qf)
+        if "prob_random_action" in variant:
+            expl_policy = PolicyWrappedWithExplorationStrategy(
+                EpsilonGreedy(expl_env.action_space, prob_random_action=variant["prob_random_action"],
+                              prob_end=variant["prob_end"],
+                              steps=variant["steps"]),
+                eval_policy,
+            )
+        else:
+            expl_policy = PolicyWrappedWithExplorationStrategy(
+                EpsilonGreedy(expl_env.action_space, prob_random_action=0.8, prob_end=0.05),
+                eval_policy,
+            )
     eval_path_collector = MdpPathCollector(
         eval_env,
         eval_policy,
