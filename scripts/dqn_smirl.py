@@ -275,8 +275,8 @@ def experiment(doodad_config, variant):
     qf_criterion = nn.MSELoss()
     if variant['algorithm'] == 'random':
         from rlkit.policies.simple import RandomPolicy
-        eval_policy = RandomPolicy()
-        expl_policy = RandomPolicy()
+        eval_policy = RandomPolicy(eval_env.action_space)
+        expl_policy = RandomPolicy(expl_env.action_space)
     else:
         eval_policy = ArgmaxDiscretePolicy(qf)
         if "prob_random_action" in variant:
