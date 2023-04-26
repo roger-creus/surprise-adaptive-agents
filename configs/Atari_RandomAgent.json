@@ -12,9 +12,9 @@
 		"render_agent_pos": false,
         "num_epochs":9000,
         "num_eval_steps_per_epoch":1000,
-        "num_trains_per_train_loop":1000,
+        "num_trains_per_train_loop":0,
         "num_expl_steps_per_train_loop":1000,
-        "min_num_steps_before_training":100000000000000,
+        "min_num_steps_before_training":1000,
         "max_path_length":500,
         "batch_size":256
     },
