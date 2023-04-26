@@ -8,8 +8,7 @@
     },
     "replay_buffer_size": 100000,
     "algorithm_kwargs": {
-        "num_epochs":6000,
-        "render_agent_pos": true,
+        "num_epochs":3000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
@@ -25,22 +24,18 @@
         "render": true
     },
     "wrappers": [
-    	{"soft_reset_wrapper": {"max_time": 500}},
+    	{"soft_reset_wrapper": true},
         {"resize_observation_wrapper": {
 	        "new_size": [7,7,3],
 	        "new_shape": [7,7,3],
 	        "grayscale": false
         }},
         {"rescale_rgb":  true},
-
     	{"rendering_observation":
 		{
-			"resize": [118,40,1],
-            "render_agent_obs": true,
-            "resize_agent_obs": [56, 56, 3],
-            "rescale_agent_obs": 255
+			"resize": [118,40,1]
 		}},
-        {"FlattenObservationWrapper":  {}},
+      {"FlattenObservationWrapper":  {}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
@@ -63,19 +58,12 @@
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation"],
     		"obs_size": 147
-    	}},
-      {"add_text_info_to_rendering":  {
-        "log_returns": true,
-      }}
-
+    	}}
     ],
     "log_comet": false,
     "env": "MiniGrid-SurpriseAdaptRooms-v0",
     "env_kwargs": {
-      "num_doors": 3,
-      "max_steps": 500,
-      "noisy_room": 1,
-      "noisy_prob": 0.15,
-      "agent_view": "center"
+        "noisy_room":1,
+    	"num_doors": 3
     }
 }
