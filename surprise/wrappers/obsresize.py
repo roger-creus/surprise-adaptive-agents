@@ -48,7 +48,7 @@ class FlattenObservationWrapper(gym.Env):
     def render(self, mode=None):
         return self._env.render(mode=mode)
     
-class DictToObservationWrapper(gym.Env):
+class DictToObservationWrapper(gym.Wrapper):
     
     @classu.hidden_member_initialize
     def __init__(self, env, obs_keys=None, obs_size=None):
@@ -59,6 +59,7 @@ class DictToObservationWrapper(gym.Env):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
+        super().__init__(env)
         
 
         self.num_steps = 0
@@ -98,7 +99,7 @@ class DictToObservationWrapper(gym.Env):
     def render(self, mode=None):
         return self._env.render(mode=mode)
     
-class DictObservationWrapper(gym.Env):
+class DictObservationWrapper(gym.Wrapper):
     
     @classu.hidden_member_initialize
     def __init__(self, env, obs_key=None):
@@ -109,7 +110,7 @@ class DictObservationWrapper(gym.Env):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
-        
+        super().__init__(env)
 
         self.num_steps = 0
 
@@ -375,7 +376,7 @@ class SoftResetWrapper(gym.Wrapper):
 #         print ("self._env: ", self, self._env, self._env.render, mode, self._env.render(mode=mode).shape)
         return self._env.render(mode=mode)
     
-class ObsHistoryWrapper(gym.Env):
+class ObsHistoryWrapper(gym.Wrapper):
 
     @classu.hidden_member_initialize
     def __init__(self, env, history_length=3, 
@@ -387,6 +388,7 @@ class ObsHistoryWrapper(gym.Env):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
+        super().__init__(env)
         
         # Gym spaces
         self.action_space = env.action_space
@@ -512,10 +514,14 @@ from PIL import Image, ImageDraw, ImageFont
 
 class AddTextInfoToRendering(gym.Wrapper):
 
-    def __init__(self, env, log_returns=False, log_alphas=False):
+    def __init__(self, env, log_returns=False, log_alphas=False, text_color=(255, 255, 255), text_pos=None, font_size=8, font_gap=10):
         super().__init__(env)
         self.returns = 0 if log_returns else None
         self.log_alphas = log_alphas
+        self.text_color = text_color
+        self.text_pos = text_pos
+        self.font_size = font_size
+        self.font_gap = font_gap
 
     def step(self, action):
         obs, rew, done, info = self.env.step(action)
@@ -524,21 +530,27 @@ class AddTextInfoToRendering(gym.Wrapper):
         render_obs = info['rendering']
         import os
         font_path = os.path.join(cv2.__path__[0], 'qt', 'fonts', 'DejaVuSans.ttf')
-        font = ImageFont.truetype(font_path, size=8)
+        font = ImageFont.truetype(font_path, size=self.font_size)
 
         im = Image.fromarray(render_obs)
         draw = ImageDraw.Draw(im)
 
-        draw.text((int(render_obs.shape[1]/2), int(render_obs.shape[0]/2)),
-                     f"rew: {rew:.2f}", fill=(255, 255, 255), font=font)
+        if self.text_pos is None:
+            x = int(render_obs.shape[1] / 2)
+            y = int(render_obs.shape[0] / 2)
+        else:
+            x, y = self.text_pos
+
+        draw.text((x, y), f"rew: {rew:.2f}", fill=tuple(self.text_color), font=font)
+        
         if self.returns is not None:
             draw = ImageDraw.Draw(im)
-            draw.text((int(render_obs.shape[1] / 2), int(render_obs.shape[0] / 2)+10),
-                         f"ret: {self.returns:.2f}", fill=(255, 255, 255), font=font)
+            draw.text((x, y+self.font_gap), f"ret: {self.returns:.2f}", fill=tuple(self.text_color), font=font)
+        
         if self.log_alphas:
             draw = ImageDraw.Draw(im)
-            draw.text((int(render_obs.shape[1] / 2), int(render_obs.shape[0] / 2)+20),
-                         f"alpha: {self.env.alpha_t}", fill=(255, 255, 255), font=font)
+            draw.text((x, y+(self.font_gap*2)), f"alpha: {self.env.alpha_t * 1}", fill=tuple(self.text_color), font=font)
+        
         info['rendering'] = np.array(im)
         return obs, rew, done, info
 

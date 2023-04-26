@@ -15,6 +15,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
                  surprise_window_len,
                  surprise_change_threshold=0.0,
                  flip_alpha=False,
+                 flip_alpha_strategy="SA",
                  momentum=False,
                  add_true_rew=False,
                  smirl_rew_scale=None, 
@@ -55,9 +56,11 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
                 )
             )
 
-        self.surprise_window_len = surprise_window_len
         self.surprise_change_threshold = surprise_change_threshold
-        assert self.surprise_window_len == -1 or self.surprise_window_len % 2 == 0
+
+        self.surprise_window_len = surprise_window_len
+        self.flip_alpha_strategy = flip_alpha_strategy
+        #assert self.surprise_window_len == -1 or self.surprise_window_len % 2 == 0
 
         self.momentum = momentum
         self.flip_alpha = flip_alpha
@@ -86,14 +89,15 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         rew = ((-1)**self.alpha_t) * surprise
         
         # remove old elements from the surprise window
-        if self.surprise_window_len != -1 or self.flip_alpha == True:
+        if self.flip_alpha_strategy == "SA" or self.flip_alpha == True:
             if self.surprise_counter > self.surprise_window_len:
-                self.surprise_window.popleft()
+                try:
+                    self.surprise_window.popleft()
+                except:
+                    pass
 
             # add new element to the surprise window
             self.surprise_window.append(surprise)
-
-        self.surprise_counter += 1
 
         # Add observation to buffer
         self._buffer.add(self.encode_obs(obs)) # this adds the raw observations to the buffer no? shouldnt we add the augmented obs?
@@ -113,7 +117,8 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         info['surprise'] = surprise
         info["alpha"] = self.alpha_t
         
-        if self.surprise_window_len != -1 or self.flip_alpha == True:
+        # flip alphas according to our SA objective
+        if self.flip_alpha_strategy == "SA" or self.flip_alpha == True:
             # update surprise momentum
             surprise_change = [0 if (np.abs(self.surprise_window[i+1]-self.surprise_window[i])/np.abs(self.surprise_window[i])
                                      < self.surprise_change_threshold)
@@ -121,15 +126,31 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
                                else 1 if self.surprise_window[i+1] > self.surprise_window[i] else -1
                                 for i in range(len(self.surprise_window)-1)]
             if sum(surprise_change) == 0:
-                self.alpha_t = np.random.rand() < 0.5
+                self.alpha_t = (np.random.rand() < 0.5) * 1
             elif self.momentum:
                 self.alpha_t = 0 if np.sign(sum(surprise_change)) > 0 else 1
             else:
                 self.alpha_t = 1 if np.sign(sum(surprise_change)) > 0 else 0
         
+        # flip alphas according to fixed length windows
+        elif self.flip_alpha_strategy == "fixed_length":
+            if self.surprise_counter % self.surprise_window_len == 0:
+                self.alpha_t = 0 if self.alpha_t == 1 else 1
+
+        # flip alpha randomly at each step
+        elif self.flip_alpha_strategy == "random":
+            self.alpha_t = (np.random.rand() < 0.5) * 1
+
+        # fixed alphas during training
+        elif self.flip_alpha_strategy == "SA_fixedAlphas":
+            pass
+        else:
+            print("This switching alpha strategy is not supported.")
+
         # augment next state
         obs = self.get_obs(obs)
-        
+
+        self.surprise_counter += 1
         self._num_steps += 1
         
         return obs, rew, self.get_done() or envdone, info
