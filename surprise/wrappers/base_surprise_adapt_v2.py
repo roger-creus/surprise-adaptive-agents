@@ -6,7 +6,7 @@ import util.class_util as classu
 from collections import deque
 import pandas as pd
 
-class BaseSurpriseAdaptWrapper(gym.Wrapper):
+class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
     
     @classu.hidden_member_initialize
     def __init__(self, 
@@ -73,7 +73,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
 
     def init_surprise_window(self):
         self.surprise_counter = 0
-        self.surprise_window = deque(30)
+        self.surprise_window = deque()
 
     def step(self, action):
         # Take Action
@@ -128,11 +128,11 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
             #                     for i in range(len(self.surprise_window)-1)]
             surprise_change = pd.Series(list(self.surprise_window))
             surprise_change = (1*(surprise_change - surprise_change.rolling(10).mean() > 0) +
-                               -1*(surprise_change - surprise_change.rolling(10).mean() < 0)).rolling(10).sum()
-            if sum(surprise_change) == 0:
+                               -1*(surprise_change - surprise_change.rolling(10).mean() < 0)).rolling(10).sum().iloc[-1]
+            if (surprise_change == 0) or np.isnan(surprise_change):
                 self.alpha_t = (np.random.rand() < 0.5) * 1
             elif self.momentum:
-                self.alpha_t = 0 if np.sign(sum(surprise_change)) > 0 else 1
+                self.alpha_t = 0 if np.sign(surprise_change) > 0 else 1
             else:
                 self.alpha_t = 1 if np.sign(sum(surprise_change)) > 0 else 0
         
