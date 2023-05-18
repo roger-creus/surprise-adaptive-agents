@@ -87,6 +87,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device)
         elif "surprise_adapt_wrapper" in wrapper:
             env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device, flip_alpha=flip_alpha, flip_alpha_strategy=wrapper["surprise_adapt_wrapper"]["flip_alpha_strategy"])
+        elif "surprise_adapt_wrapper_v2" in wrapper:
+            env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device, flip_alpha=flip_alpha, flip_alpha_strategy=wrapper["surprise_adapt_wrapper"]["flip_alpha_strategy"])
         elif "soft_reset_wrapper" in wrapper:
             env = SoftResetWrapper(env=env, max_time=variant["env_kwargs"]["max_steps"])
         elif "FlattenObservationWrapper" in wrapper:
