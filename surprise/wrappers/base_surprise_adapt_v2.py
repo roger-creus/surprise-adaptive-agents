@@ -47,13 +47,15 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
                     (self.env_obs_space.low.flatten(), 
                      np.zeros(theta.shape), 
                      np.zeros(1),
-                     np.ones(1) * -1)
+                     np.ones(1) * -1,
+                     -np.ones(1) * np.inf)
                 ),
                 np.concatenate(
                     (self.env_obs_space.high.flatten(), 
                      np.ones(theta.shape), 
                      np.ones(1)*time_horizon,
-                     np.ones(1))
+                     np.ones(1),
+                     np.ones(1) * np.inf)
                 )
             )
 
@@ -169,7 +171,7 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         if len(self.surprise_window) > 0:
             prev_surprise = np.ones(1) * self.surprise_window[-1]
         else:
-            prev_surprise = 0
+            prev_surprise = np.zeros(1)
 
         if (self._obs_out_label is None):
             obs = np.concatenate([np.array(obs).flatten(), np.array(theta).flatten(), num_samples, alpha_t, prev_surprise])
