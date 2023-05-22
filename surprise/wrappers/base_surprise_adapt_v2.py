@@ -86,18 +86,14 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         # For numerical stability, clip stds to not be 0
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
-        
-        rew = ((-1)**self.alpha_t) * surprise
+
+        if len(self.surprise_window) == 0:
+            rew = 0
+        else:
+            rew = ((-1)**self.alpha_t) * (surprise - self.surprise_window[-1])
         
         # remove old elements from the surprise window
         if self.flip_alpha_strategy == "SA" or self.flip_alpha == True:
-            # if self.surprise_counter > self.surprise_window_len:
-            #     try:
-            #         self.surprise_window.popleft()
-            #     except:
-            #         pass
-
-            # add new element to the surprise window
             self.surprise_window.append(surprise)
 
         # Add observation to buffer
