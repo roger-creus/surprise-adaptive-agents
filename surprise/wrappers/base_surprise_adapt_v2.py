@@ -166,10 +166,15 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         num_samples = np.ones(1)*self._buffer.buffer_size
         alpha_t = np.ones(1)*self.alpha_t
 
-        if (self._obs_out_label is None):
-            obs = np.concatenate([np.array(obs).flatten(), np.array(theta).flatten(), num_samples, alpha_t])
+        if len(self.surprise_window) > 0:
+            prev_surprise = np.ones(1) * self.surprise_window[-1]
         else:
-            obs[self._obs_out_label] = np.concatenate([np.array(theta).flatten(), num_samples, alpha_t])
+            prev_surprise = 0
+
+        if (self._obs_out_label is None):
+            obs = np.concatenate([np.array(obs).flatten(), np.array(theta).flatten(), num_samples, alpha_t, prev_surprise])
+        else:
+            obs[self._obs_out_label] = np.concatenate([np.array(theta).flatten(), num_samples, alpha_t, prev_surprise])
         
         return obs
 
