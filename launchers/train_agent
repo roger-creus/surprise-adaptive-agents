@@ -16,4 +16,4 @@ conda activate /home/mila/r/roger.creus-castanyer/anaconda3/envs/surprise_adapt
 
 # 4. Launch your job, tell it to save the model in $SLURM_TMPDIR
 #    and look for the dataset into $SLURM_TMPDIR
-python3 scripts/dqn_smirl.py --config=configs/Atari_SA_no_momentum.json --run_mode=local --exp_name=SA_no_momentum_final --training_processor_type=gpu --log_comet=true --random_seeds=3
+python3 scripts/dqn_smirl.py --config=configs/Atari_SAv2_delta.json --run_mode=local --exp_name=SA_v2_delta_final --training_processor_type=gpu --log_comet=true --random_seeds=3

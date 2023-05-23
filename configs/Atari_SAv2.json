@@ -1,0 +1,88 @@
+{
+    "algorithm":"SAC",
+    "version":"normal",
+    "layer_size":256,
+    "network_args": 
+    {
+    	"type": "conv_mixed",
+    	"size": 1810
+    },
+    "replay_buffer_size": 50000,
+    "algorithm_kwargs": {
+		"render_agent_pos": false,
+        "log_episode_alphas" : true,
+        "num_epochs":9000,
+        "num_eval_steps_per_epoch":1000,
+        "num_trains_per_train_loop":1000,
+        "num_expl_steps_per_train_loop":1000,
+        "min_num_steps_before_training":1000,
+        "max_path_length":500,
+        "batch_size":256
+    },
+    "trainer_kwargs": {
+        "discount":0.99,
+        "learning_rate":3E-4
+    },
+    "render_kwargs":{
+        "render": true
+    },
+    "wrappers": [
+		{"add_alpha" : true},
+    	{"soft_reset_wrapper": {"max_time": 500}},
+    	{"dict_obs_wrapper": {
+    		"obs_key": "observation"
+    		}
+    	},
+    	{"resize_observation_wrapper": {
+	        "new_size": [20, 26, 1],
+	        "new_shape": [26, 20, 1],
+	        "grayscale": true,
+	        "obs_key": "observation",
+	        "out_key_name": "small_img"
+	        }},
+    	{"resize_observation_wrapper": {
+	        "new_size": [48,64,1],
+	        "new_shape": [64,48,1],
+	        "grayscale": true,
+	        "obs_key": "observation"
+	        }},
+    	{"rendering_observation": 
+			{
+				"resize": [48,64,1]
+			}},
+    	{"ObsHistoryWrapper": {
+    		"history_length": 4,
+    		"stack_channels": true,
+    		"channel_dim": 2,
+    		"obs_key": "observation"
+    	}},
+		{ "surprise_adapt_wrapper_v2": {
+            "buffer_type": "Gaussian",
+    		"obs_label": "small_img",
+    		"obs_out_label": "theta",
+			"smirl_rew_scale": 0.005,
+    		"latent_obs_size": 520,
+			"surprise_window_len" : 25,
+            "flip_alpha_strategy": "SA",
+            "momentum": true,
+            "surprise_change_threshold": 0.001
+        }},
+    	{"dict_to_obs_wrapper": {
+    		"obs_keys": ["observation", "theta"]
+    	}},
+		{"add_text_info_to_rendering":  {
+            "log_returns": true,
+            "log_alphas": true,
+            "text_pos": [0,0],
+            "text_color": [255,255,255],
+			"font_size" : 8,
+			"font_gap" : 5
+        }}
+    ],
+    "log_comet": false,
+    "env": "Carnival-v0",
+	"env_kwargs": {
+        "max_steps": 500
+    },
+    "doom_info": "surprise/envs/vizdoom/scenarios/defend_the_line.cfg"
+}
