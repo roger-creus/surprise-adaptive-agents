@@ -52,6 +52,53 @@ def get_env(variant):
         env_wargs = variant["env_kwargs"]
         env = VizDoomEnv(config_path=BASE_CODE_DIR + env_wargs["doom_scenario"], 
                          **env_wargs)
+    elif "MazeEnv" in variant["env"]:
+        import griddly
+        import gym
+        from griddly import GymWrapperFactory, gd
+        from surprise.envs.maze.maze_env import MazeEnvFullyObserved
+
+        env = MazeEnvFullyObserved()
+        if "FullyObserved" in variant["env"]:
+            env_dict = gym.envs.registration.registry.env_specs.copy()
+            for env_ in env_dict:
+                if 'GDY-MazeEnvFullyObserved-v0' in env_:
+                    del gym.envs.registration.registry.env_specs[env_]
+            
+            wrapper = GymWrapperFactory()
+            wrapper.build_gym_from_yaml('MazeEnvFullyObserved', '/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/maze_env_fully_observed.yaml')
+            env_ = gym.make(
+                'GDY-MazeEnvFullyObserved-v0',
+                player_observer_type=gd.ObserverType.VECTOR,
+                global_observer_type=gd.ObserverType.VECTOR,
+                max_steps = variant["env_kwargs"]["max_steps"]
+            )
+
+            env.set_env(env_)
+
+
+        elif "PartiallyObserved" in variant["env"]:
+            env_dict = gym.envs.registration.registry.env_specs.copy()
+            for env in env_dict:
+                if 'GDY-MazeEnvPartiallyObserved-v0' in env:
+                    del gym.envs.registration.registry.env_specs[env]
+            
+            wrapper = GymWrapperFactory()
+            wrapper.build_gym_from_yaml('MazeEnvPartiallyObserved', '/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/maze_env_partially_observed.yaml')
+            env = gym.make(
+                'GDY-MazeEnvPartiallyObserved-v0',
+                player_observer_type=gd.ObserverType.VECTOR,
+                max_steps = variant["env_kwargs"]["max_steps"]
+            )
+            
+        
+        else:
+            raise "This maze is not implemented"
+        
+        from surprise.wrappers.obsresize import OneMaskObs
+        env = OneMaskObs(env)
+        
+
     else: 
         import gym
         env = gym.make(variant['env'])
@@ -78,7 +125,6 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
     if isinstance(env, MiniGridEnv):
         env = RGBImgPartialObsWrapper(env)
         env = ImgObsWrapper(env)
-
 
     obs_dim = env.observation_space.low.shape
     print("obs dim", obs_dim)
