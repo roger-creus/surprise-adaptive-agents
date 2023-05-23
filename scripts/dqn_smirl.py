@@ -87,6 +87,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = add_smirl(env=env, variant=wrapper["smirl_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device)
         elif "surprise_adapt_wrapper" in wrapper:
             env = add_surprise_adapt(env=env, variant=wrapper["surprise_adapt_wrapper"], ep_length=variant["env_kwargs"]["max_steps"], device=device, flip_alpha=flip_alpha, flip_alpha_strategy=wrapper["surprise_adapt_wrapper"]["flip_alpha_strategy"])
+        elif "surprise_adapt_wrapper_v2" in wrapper:
+            env = add_surprise_adapt_v2(env=env, variant=wrapper["surprise_adapt_wrapper_v2"], ep_length=variant["env_kwargs"]["max_steps"], device=device, flip_alpha=flip_alpha, flip_alpha_strategy=wrapper["surprise_adapt_wrapper_v2"]["flip_alpha_strategy"])
         elif "soft_reset_wrapper" in wrapper:
             env = SoftResetWrapper(env=env, max_time=variant["env_kwargs"]["max_steps"])
         elif "FlattenObservationWrapper" in wrapper:
@@ -165,6 +167,29 @@ def add_surprise_adapt(env, variant, ep_length = 500, device = 0, flip_alpha=Fal
     elif (variant["buffer_type"] == "Gaussian"):
         buffer = GaussianBufferIncremental(obs_size)
         env = BaseSurpriseAdaptWrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant)
+    else:
+        print("Non supported prob distribution type: ", variant["buffer_type"])
+        sys.exit()
+
+    return env
+
+
+def add_surprise_adapt_v2(env, variant, ep_length=500, device=0, flip_alpha=False, flip_alpha_strategy="SA"):
+    from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental
+    from surprise.wrappers.base_surprise_adapt_v2 import BaseSurpriseAdaptV2Wrapper
+
+    if ("latent_obs_size" in variant):
+        obs_size = variant["latent_obs_size"]
+    else:
+        obs_size = env.observation_space.low.size
+
+    if (variant["buffer_type"] == "Bernoulli"):
+        buffer = BernoulliBuffer(obs_size)
+        env = BaseSurpriseAdaptV2Wrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant)
+
+    elif (variant["buffer_type"] == "Gaussian"):
+        buffer = GaussianBufferIncremental(obs_size)
+        env = BaseSurpriseAdaptV2Wrapper(env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant)
     else:
         print("Non supported prob distribution type: ", variant["buffer_type"])
         sys.exit()
