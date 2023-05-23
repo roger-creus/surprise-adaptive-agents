@@ -18,6 +18,7 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
                  flip_alpha=False,
                  flip_alpha_strategy="SA",
                  momentum=False,
+                 delta_rew=False,
                  add_true_rew=False,
                  smirl_rew_scale=None, 
                  buffer_type=None,
@@ -42,20 +43,24 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
 
         # adding theta and t for consistent MDP (same as SMiRL)
         # adding history of surprise (either -1 or 1)
+        obs_min = (self.env_obs_space.low.flatten(),
+                     np.zeros(theta.shape),
+                     np.zeros(1),
+                     np.ones(1) * -1)
+        obs_max = (self.env_obs_space.high.flatten(),
+                     np.ones(theta.shape),
+                     np.ones(1)*time_horizon,
+                     np.ones(1))
+        if delta_rew:
+            obs_min = obs_min + (-np.ones(1) * np.inf, )
+            obs_max = obs_max + (np.ones(1) * np.inf, )
+
         self.observation_space = Box(
                 np.concatenate(
-                    (self.env_obs_space.low.flatten(), 
-                     np.zeros(theta.shape), 
-                     np.zeros(1),
-                     np.ones(1) * -1,
-                     -np.ones(1) * np.inf)
+                    obs_min
                 ),
                 np.concatenate(
-                    (self.env_obs_space.high.flatten(), 
-                     np.ones(theta.shape), 
-                     np.ones(1)*time_horizon,
-                     np.ones(1),
-                     np.ones(1) * np.inf)
+                    obs_max
                 )
             )
 
@@ -70,6 +75,8 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         
         if self.flip_alpha == True:
             self.surprise_window_len = 10
+
+        self.delta_rew = delta_rew
 
         self.reset()
 
@@ -89,11 +96,14 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
 
-        if len(self.surprise_window) == 0:
-            rew = 0
+        if self.delta_rew:
+            if len(self.surprise_window) == 0:
+                rew = 0
+            else:
+                rew = ((-1)**self.alpha_t) * (surprise - self.surprise_window[-1])
         else:
-            rew = ((-1)**self.alpha_t) * (surprise - self.surprise_window[-1])
-        
+            rew = ((-1)**self.alpha_t) * surprise
+
         # remove old elements from the surprise window
         if self.flip_alpha_strategy == "SA" or self.flip_alpha == True:
             self.surprise_window.append(surprise)
@@ -118,21 +128,17 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         
         # flip alphas according to our SA objective
         if self.flip_alpha_strategy == "SA" or self.flip_alpha == True:
-            # update surprise momentum
-            # surprise_change = [0 if (np.abs(self.surprise_window[i+1]-self.surprise_window[i])/np.abs(self.surprise_window[i])
-            #                          < self.surprise_change_threshold)
-            #                          & (np.sign(self.surprise_window[i+1]) == np.sign(self.surprise_window[i]))
-            #                    else 1 if self.surprise_window[i+1] > self.surprise_window[i] else -1
-            #                     for i in range(len(self.surprise_window)-1)]
             surprise_change = pd.Series(list(self.surprise_window))
-            surprise_change = (1*(surprise_change - surprise_change.rolling(10).mean() > 0) +
-                               -1*(surprise_change - surprise_change.rolling(10).mean() < 0)).rolling(10).sum().iloc[-1]
+            surprise_change = (1*(surprise_change - surprise_change.rolling(self.surprise_window_len).mean() >
+                                  self.surprise_change_threshold) +
+                               -1*(surprise_change - surprise_change.rolling(self.surprise_window_len).mean() <
+                                   self.surprise_change_threshold)).rolling(self.surprise_window_len).sum().iloc[-1]
             if (surprise_change == 0) or np.isnan(surprise_change):
                 self.alpha_t = (np.random.rand() < 0.5) * 1
             elif self.momentum:
                 self.alpha_t = 0 if np.sign(surprise_change) > 0 else 1
             else:
-                self.alpha_t = 1 if np.sign(sum(surprise_change)) > 0 else 0
+                self.alpha_t = 1 if np.sign(surprise_change) > 0 else 0
         
         # flip alphas according to fixed length windows
         elif self.flip_alpha_strategy == "fixed_length":
@@ -168,16 +174,24 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         num_samples = np.ones(1)*self._buffer.buffer_size
         alpha_t = np.ones(1)*self.alpha_t
 
-        if len(self.surprise_window) > 0:
-            prev_surprise = np.ones(1) * self.surprise_window[-1]
+        if (self._obs_out_label is None):
+            obs_ls = [np.array(obs).flatten(), np.array(theta).flatten(), num_samples, alpha_t]
         else:
-            prev_surprise = np.zeros(1)
+            obs_ls = [np.array(theta).flatten(), num_samples, alpha_t]
+
+        if self.delta_rew:
+            if len(self.surprise_window) > 0:
+                prev_surprise = np.ones(1) * self.surprise_window[-1]
+                obs_ls.append(prev_surprise)
+            else:
+                prev_surprise = np.zeros(1)
+                obs_ls.append(prev_surprise)
 
         if (self._obs_out_label is None):
-            obs = np.concatenate([np.array(obs).flatten(), np.array(theta).flatten(), num_samples, alpha_t, prev_surprise])
+            obs = np.concatenate(obs_ls)
         else:
-            obs[self._obs_out_label] = np.concatenate([np.array(theta).flatten(), num_samples, alpha_t, prev_surprise])
-        
+            obs[self._obs_out_label] = np.concatenate(obs_ls)
+
         return obs
 
     #def get_done(self, env_done):
