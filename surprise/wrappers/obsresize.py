@@ -462,6 +462,42 @@ class AddAlphaWrapper(gym.Wrapper):
         super().__init__(env)
         self.alpha_t = None
 
+class OneMaskObs(gym.Wrapper):
+    def __init__(self, env):
+        super().__init__(env)
+
+        self.observation_space = Box(0, 3, shape=(16, 14))
+        self.action_space = env.action_space
+
+    def step(self, action):
+        # Take Action
+        obs, rew, done, info = super().step(action)
+        obs = self.ToOneMask(obs)
+        return obs, rew, done, info
+
+    def reset(self):
+        '''
+        Reset the wrapped env and the buffer
+        '''
+        obs = super().reset()
+        obs = self.ToOneMask(obs)
+        
+        return obs
+
+    def ToOneMask(self, obs):
+
+        # get goal position
+        x, y = np.unravel_index(np.argmax(obs[0], axis=None), obs[0].shape)
+        
+        # tranform to one channel only with indexes
+        obs = np.argmax(obs, axis=0)
+
+        # manually set goal position
+        max_num = np.max(obs)
+        obs[x, y] = max_num + 1
+
+        return obs
+        
 
 class RescaleImageWrapper(TransformObservation):
     def __init__(self, env):

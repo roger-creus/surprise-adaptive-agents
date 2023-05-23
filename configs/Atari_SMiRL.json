@@ -9,7 +9,7 @@
     },
     "replay_buffer_size": 50000,
     "algorithm_kwargs": {
-        "num_epochs":3000,
+        "num_epochs":9000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
@@ -66,5 +66,8 @@
     ],
     "log_comet": false,
     "env": "Carnival-v0",
+	"env_kwargs": {
+        "max_steps": 500
+    },
     "doom_info": "surprise/envs/vizdoom/scenarios/defend_the_line.cfg"
 }

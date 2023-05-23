@@ -4,10 +4,13 @@
     "layer_size":256,
     "network_args": 
     {
-    	"type": "conv"
+    	"type": "conv_mixed",
+    	"size": 1810
     },
     "replay_buffer_size": 50000,
     "algorithm_kwargs": {
+		"render_agent_pos": false,
+        "log_episode_alphas" : true,
         "num_epochs":9000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
@@ -24,14 +27,15 @@
         "render": true
     },
     "wrappers": [
+		{"add_alpha" : true},
     	{"soft_reset_wrapper": {"max_time": 500}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
     	},
     	{"resize_observation_wrapper": {
-	        "new_size": [20,26,1],
-	        "new_shape": [26,20,1],
+	        "new_size": [20, 26, 1],
+	        "new_shape": [26, 20, 1],
 	        "grayscale": true,
 	        "obs_key": "observation",
 	        "out_key_name": "small_img"
@@ -52,32 +56,33 @@
     		"channel_dim": 2,
     		"obs_key": "observation"
     	}},
-    	{"ICMWrapper": {
-    		"stuff": true,
-    		"encoding_size": 64,
-    		"network_type": "conv",
-    		"obs_key": "observation",
-    		"network": null
-    		}
-    		},
-    	{"smirl_wrapper": {
-    		"buffer_type": "Gaussian",
+		{ "surprise_adapt_wrapper": {
+            "buffer_type": "Gaussian",
     		"obs_label": "small_img",
     		"obs_out_label": "theta",
-    		"smirl_rew_scale": 0.001,
-    		"add_true_rew": "only",
-    		"latent_obs_size": 520
-    	}},
+			"smirl_rew_scale": 0.005,
+    		"latent_obs_size": 520,
+			"surprise_window_len" : 25,
+            "flip_alpha_strategy": "SA",
+            "momentum": false,
+            "surprise_change_threshold": 0.001
+        }},
     	{"dict_to_obs_wrapper": {
-    		"obs_keys": ["observation"],
-    		"obs_size": 12288
-    	}}
+    		"obs_keys": ["observation", "theta"]
+    	}},
+		{"add_text_info_to_rendering":  {
+            "log_returns": true,
+            "log_alphas": true,
+            "text_pos": [0,0],
+            "text_color": [255,255,255],
+			"font_size" : 8,
+			"font_gap" : 5
+        }}
     ],
     "log_comet": false,
     "env": "Carnival-v0",
-    "env_kwargs": {
-	    "doom_scenario": "surprise/envs/vizdoom/scenarios/take_cover.cfg",
-	    "god": false,
-		"max_steps": 500
-    }
+	"env_kwargs": {
+        "max_steps": 500
+    },
+    "doom_info": "surprise/envs/vizdoom/scenarios/defend_the_line.cfg"
 }
