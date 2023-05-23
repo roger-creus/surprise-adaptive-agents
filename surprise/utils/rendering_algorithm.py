@@ -189,14 +189,14 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             discard_incomplete_paths=True
         )
 
-        try:
-            # plotting the eval alphas for the 2 episodes
+        # plotting the eval alphas for the 2 episodes
+        if self.log_episode_alphas:
             eval_alphas = np.array([y['alpha'] for x in path for y in x['env_infos']]).reshape(-1, self.episode_length)
             x_axis = np.arange(self.episode_length)
             
             cl = logger.get_comet_logger()
             logdir = logger.get_snapshot_dir()  + "eval_alphas_" + str(counter) + ".png"
-            
+
             plt.figure()
             plt.plot(x_axis, eval_alphas[0])
             plt.plot(x_axis, eval_alphas[1])
@@ -204,10 +204,8 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
             if (cl is not None):
                 cl.log_image(image_data=logdir, overwrite=True, image_format="png")
-            
+
             plt.close()
-        except:
-            print("Not logging alphas")
         
         if ("vae_reconstruction" in path[0]['env_infos'][0]):
             video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
