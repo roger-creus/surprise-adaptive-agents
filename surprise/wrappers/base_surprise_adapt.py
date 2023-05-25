@@ -1,9 +1,10 @@
 import numpy as np
 import gym
-from gym.spaces import Box
+from gym.spaces import Box, Dict
 import pdb
 import util.class_util as classu
 from collections import deque
+
 
 class BaseSurpriseAdaptWrapper(gym.Wrapper):
     
@@ -41,20 +42,29 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
 
         # adding theta and t for consistent MDP (same as SMiRL)
         # adding history of surprise (either -1 or 1)
-        self.observation_space = Box(
-                np.concatenate(
-                    (self.env_obs_space.low.flatten(), 
-                     np.zeros(theta.shape), 
-                     np.zeros(1),
-                     np.ones(1) * -1)
-                ),
-                np.concatenate(
-                    (self.env_obs_space.high.flatten(), 
-                     np.ones(theta.shape), 
-                     np.ones(1)*time_horizon,
-                     np.ones(1))
+        if self._obs_out_label is None:
+            self.observation_space = Box(
+                    np.concatenate(
+                        (self.env_obs_space.low.flatten(),
+                         np.zeros(theta.shape),
+                         np.zeros(1),
+                         np.ones(1) * -1)
+                    ),
+                    np.concatenate(
+                        (self.env_obs_space.high.flatten(),
+                         np.ones(theta.shape),
+                         np.ones(1)*time_horizon,
+                         np.ones(1))
+                    )
                 )
-            )
+
+        else:
+            self.observation_space = Dict({
+                self._obs_label: Box(self.env_obs_space.low, self.env_obs_space.high),
+                self._obs_out_label: Box(np.concatenate((np.zeros(theta.shape), np.zeros(1), np.ones(1) * -1)),
+                                         np.concatenate((np.zeros(theta.shape), np.zeros(1), np.ones(1))))
+            })
+
 
         self.surprise_change_threshold = surprise_change_threshold
 
