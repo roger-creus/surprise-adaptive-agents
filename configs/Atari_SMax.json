@@ -31,13 +31,6 @@
     		}
     	},
     	{"resize_observation_wrapper": {
-	        "new_size": [20, 26, 1],
-	        "new_shape": [26, 20, 1],
-	        "grayscale": true,
-	        "obs_key": "observation",
-	        "out_key_name": "small_img"
-	        }},
-    	{"resize_observation_wrapper": {
 	        "new_size": [48,64,1],
 	        "new_shape": [64,48,1],
 	        "grayscale": true,
@@ -61,8 +54,7 @@
     		"latent_obs_size": 520
     	}},
     	{"dict_to_obs_wrapper": {
-    		"obs_keys": ["observation", "theta"],
-    		"obs_size": 12288
+    		"obs_keys": ["observation"]
     	}}
     ],
     "log_comet": false,
