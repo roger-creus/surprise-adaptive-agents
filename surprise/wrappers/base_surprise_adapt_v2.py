@@ -97,10 +97,10 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
 
         if self.delta_rew:
-            if len(self.surprise_window) == 0:
+            if len(self.surprise_window) <= 0:
                 rew = 0
             else:
-                rew = ((-1)**self.alpha_t) * (surprise - self.surprise_window[-1])
+                rew = ((-1)**self.alpha_t) * np.sign(surprise - self.surprise_window[-1])
         else:
             rew = ((-1)**self.alpha_t) * surprise
 
