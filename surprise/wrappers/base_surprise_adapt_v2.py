@@ -18,7 +18,7 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
                  flip_alpha=False,
                  flip_alpha_strategy="SA",
                  momentum=False,
-                 delta_rew=False,
+                 delta_rew=None,
                  add_true_rew=False,
                  smirl_rew_scale=None, 
                  buffer_type=None,
@@ -96,11 +96,16 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
 
-        if self.delta_rew:
+        if self.delta_rew is not None:
             if len(self.surprise_window) <= 0:
                 rew = 0
             else:
-                rew = ((-1)**self.alpha_t) * np.sign(surprise - self.surprise_window[-1])
+                if self.delta_rew == 'bin':
+                    rew = ((-1)**self.alpha_t) * np.sign(surprise - self.surprise_window[-1])
+                elif self.delta_rew == 'abs':
+                    rew = ((-1) ** self.alpha_t) * (surprise - self.surprise_window[-1])
+                else:
+                    raise ValueError(f"Unknown delta rewards type {self.delta_rew}")
         else:
             rew = ((-1)**self.alpha_t) * surprise
 
@@ -179,7 +184,7 @@ class BaseSurpriseAdaptV2Wrapper(gym.Wrapper):
         else:
             obs_ls = [np.array(theta).flatten(), num_samples, alpha_t]
 
-        if self.delta_rew:
+        if self.delta_rew is not None:
             if len(self.surprise_window) > 0:
                 prev_surprise = np.ones(1) * self.surprise_window[-1]
                 obs_ls.append(prev_surprise)
