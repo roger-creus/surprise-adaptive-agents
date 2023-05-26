@@ -34,7 +34,7 @@
 			}},
         { "surprise_adapt_wrapper": {
             "buffer_type": "Gaussian",
-            "surprise_window_len": 75,
+            "surprise_window_len": 50,
             "flip_alpha_strategy": "fixed_length",
             "momentum": true,
             "surprise_change_threshold": 0.1
