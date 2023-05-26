@@ -38,7 +38,7 @@
             "flip_alpha_strategy": "SA",
             "momentum": true,
             "surprise_change_threshold": 0.01,
-            "delta_rew": "abs"
+            "delta_rew": "bin"
         }},
         {"add_text_info_to_rendering":  {
             "log_returns": true,

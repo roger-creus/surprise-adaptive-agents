@@ -67,7 +67,10 @@ class DictToObservationWrapper(gym.Wrapper):
         # Gym spaces
         self.action_space = env.action_space
         if (self._obs_size is None):
-            self.observation_space = env.observation_space
+            self.observation_space = Box(
+                np.concatenate([x.low.flatten() for x in self.env.observation_space.spaces.values()]),
+                np.concatenate([x.high.flatten() for x in self.env.observation_space.spaces.values()])
+            )
         else:
             self.observation_space = Box(
                 np.zeros(self._obs_size),

@@ -69,5 +69,5 @@
 	"env_kwargs": {
         "max_steps": 500
     },
-    "doom_info": "surprise/envs/vizdoom/scenarios/defend_the_line.cfg"
+	"doom_info": "surprise/envs/vizdoom/scenarios/defend_the_line.cfg"
 }
