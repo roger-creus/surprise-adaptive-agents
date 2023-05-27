@@ -30,7 +30,8 @@
 				"resize": [64,48,1]
 			}},
     	{ "smirl_wrapper": {
-    		"buffer_type": "Bernoulli"
+    		"buffer_type": "Bernoulli",
+		"minimize": false
         }}
     ],
     "log_comet": false,
