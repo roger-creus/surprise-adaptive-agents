@@ -64,9 +64,10 @@ def get_env(variant):
             for env_ in env_dict:
                 if 'GDY-MazeEnvFullyObserved-v0' in env_:
                     del gym.envs.registration.registry.env_specs[env_]
-            
+
+            import os
             wrapper = GymWrapperFactory()
-            wrapper.build_gym_from_yaml('MazeEnvFullyObserved', '/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/maze_env_fully_observed.yaml')
+            wrapper.build_gym_from_yaml('MazeEnvFullyObserved', f'{os.getcwd()}/surprise/envs/maze/maze_env_fully_observed.yaml')
             env_ = gym.make(
                 'GDY-MazeEnvFullyObserved-v0',
                 player_observer_type=gd.ObserverType.VECTOR,
@@ -84,7 +85,7 @@ def get_env(variant):
                     del gym.envs.registration.registry.env_specs[env]
             
             wrapper = GymWrapperFactory()
-            wrapper.build_gym_from_yaml('MazeEnvPartiallyObserved', '/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/maze_env_partially_observed.yaml')
+            wrapper.build_gym_from_yaml('MazeEnvPartiallyObserved', f'{os.getcwd()}/surprise/envs/maze/maze_env_partially_observed.yaml')
             env = gym.make(
                 'GDY-MazeEnvPartiallyObserved-v0',
                 player_observer_type=gd.ObserverType.VECTOR,

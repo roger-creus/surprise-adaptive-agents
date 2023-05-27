@@ -1,5 +1,5 @@
 {
-    "algorithm":"random",
+    "algorithm":"SAC",
     "version":"normal",
     "layer_size":256,
     "network_args": 
@@ -26,24 +26,17 @@
         "render": true
     },
     "wrappers": [
-        {"add_alpha" : true},
     	{"soft_reset_wrapper": {"max_time": 250}},
-    	{"rendering_observation":
+    	{"rendering_observation": 
 			{
 				"resize": [64,48,1]
 			}},
-        { "surprise_adapt_wrapper": {
+        { "smirl_wrapper": {
             "buffer_type": "Gaussian",
-            "surprise_window_len": 10,
-            "flip_alpha_strategy": "SA",
-            "momentum": true,
-            "surprise_change_threshold": 0.1
+            "minimize": true
         }},
         {"add_text_info_to_rendering":  {
-            "log_returns": true,
-            "log_alphas": true,
-            "text_pos": [0,0],
-            "text_color": [255,0,0]
+            "log_returns": true
         }}
     ],
     "log_comet": false,
