@@ -102,12 +102,16 @@ def get_env(variant):
 
     else: 
         import gym
-        env = gym.make(variant['env'])
-        if variant['env'] != "Carnival-v0":
-            try:
-                env.__init__(**variant["env_kwargs"])
-            except KeyError:
-                pass
+        try:
+            env = gym.make(variant['env'], **variant["env_kwargs"])
+        except KeyError:
+            print("Environment kwargs are not valid. Ignoring...")
+            env = gym.make(variant['env'])
+        # if variant['env'] != "Carnival-v0":
+        #     try:
+        #         env.__init__(**variant["env_kwargs"])
+        #     except KeyError:
+        #         pass
 
     #     else:
 #         print("Non supported env type: ", variant["env"])
@@ -272,7 +276,10 @@ def experiment(doodad_config, variant):
     print ("doodad_config.base_log_dir: ", doodad_config.base_log_dir)
     from datetime import datetime
     timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f')
-    setup_logger('wrapped_'+variant['env'], variant=variant, log_dir=doodad_config.base_log_dir+"/smirl/"+variant['exp_name']+"/"+timestamp+"/")
+    snapshot_mode = variant['snapshot_mode'] if 'snapshot_mode' in variant.keys() else "last"
+    setup_logger('wrapped_'+variant['env'], variant=variant,
+                 log_dir=doodad_config.base_log_dir+"/smirl/"+variant['exp_name']+"/"+timestamp+"/",
+                 snapshot_mode=snapshot_mode)
     if (variant["log_comet"]):
         try:
             from launchers.config import COMET_API_KEY, COMET_PROJECT_NAME, COMET_WORKSPACE

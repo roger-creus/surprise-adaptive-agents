@@ -3,4 +3,6 @@
 logs/*
 logs_local/*
 /logs_local/*
+*egg*
+
 

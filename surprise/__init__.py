@@ -36,3 +36,12 @@ gym_register(
     id='MiniGrid-SurpriseAdaptRooms-v0',
     entry_point='surprise.envs.minigrid.envs.surprise_adapt_rooms:SurpriseAdaptRoomsEnv'
 )
+
+from griddly import GymWrapperFactory, gd
+import os
+wrapper = GymWrapperFactory()
+wrapper.build_gym_from_yaml('_ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
+gym_register(
+    id='GDY-ButterfliesEnv-v0',
+    entry_point='surprise.envs.maze.butterflies:ButterfliesEnv'
+)
