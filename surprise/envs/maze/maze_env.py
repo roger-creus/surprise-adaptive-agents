@@ -7,7 +7,8 @@ class MazeEnvFullyObserved(gym.Env):
         super(MazeEnvFullyObserved, self).__init__()
 
     def step(self, action):
-        return self.env.step(action)
+        state, rew, done, info = self.env.step(action)
+        return state, rew, done, {}
 
     def reset(self):
         return self.env.reset()
