@@ -74,30 +74,12 @@ def get_env(variant):
                 global_observer_type=gd.ObserverType.VECTOR,
                 max_steps = variant["env_kwargs"]["max_steps"]
             )
-
             env.set_env(env_)
-
-
-        elif "PartiallyObserved" in variant["env"]:
-            env_dict = gym.envs.registration.registry.env_specs.copy()
-            for env in env_dict:
-                if 'GDY-MazeEnvPartiallyObserved-v0' in env:
-                    del gym.envs.registration.registry.env_specs[env]
-            
-            wrapper = GymWrapperFactory()
-            wrapper.build_gym_from_yaml('MazeEnvPartiallyObserved', f'{os.getcwd()}/surprise/envs/maze/maze_env_partially_observed.yaml')
-            env = gym.make(
-                'GDY-MazeEnvPartiallyObserved-v0',
-                player_observer_type=gd.ObserverType.VECTOR,
-                max_steps = variant["env_kwargs"]["max_steps"]
-            )
-            
-        
         else:
             raise "This maze is not implemented"
         
-        from surprise.wrappers.obsresize import OneMaskObs
-        env = OneMaskObs(env)
+        from surprise.wrappers.obsresize import MazeEnvOneMaskObs
+        env = MazeEnvOneMaskObs(env)
         
 
     else: 
@@ -107,16 +89,7 @@ def get_env(variant):
         except KeyError:
             print("Environment kwargs are not valid. Ignoring...")
             env = gym.make(variant['env'])
-        # if variant['env'] != "Carnival-v0":
-        #     try:
-        #         env.__init__(**variant["env_kwargs"])
-        #     except KeyError:
-        #         pass
 
-    #     else:
-#         print("Non supported env type: ", variant["env"])
-#         sys.exit()
-        
     return env
 
 def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=False):
