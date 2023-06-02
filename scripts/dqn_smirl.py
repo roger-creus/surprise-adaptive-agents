@@ -52,19 +52,44 @@ def get_env(variant):
         env_wargs = variant["env_kwargs"]
         env = VizDoomEnv(config_path=BASE_CODE_DIR + env_wargs["doom_scenario"], 
                          **env_wargs)
+    elif "MazeEnv" in variant["env"]:
+        import griddly
+        import gym
+        from griddly import GymWrapperFactory, gd
+        from surprise.envs.maze.maze_env import MazeEnvFullyObserved
+
+        env = MazeEnvFullyObserved()
+        if "FullyObserved" in variant["env"]:
+            env_dict = gym.envs.registration.registry.env_specs.copy()
+            for env_ in env_dict:
+                if 'GDY-MazeEnvFullyObserved-v0' in env_:
+                    del gym.envs.registration.registry.env_specs[env_]
+
+            import os
+            wrapper = GymWrapperFactory()
+            wrapper.build_gym_from_yaml('MazeEnvFullyObserved', f'/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/maze_env_fully_observed.yaml')
+            env_ = gym.make(
+                'GDY-MazeEnvFullyObserved-v0',
+                player_observer_type=gd.ObserverType.VECTOR,
+                global_observer_type=gd.ObserverType.VECTOR,
+                max_steps = variant["env_kwargs"]["max_steps"]
+            )
+            env.set_env(env_)
+        else:
+            raise "This maze is not implemented"
+        
+        from surprise.wrappers.obsresize import MazeEnvOneMaskObs
+        env = MazeEnvOneMaskObs(env)
+        
+
     else: 
         import gym
-        env = gym.make(variant['env'])
-        if variant['env'] != "Carnival-v0":
-            try:
-                env.__init__(**variant["env_kwargs"])
-            except KeyError:
-                pass
+        try:
+            env = gym.make(variant['env'], **variant["env_kwargs"])
+        except KeyError:
+            print("Environment kwargs are not valid. Ignoring...")
+            env = gym.make(variant['env'])
 
-    #     else:
-#         print("Non supported env type: ", variant["env"])
-#         sys.exit()
-        
     return env
 
 def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=False):
@@ -78,7 +103,6 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
     if isinstance(env, MiniGridEnv):
         env = RGBImgPartialObsWrapper(env)
         env = ImgObsWrapper(env)
-
 
     obs_dim = env.observation_space.low.shape
     print("obs dim", obs_dim)
@@ -225,7 +249,10 @@ def experiment(doodad_config, variant):
     print ("doodad_config.base_log_dir: ", doodad_config.base_log_dir)
     from datetime import datetime
     timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f')
-    setup_logger('wrapped_'+variant['env'], variant=variant, log_dir=doodad_config.base_log_dir+"/smirl/"+variant['exp_name']+"/"+timestamp+"/")
+    snapshot_mode = variant['snapshot_mode'] if 'snapshot_mode' in variant.keys() else "last"
+    setup_logger('wrapped_'+variant['env'], variant=variant,
+                 log_dir=doodad_config.base_log_dir+"/smirl/"+variant['exp_name']+"/"+timestamp+"/",
+                 snapshot_mode=snapshot_mode)
     if (variant["log_comet"]):
         try:
             from launchers.config import COMET_API_KEY, COMET_PROJECT_NAME, COMET_WORKSPACE

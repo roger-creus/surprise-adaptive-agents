@@ -4,7 +4,8 @@
     "layer_size":256,
     "network_args": 
     {
-    	"type": "conv"
+    	"type": "conv_mixed",
+    	"size": 1809
     },
     "replay_buffer_size": 50000,
     "algorithm_kwargs": {
@@ -30,13 +31,6 @@
     		}
     	},
     	{"resize_observation_wrapper": {
-	        "new_size": [20,26,1],
-	        "new_shape": [26,20,1],
-	        "grayscale": true,
-	        "obs_key": "observation",
-	        "out_key_name": "small_img"
-	        }},
-    	{"resize_observation_wrapper": {
 	        "new_size": [48,64,1],
 	        "new_shape": [64,48,1],
 	        "grayscale": true,
@@ -52,32 +46,21 @@
     		"channel_dim": 2,
     		"obs_key": "observation"
     	}},
-    	{"ICMWrapper": {
-    		"stuff": true,
-    		"encoding_size": 64,
-    		"network_type": "conv",
-    		"obs_key": "observation",
-    		"network": null
-    		}
-    		},
     	{"smirl_wrapper": {
     		"buffer_type": "Gaussian",
     		"obs_label": "small_img",
     		"obs_out_label": "theta",
-    		"smirl_rew_scale": 0.001,
-    		"add_true_rew": "only",
+    		"smirl_rew_scale": 0.005,
     		"latent_obs_size": 520
     	}},
     	{"dict_to_obs_wrapper": {
-    		"obs_keys": ["observation"],
-    		"obs_size": 12288
+    		"obs_keys": ["observation"]
     	}}
     ],
     "log_comet": false,
     "env": "Carnival-v0",
-    "env_kwargs": {
-	    "doom_scenario": "surprise/envs/vizdoom/scenarios/take_cover.cfg",
-	    "god": false,
-		"max_steps": 500
-    }
+	"env_kwargs": {
+        "max_steps": 500
+    },
+    "doom_info": "surprise/envs/vizdoom/scenarios/defend_the_line.cfg"
 }

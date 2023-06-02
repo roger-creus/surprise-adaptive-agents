@@ -9,7 +9,7 @@
     },
     "replay_buffer_size": 50000,
     "algorithm_kwargs": {
-        "num_epochs":3000,
+        "num_epochs":9000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
@@ -61,7 +61,8 @@
     		"latent_obs_size": 520
     	}},
     	{"dict_to_obs_wrapper": {
-    		"obs_keys": ["observation", "theta"]
+    		"obs_keys": ["observation", "theta"],
+    		"obs_size": 12288
     	}}
     ],
     "log_comet": false,

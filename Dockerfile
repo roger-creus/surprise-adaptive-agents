@@ -4,7 +4,9 @@ ARG UBUNTU_VERSION=18.04
 ARG ARCH=
 ARG CUDA=10.0
 
-FROM nvidia/cudagl${ARCH:+-$ARCH}:${CUDA}-base-ubuntu${UBUNTU_VERSION} as base
+#FROM nvidia/cudagl${ARCH:+-$ARCH}:${CUDA}-base-ubuntu${UBUNTU_VERSION} as base
+#FROM nvidia/vulkan:1.1.121 as base
+FROM nvidia/cudagl:11.4.2-base-ubuntu20.04 as base
 # ARCH and CUDA are specified again because the FROM directive resets ARGs
 # (but their default value is retained if set previously)
 
@@ -23,7 +25,7 @@ ENV PATH /opt/conda/bin:$PATH
 
 # install anaconda
 RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
-    libglib2.0-0 libxext6 libsm6 libxrender1 \
+    libglib2.0-0 libxext6 libsm6 libxrender1 libc6 libvulkan1 vulkan-utils\
     git mercurial subversion
     
 # NOTE: we don't use TF so might not need some of these
@@ -108,7 +110,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 RUN pip install -r requirements.txt
 
 
-
 ## Install VizDoom dependancies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 build-essential zlib1g-dev libsdl2-dev libjpeg-dev \
@@ -124,6 +125,7 @@ RUN conda install -n surprise-adapt x264=='1!152.20180717' ffmpeg=4.0.2 -c conda
 
 ENV IMAGEIO_FFMPEG_EXE="/usr/bin/ffmpeg"
 
+RUN pip install griddly==1.6.0
 
 WORKDIR /root/playground
 
