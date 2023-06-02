@@ -20,8 +20,7 @@ class ButterfliesEnv(ObservationWrapper):
         
     def step(self, action):
         obs, rew, done, info = super().step(action)
-        obs = self.ToOneMask(obs)
-        return obs, rew, done, info
+        return obs, rew, done, {}
 
     def observation(self, obs):
         # put agent channel first
