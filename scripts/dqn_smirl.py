@@ -67,7 +67,7 @@ def get_env(variant):
 
             import os
             wrapper = GymWrapperFactory()
-            wrapper.build_gym_from_yaml('MazeEnvFullyObserved', f'/home/ahugessen/github/surprise-adaptive-agents/surprise/envs/maze/maze_env_fully_observed.yaml')
+            wrapper.build_gym_from_yaml('MazeEnvFullyObserved', f'/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/maze_env_fully_observed.yaml')
             env_ = gym.make(
                 'GDY-MazeEnvFullyObserved-v0',
                 player_observer_type=gd.ObserverType.VECTOR,
