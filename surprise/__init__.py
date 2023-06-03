@@ -45,3 +45,17 @@ gym_register(
     id='GDY-ButterfliesEnv-v0',
     entry_point='surprise.envs.maze.butterflies:ButterfliesEnv'
 )
+
+wrapper = GymWrapperFactory()
+wrapper.build_gym_from_yaml('_BiomesFullyObservedVector', "/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/biomes.yaml") #f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
+gym_register(
+    id='GDY-BiomesFullyObservedVector-v0',
+    entry_point='surprise.envs.maze.biomes:BiomesFullyObservedVector'
+)
+
+wrapper = GymWrapperFactory()
+wrapper.build_gym_from_yaml('_BiomesPartiallyObservedVector', "/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/biomes_po.yaml") #f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
+gym_register(
+    id='GDY-BiomesPartiallyObservedVector-v0',
+    entry_point='surprise.envs.maze.biomes:BiomesPartiallyObservedVector'
+)

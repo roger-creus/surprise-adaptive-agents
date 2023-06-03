@@ -1,0 +1,422 @@
+Version: '0.1'
+Environment:
+  Name: Biome explorer
+  Description: A Crafter map designed to explore multiple biomes
+  Observers:
+    Entity:
+      IncludeMasks: true
+      IncludePlayerId:
+        - player
+    Sprite2D:
+      TileSize: 12
+      BackgroundTile: sprite2d/path.png
+    PlayerSprite2D:
+      Type: SPRITE_2D
+      TileSize: 8
+      BackgroundTile: sprite2d/path.png
+  Termination:
+    Win:
+      - eq:
+          - plant_count
+          - 0
+    End:
+      - eq:
+          - _steps
+          - 500
+  Player:
+    Count: 1
+    AvatarObject: player
+    Observer:
+      TrackAvatar: true
+      Width: 7
+      Height: 7
+      OffsetY: -1
+  Variables:
+    - Name: player_count
+      InitialValue: 0
+    - Name: plant_count
+      InitialValue: 8
+  Levels:
+    - >
+      t   t   t   t   t   t   t   t   t   t   t   t   t   G   G   G   G   G  
+      G   G   G   G   G   G   G   G   s   s   s   s   s   s   s   s   s   s  
+      s   s   s   
+
+      t   t   t   t   t   t   t   t   t   t   t   t   t   G   G   G   G   G  
+      G   G   G   G   G   G   G   G   s   s   s   s   s   s   s   s   s   s  
+      s   s   s   
+
+      t   t   t   t   t   t   t   t   t   t   t   t   t   G   G   G   G   G  
+      G   G   G   G   G   G   G   G   s   s   s   s   s   s   s   s   s   s  
+      s   s   s   
+
+      t   t   t   t   t   t   t   t   t   t   t   t   t   G   G   G   G   G  
+      G   G   G   G   G   G   G   G   s   s   s   s   s   s   s   s   s   s  
+      s   s   s   
+
+      t   t   t   t   .   .   .   .   .   t   t   t   t   G   G   G   G   .  
+      .   .   .   .   G   G   G   G   s   s   s   s   .   .   .   .   .   s  
+      s   s   s   
+
+      t   t   t   t   .   .   .   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   s  
+      s   s   s   
+
+      t   t   t   t   .   .   +   .   .   .   .   .   .   .   .   .   .   .  
+      .   +   .   .   .   .   .   .   .   .   .   .   .   .   +   .   .   s  
+      s   s   s   
+
+      t   t   t   t   .   .   .   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   s  
+      s   s   s   
+
+      t   t   t   t   .   .   .   .   .   t   t   t   t   G   G   G   G   .  
+      .   .   .   .   G   G   G   G   s   s   s   s   .   .   .   .   .   s  
+      s   s   s   
+
+      t   t   t   t   t   .   .   .   t   t   t   t   t   G   G   G   G   G  
+      .   .   .   G   G   G   G   G   s   s   s   s   s   .   .   .   s   s  
+      s   s   s   
+
+      t   t   t   t   t   .   .   .   t   t   t   t   t   G   G   G   G   G  
+      .   .   .   G   G   G   G   G   s   s   s   s   s   .   .   .   s   s  
+      s   s   s   
+
+      t   t   t   t   t   .   .   .   t   t   t   t   t   G   G   G   G   G  
+      .   .   .   G   G   G   G   G   s   s   s   s   s   .   .   .   s   s  
+      s   s   s   
+
+      t   t   t   t   t   .   .   .   t   t   t   t   t   G   G   G   G   G  
+      .   .   .   G   G   G   G   G   s   s   s   s   s   .   .   .   s   s  
+      s   s   s   
+
+      c   c   c   c   c   .   .   .   c   c   c   c   c   S   S   S   S   S  
+      .   .   .   S   S   S   S   S   W   W   W   W   W   .   .   .   W   W  
+      W   W   W   
+
+      c   c   c   c   c   .   .   .   c   c   c   c   c   S   S   S   S   S  
+      .   .   .   S   S   S   S   S   W   W   W   W   W   .   .   .   W   W  
+      W   W   W   
+
+      c   c   c   c   c   .   .   .   c   c   c   c   c   S   S   S   S   S  
+      .   .   .   S   S   S   S   S   W   W   W   W   W   .   .   .   W   W  
+      W   W   W   
+
+      c   c   c   c   c   .   .   .   c   c   c   c   c   S   S   S   S   S  
+      .   .   .   S   S   S   S   S   W   W   W   W   W   .   .   .   W   W  
+      W   W   W   
+
+      c   c   c   c   .   .   .   .   .   c   c   c   c   S   S   S   S   .  
+      .   .   .   .   S   S   S   S   W   W   W   W   .   .   .   .   .   W  
+      W   W   W   
+
+      c   c   c   c   .   .   .   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   W  
+      W   W   W   
+
+      c   c   c   c   .   .   +   .   .   .   .   .   .   .   .   .   .   .  
+      .   p   .   .   .   .   .   .   .   .   .   .   .   .   +   .   .   W  
+      W   W   W   
+
+      c   c   c   c   .   .   .   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   W  
+      W   W   W   
+
+      c   c   c   c   .   .   .   .   .   c   c   c   c   S   S   S   S   .  
+      .   .   .   .   S   S   S   S   W   W   W   W   .   .   .   .   .   W  
+      W   W   W   
+
+      c   c   c   c   c   .   .   .   c   c   c   c   c   S   S   S   S   S  
+      .   .   .   S   S   S   S   S   W   W   W   W   W   .   .   .   W   W  
+      W   W   W   
+
+      c   c   c   c   c   .   .   .   c   c   c   c   c   S   S   S   S   S  
+      .   .   .   S   S   S   S   S   W   W   W   W   W   .   .   .   W   W  
+      W   W   W   
+
+      c   c   c   c   c   .   .   .   c   c   c   c   c   S   S   S   S   S  
+      .   .   .   S   S   S   S   S   W   W   W   W   W   .   .   .   W   W  
+      W   W   W   
+
+      c   c   c   c   c   .   .   .   c   c   c   c   c   S   S   S   S   S  
+      .   .   .   S   S   S   S   S   W   W   W   W   W   .   .   .   W   W  
+      W   W   W   
+
+      T   T   T   T   T   .   .   .   T   T   T   T   T   d   d   d   d   d  
+      .   .   .   d   d   d   d   d   L   L   L   L   L   .   .   .   L   L  
+      L   L   L   
+
+      T   T   T   T   T   .   .   .   T   T   T   T   T   d   d   d   d   d  
+      .   .   .   d   d   d   d   d   L   L   L   L   L   .   .   .   L   L  
+      L   L   L   
+
+      T   T   T   T   T   .   .   .   T   T   T   T   T   d   d   d   d   d  
+      .   .   .   d   d   d   d   d   L   L   L   L   L   .   .   .   L   L  
+      L   L   L   
+
+      T   T   T   T   T   .   .   .   T   T   T   T   T   d   d   d   d   d  
+      .   .   .   d   d   d   d   d   L   L   L   L   L   .   .   .   L   L  
+      L   L   L   
+
+      T   T   T   T   .   .   .   .   .   T   T   T   T   d   d   d   d   .  
+      .   .   .   .   d   d   d   d   L   L   L   L   .   .   .   .   .   L  
+      L   L   L   
+
+      T   T   T   T   .   .   .   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   L  
+      L   L   L   
+
+      T   T   T   T   .   .   +   .   .   .   .   .   .   .   .   .   .   .  
+      .   +   .   .   .   .   .   .   .   .   .   .   .   .   +   .   .   L  
+      L   L   L   
+
+      T   T   T   T   .   .   .   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   L  
+      L   L   L   
+
+      T   T   T   T   .   .   .   .   .   T   T   T   T   d   d   d   d   .  
+      .   .   .   .   d   d   d   d   L   L   L   L   .   .   .   .   .   L  
+      L   L   L   
+
+      T   T   T   T   T   T   T   T   T   T   T   T   T   d   d   d   d   d  
+      d   d   d   d   d   d   d   d   L   L   L   L   L   L   L   L   L   L  
+      L   L   L   
+
+      T   T   T   T   T   T   T   T   T   T   T   T   T   d   d   d   d   d  
+      d   d   d   d   d   d   d   d   L   L   L   L   L   L   L   L   L   L  
+      L   L   L   
+
+      T   T   T   T   T   T   T   T   T   T   T   T   T   d   d   d   d   d  
+      d   d   d   d   d   d   d   d   L   L   L   L   L   L   L   L   L   L  
+      L   L   L   
+
+      T   T   T   T   T   T   T   T   T   T   T   T   T   d   d   d   d   d  
+      d   d   d   d   d   d   d   d   L   L   L   L   L   L   L   L   L   L  
+      L   L   L   
+Actions:
+  - Name: init_player
+    InputMapping:
+      Internal: true
+      Inputs:
+        '1':
+          VectorToDest:
+            - 0
+            - 0
+    Behaviours:
+      - Src:
+          Object: player
+        Dst:
+          Object: player
+          Commands:
+            - incr: player_count
+  - Name: move
+    InputMapping:
+      Inputs:
+        '1':
+          OrientationVector:
+            - -1
+            - 0
+          VectorToDest:
+            - -1
+            - 0
+          Description: Move Left
+          MetaData:
+            image_idx: 1
+        '2':
+          OrientationVector:
+            - 0
+            - -1
+          VectorToDest:
+            - 0
+            - -1
+          Description: Move Up
+          MetaData:
+            image_idx: 2
+        '3':
+          OrientationVector:
+            - 1
+            - 0
+          VectorToDest:
+            - 1
+            - 0
+          Description: Move Right
+          MetaData:
+            image_idx: 3
+        '4':
+          OrientationVector:
+            - 0
+            - 1
+          VectorToDest:
+            - 0
+            - 1
+          Description: Move Down
+          MetaData:
+            image_idx: 4
+    Behaviours:
+      - Src:
+          Object: player
+          Commands:
+            - mov: _dest
+            - set_tile: meta.image_idx
+        Dst:
+          Object:
+            - _empty
+      - Src:
+          Object: player
+          Commands:
+            - set_tile: meta.image_idx
+        Dst:
+          Object:
+            - water
+            - stone
+            - tree
+            - player
+            - coal
+            - lava
+            - diamond
+            - plant
+      - Src:
+          Object: player
+          Commands:
+            - mov: _dest
+            - reward: 1
+        Dst:
+          Object: plant
+          Commands:
+            - remove: true
+            - decr: plant_count
+Objects:
+  - Name: player
+    MapCharacter: p
+    InitialActions:
+      - Action: init_player
+        ActionId: 1
+    Z: 2
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/player.png
+        - Image: sprite2d/player-left.png
+        - Image: sprite2d/player-up.png
+        - Image: sprite2d/player-right.png
+        - Image: sprite2d/player-down.png
+        - Image: sprite2d/player-sleep.png
+      PlayerSprite2D:
+        - Image: sprite2d/player.png
+        - Image: sprite2d/player-left.png
+        - Image: sprite2d/player-up.png
+        - Image: sprite2d/player-right.png
+        - Image: sprite2d/player-down.png
+        - Image: sprite2d/player-sleep.png
+      Sprite2D:
+        - Image: sprite2d/player.png
+        - Image: sprite2d/player-left.png
+        - Image: sprite2d/player-up.png
+        - Image: sprite2d/player-right.png
+        - Image: sprite2d/player-down.png
+        - Image: sprite2d/player-sleep.png
+  - Name: water
+    MapCharacter: W
+    Z: 2
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/water.png
+      PlayerSprite2D:
+        - Image: sprite2d/water.png
+      Sprite2D:
+        - Image: sprite2d/water.png
+  - Name: grass
+    MapCharacter: G
+    Z: 2
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/grass.png
+      PlayerSprite2D:
+        - Image: sprite2d/grass.png
+      Sprite2D:
+        - Image: sprite2d/grass.png
+  - Name: stone
+    MapCharacter: s
+    Z: 2
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/stone.png
+      PlayerSprite2D:
+        - Image: sprite2d/stone.png
+      Sprite2D:
+        - Image: sprite2d/stone.png
+  - Name: sand
+    Z: 2
+    MapCharacter: S
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/sand.png
+      PlayerSprite2D:
+        - Image: sprite2d/sand.png
+      Sprite2D:
+        - Image: sprite2d/sand.png
+  - Name: tree
+    Z: 1
+    MapCharacter: T
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/tree.png
+      PlayerSprite2D:
+        - Image: sprite2d/tree.png
+      Sprite2D:
+        - Image: sprite2d/tree.png
+  - Name: plant
+    MapCharacter: +
+    Z: 2
+    Variables:
+      - Name: ripe
+        InitialValue: 1
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/plant-ripe.png
+        - Image: sprite2d/plant.png
+      PlayerSprite2D:
+        - Image: sprite2d/plant-ripe.png
+        - Image: sprite2d/plant.png
+      Sprite2D:
+        - Image: sprite2d/plant-ripe.png
+        - Image: sprite2d/plant.png
+  - Name: lava
+    MapCharacter: L
+    Z: 1
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/lava.png
+      PlayerSprite2D:
+        - Image: sprite2d/lava.png
+      Sprite2D:
+        - Image: sprite2d/lava.png
+  - Name: coal
+    MapCharacter: c
+    Z: 2
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/coal.png
+      PlayerSprite2D:
+        - Image: sprite2d/coal.png
+      Sprite2D:
+        - Image: sprite2d/coal.png
+  - Name: diamond
+    MapCharacter: d
+    Z: 2
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/diamond.png
+      PlayerSprite2D:
+        - Image: sprite2d/diamond.png
+      Sprite2D:
+        - Image: sprite2d/diamond.png
+  - Name: table
+    MapCharacter: t
+    Z: 2
+    Observers:
+      GlobalSprite2D:
+        - Image: sprite2d/table.png
+      PlayerSprite2D:
+        - Image: sprite2d/table.png
+      Sprite2D:
+        - Image: sprite2d/table.png
