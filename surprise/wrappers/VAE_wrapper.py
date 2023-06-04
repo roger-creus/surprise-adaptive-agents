@@ -2,6 +2,8 @@ import gym
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+from IPython import embed
+
 
 class VAEWrapper(gym.Env):
     
@@ -84,9 +86,7 @@ class VAEWrapper(gym.Env):
         # Take Action
         obs, rew, done, info = self.env.step(action)
         self._count = self._count + 1
-#         print ("self._count: ", self._count)
 
-#         print ("obs: ", np.mean(obs[self._obs_key]), np.std(obs[self._obs_key]))        
         if (not self._eval):
             if (self._obs_key is None):
                 self._buffer.add(obs)
@@ -96,17 +96,11 @@ class VAEWrapper(gym.Env):
             if (self._obs_key is None):
                 vae_reconstruction, mu, logvar = self.network(torch.tensor(obs).float().unsqueeze(0).to(self.device))
                 info["vae_reconstruction"] = np.array(vae_reconstruction.detach().cpu().numpy()[0] * 255, dtype="uint8")
-#                 print ("vae_reconstruction: ", np.mean(info["vae_reconstruction"]), np.std(info["vae_reconstruction"])) 
             else:
                 vae_reconstruction, mu, logvar = self.network(torch.tensor(obs[self._obs_key]).float().unsqueeze(0).to(self.device))
                 info["vae_reconstruction"] = np.array(vae_reconstruction.detach().cpu().numpy()[0] * 255, dtype="uint8")
                 ### Need to change image to be channel first
-#                 info["vae_reconstruction"] = info["vae_reconstruction"].permute(0, 2,3,1)
-#                 print ("vae_reconstruction before: ", info["vae_reconstruction"].shape, np.mean(info["vae_reconstruction"]), np.std(info["vae_reconstruction"]))
                 info["vae_reconstruction"] = np.moveaxis(info["vae_reconstruction"][:3], 0, -1)
-#                 print ("vae_reconstruction: ", info["vae_reconstruction"].shape, np.mean(info["vae_reconstruction"]), np.std(info["vae_reconstruction"]))
-                        
-#                 print (vae_reconstruction)
 
         if ((not self._eval) and (len(self._buffer) >= self._hist_size) and 
 #             (np.random.rand() > (1/self.step_skip)) and 
@@ -165,6 +159,7 @@ class VAEWrapper(gym.Env):
         # Reconstruction + KL divergence losses summed over all elements and batch
     def loss_fn(self, recon_x, x, mu, logvar):
 #         BCE = F.binary_cross_entropy(recon_x, x.view(-1, self.observation_space_old.low.size), reduction='sum')
+
         BCE = F.mse_loss(recon_x, x)
 #         BCE = 0
         # see Appendix B from VAE paper:

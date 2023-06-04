@@ -209,6 +209,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         
         if ("vae_reconstruction" in path[0]['env_infos'][0]):
             video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
+            video = video.transpose(0,1,3,4,2)
             display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
 
 

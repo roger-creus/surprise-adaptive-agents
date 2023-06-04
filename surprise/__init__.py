@@ -59,3 +59,10 @@ gym_register(
     id='GDY-BiomesPartiallyObservedVector-v0',
     entry_point='surprise.envs.maze.biomes:BiomesPartiallyObservedVector'
 )
+
+wrapper = GymWrapperFactory()
+wrapper.build_gym_from_yaml('_BiomesFullyObservedPixel', "/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/biomes_pixel.yaml") #f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
+gym_register(
+    id='GDY-BiomesFullyObservedPixel-v0',
+    entry_point='surprise.envs.maze.biomes:BiomesFullyObservedPixel'
+)
