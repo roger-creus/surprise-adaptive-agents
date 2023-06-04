@@ -90,3 +90,25 @@ class BiomesFullyObservedPixel(ObservationWrapper):
         obs = cv2.resize(obs, dsize=(64, 64), interpolation=cv2.INTER_AREA)
         obs = obs.astype(float) / 255.0
         return obs
+
+class BiomesPartiallyObservedPixel(ObservationWrapper):
+
+    def __init__(self, **kwargs):
+        env = gym.make("GDY-_BiomesPartiallyObservedPixel-v0",
+                       level=0,
+                       player_observer_type=gd.ObserverType.SPRITE_2D,
+                       global_observer_type=gd.ObserverType.SPRITE_2D,
+                       **kwargs)
+        super(BiomesPartiallyObservedPixel, self).__init__(env)
+
+        self.observation_space = Box(0, 1, shape=(64, 64))
+        
+    def step(self, action):
+        obs, rew, done, info = super().step(action)
+        return obs, rew, done, {}
+
+    def observation(self, obs):
+        obs = obs.transpose(1,2,0)
+        obs = cv2.resize(obs, dsize=(64, 64), interpolation=cv2.INTER_AREA)
+        obs = obs.astype(float) / 255.0
+        return obs
