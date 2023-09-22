@@ -64,6 +64,8 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 range(self._start_epoch, self.num_epochs),
                 save_itrs=True,
         ):
+            self.eval_data_collector._env.set_alpha_one_mean(self.expl_data_collector._env.alpha_one_mean)
+            self.eval_data_collector._env.set_alpha_zero_mean(self.expl_data_collector._env.alpha_zero_mean)
             cl = logger.get_comet_logger()
             if (cl is not None):
                 cl.set_step(step=epoch)
@@ -210,7 +212,6 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         if ("vae_reconstruction" in path[0]['env_infos'][0]):
             video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
             display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
-
 
         video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
         display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
