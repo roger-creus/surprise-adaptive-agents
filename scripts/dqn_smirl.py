@@ -85,8 +85,8 @@ def get_env(variant):
     else: 
         import gym
         try:
-            env = gym.make(variant['env'], **variant["env_kwargs"])
-        except KeyError:
+            env = gym.make(variant["env"], **variant["env_kwargs"])
+        except Exception:
             print("Environment kwargs are not valid. Ignoring...")
             env = gym.make(variant['env'])
 
