@@ -64,8 +64,10 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 range(self._start_epoch, self.num_epochs),
                 save_itrs=True,
         ):
-            self.eval_data_collector._env.set_alpha_one_mean(self.expl_data_collector._env.alpha_one_mean)
-            self.eval_data_collector._env.set_alpha_zero_mean(self.expl_data_collector._env.alpha_zero_mean)
+            from surprise.wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
+            if isinstance(self.eval_data_collector._env, BaseSurpriseAdaptBanditWrapper):
+                self.eval_data_collector._env.set_alpha_one_mean(self.expl_data_collector._env.alpha_one_mean)
+                self.eval_data_collector._env.set_alpha_zero_mean(self.expl_data_collector._env.alpha_zero_mean)
             cl = logger.get_comet_logger()
             if (cl is not None):
                 cl.set_step(step=epoch)

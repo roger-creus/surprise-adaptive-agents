@@ -1,0 +1,65 @@
+{
+    "algorithm":"SAC",
+    "version":"normal",
+    "layer_size":256,
+    "network_args": 
+    {
+    	"type": "cnn",
+        "cnn_keys": ["observation"],
+        "ident_keys": [],
+        "mlp_keys": ["theta"],
+        "mlp_kwargs": {
+          "hidden_sizes": [64],
+          "output_size":  32
+        },
+        "cnn_kwargs": {
+                "output_size": 128,
+                "n_channels": [16],
+                "kernel_sizes": [3],
+                "strides": [1],
+                "paddings": [0]
+                  }
+    },
+    "replay_buffer_size": 50000,
+    "algorithm_kwargs": {
+		"render_agent_pos": false,
+        "log_episode_alphas" : true,
+        "num_epochs":9000,
+        "num_eval_steps_per_epoch":1000,
+        "num_trains_per_train_loop":1000,
+        "num_expl_steps_per_train_loop":1000,
+        "min_num_steps_before_training":1000,
+        "max_path_length":500,
+        "batch_size":256
+    },
+    "trainer_kwargs": {
+        "discount":0.99,
+        "learning_rate":3E-4
+    },
+    "render_kwargs":{
+        "render": true
+    },
+    "wrappers": [
+		{"add_alpha" : true},
+    	{"soft_reset_wrapper": {"max_time": 500}},
+		{"channel_first_observation_wrapper": {}},
+		{"dict_obs_wrapper": {
+    		"obs_key": "observation"
+    		}
+    	},
+		{"rendering_observation": 
+		{
+		}},
+        { "surprise_adapt_bandit_wrapper": {
+			"buffer_type": "Bernoulli",
+			"obs_out_label": "theta",
+			"obs_label": "observation"
+        }},
+        {"flatten_dict_observation":  true}
+    ],
+    "log_comet": false,
+    "env": "MinAtar/Breakout-v1",
+	"env_kwargs": {
+        "max_steps": 500
+    }
+}

@@ -34,9 +34,13 @@ class MixedIdentMlpCNN(nn.Module):
 
         mlp_input_dim = sum(mlp_dims)
         self.cnn = CNN(cnn_width, cnn_height, cnn_channels, **cnn_kwargs)
-        self.mlp = Mlp(input_size=mlp_input_dim, **mlp_kwargs)
+        if len(mlp_dims) > 0:
+            self.mlp = Mlp(input_size=mlp_input_dim, **mlp_kwargs)
+        else:
+            self.mlp = nn.Identity()
 
-        self.fc = nn.Linear(cnn_kwargs['output_size'] + mlp_kwargs['output_size'], action_dim)
+        insize = cnn_kwargs['output_size'] + (mlp_kwargs.get('output_size') or 0)
+        self.fc = nn.Linear(insize, action_dim)
 
     def forward(self, input):
         input = self._dictify_input(input)
@@ -54,7 +58,8 @@ class MixedIdentMlpCNN(nn.Module):
             else:
                 print(f"Skipping input with key: {key}")
         conv_input = torch.cat(conv_input, dim=-1)
-        mlp_input = torch.cat(mlp_input, dim=-1)
+        if len(mlp_input) > 0:
+            mlp_input = torch.cat(mlp_input, dim=-1)
 
         if len(ident_input) > 0:
             ident_output = torch.cat(ident_input, dim=-1)

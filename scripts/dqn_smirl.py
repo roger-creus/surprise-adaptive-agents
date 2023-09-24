@@ -358,11 +358,12 @@ def experiment(doodad_config, variant):
         expl_policy = RandomPolicy(expl_env.action_space)
     else:
         eval_policy = ArgmaxDiscretePolicy(qf)
-        if "prob_random_action" in variant:
+        if "exploration_kwargs" in variant.keys():
             expl_policy = PolicyWrappedWithExplorationStrategy(
-                EpsilonGreedy(expl_env.action_space, prob_random_action=variant["prob_random_action"],
-                              prob_end=variant["prob_end"],
-                              steps=variant["steps"]),
+                EpsilonGreedy(
+                    expl_env.action_space,
+                    **variant["exploration_kwargs"]
+                ),
                 eval_policy,
             )
         else:

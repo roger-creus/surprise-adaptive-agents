@@ -45,3 +45,17 @@ gym_register(
     id='GDY-ButterfliesEnv-v0',
     entry_point='surprise.envs.maze.butterflies:ButterfliesEnv'
 )
+
+
+for game in ["asterix", "breakout", "freeway", "seaquest", "space_invaders"]:
+    name = game.title().replace('_', '')   
+    gym_register(                   
+        id="MinAtar/{}-v0".format(name),          
+        entry_point="surprise.envs.minatar:MinAtarEnv", 
+        kwargs=dict(game=game, display_time=50, use_minimal_action_set=False)
+    )        
+    gym_register(                   
+        id="MinAtar/{}-v1".format(name),          
+        entry_point="surprise.envs.minatar:MinAtarEnv", 
+        kwargs=dict(game=game, display_time=50, use_minimal_action_set=True)
+    )  

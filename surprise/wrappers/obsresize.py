@@ -1,6 +1,6 @@
 import numpy as np
 import gym
-from gym.spaces import Box
+from gym.spaces import Box, Dict
 import pdb
 import cv2
 import util.class_util as classu
@@ -120,7 +120,7 @@ class DictObservationWrapper(gym.Wrapper):
         # Gym spaces
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
-        self.observation_space = env.observation_space
+        self.observation_space = Dict({self._obs_key: env.observation_space})
 
 
     def step(self, action):
