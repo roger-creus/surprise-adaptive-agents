@@ -1,6 +1,6 @@
 from collections import deque
 
-from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
+from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm, TorchOnlineRLAlgorithm
 # from torch.utils.tensorboard import SummaryWriter
 # from railrl.core import logger
 from collections import OrderedDict
@@ -127,7 +127,148 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 
             self._end_epoch(epoch)
 
+from rlkit.samplers.data_collector import (
+    PathCollector,
+    StepCollector,
+)
+class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
 
+    def __init__(self,
+                trainer,
+                exploration_env,
+                evaluation_env,
+                exploration_data_collector: StepCollector,
+                evaluation_data_collector: PathCollector,
+                replay_buffer: ReplayBuffer,
+                batch_size,
+                max_path_length,
+                num_epochs,
+                num_eval_steps_per_epoch,
+                num_expl_steps_per_train_loop,
+                num_trains_per_train_loop,
+                num_train_loops_per_epoch=1,
+                min_num_steps_before_training=0,
+                render_agent_pos=False, log_episode_alphas=False, max_steps = 200, render=True):
+        super().__init__(
+            trainer,
+            exploration_env,
+            evaluation_env,
+            exploration_data_collector,
+            evaluation_data_collector,
+            replay_buffer,
+        )
+        self.batch_size = batch_size
+        self.max_path_length = max_path_length
+        self.num_epochs = num_epochs
+        self.num_eval_steps_per_epoch = num_eval_steps_per_epoch
+        self.num_trains_per_train_loop = num_trains_per_train_loop
+        self.num_train_loops_per_epoch = num_train_loops_per_epoch
+        self.num_expl_steps_per_train_loop = num_expl_steps_per_train_loop
+        self.min_num_steps_before_training = min_num_steps_before_training
+
+        self.render = render
+        self.render_agent_pos = render_agent_pos
+        self.log_episode_alphas = log_episode_alphas
+        
+        self.episode_length = max_steps
+        
+    def _train(self):
+        self.training_mode(False)
+        if self.min_num_steps_before_training > 0:
+            self.expl_data_collector.collect_new_steps(
+                self.max_path_length,
+                self.min_num_steps_before_training,
+                discard_incomplete_paths=False,
+            )
+            init_expl_paths = self.expl_data_collector.get_epoch_paths()
+            self.replay_buffer.add_paths(init_expl_paths)
+            self.expl_data_collector.end_epoch(-1)
+
+            gt.stamp('initial exploration', unique=True)
+
+        if self.render_agent_pos:
+            eval_agent_pos_history = deque(maxlen=100000)
+            train_agent_pos_history = deque(maxlen=100000)
+            
+        if self.log_episode_alphas:
+            train_episode_alphas = deque(maxlen=100000)
+            
+        for epoch in gt.timed_for(
+                range(self._start_epoch, self.num_epochs),
+                save_itrs=True,
+        ):
+            from surprise.wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
+            if isinstance(self.eval_data_collector._env, BaseSurpriseAdaptBanditWrapper):
+                self.eval_data_collector._env.set_alpha_one_mean(self.expl_data_collector._env.alpha_one_mean)
+                self.eval_data_collector._env.set_alpha_zero_mean(self.expl_data_collector._env.alpha_zero_mean)
+            cl = logger.get_comet_logger()
+            if (cl is not None):
+                cl.set_step(step=epoch)
+
+            self.eval_data_collector.collect_new_paths(
+                self.max_path_length,
+                self.num_eval_steps_per_epoch,
+                discard_incomplete_paths=True,
+            )
+            gt.stamp('evaluation sampling')
+
+            for _ in range(self.num_train_loops_per_epoch):
+                for _ in range(self.num_expl_steps_per_train_loop):
+                    self.expl_data_collector.collect_new_steps(
+                        self.max_path_length,
+                        1,  # num steps
+                        discard_incomplete_paths=False,
+                    )
+                    gt.stamp('exploration sampling', unique=False)
+
+                self.training_mode(True)
+                for _ in range(self.num_trains_per_train_loop):
+                    train_data = self.replay_buffer.random_batch(
+                        self.batch_size)
+                    self.trainer.train(train_data)
+                gt.stamp('training', unique=False)
+                self.training_mode(False)
+
+            new_expl_paths = self.expl_data_collector.get_epoch_paths()
+            self.replay_buffer.add_paths(new_expl_paths)
+            gt.stamp('data storing', unique=False)
+            
+            if ((epoch % 25) == 0) and self.render:
+                print("Rendering video")
+                self.render_video("eval_video_", counter=epoch)
+
+                if self.render_agent_pos and len(eval_agent_pos_history) > 0 :
+                    self.render_heatmap(eval_agent_pos_history, epoch, "eval_heatmap_")
+                    self.render_heatmap(train_agent_pos_history, epoch, "train_heatmap_")
+                eval_agent_pos_history = deque(maxlen=100000)
+                train_agent_pos_history = deque(maxlen=100000)
+                
+                if self.log_episode_alphas and len(train_episode_alphas) > 0:
+                    self.log_alphas(train_episode_alphas, epoch, "train_alphas_")
+                train_episode_alphas = deque(maxlen=100000)
+
+            if self.render_agent_pos or self.log_episode_alphas:
+                eval_epoch_paths = self.eval_data_collector.get_epoch_paths()
+                train_epoch_paths = self.expl_data_collector.get_epoch_paths()
+
+            if self.render_agent_pos:
+                eval_agent_pos_history.extend([y['agent_pos'] for x in eval_epoch_paths
+                                               for y in x['env_infos']])
+                train_agent_pos_history.extend([y['agent_pos'] for x in train_epoch_paths
+                                               for y in x['env_infos']])
+                
+            if self.log_episode_alphas:
+                train_episode_alphas.extend([y['alpha'] for x in train_epoch_paths for y in x['env_infos']])
+                
+            self._end_epoch(epoch)
+
+    def to(self, device):
+        for net in self.trainer.networks:
+            net.to(device)
+
+    def training_mode(self, mode):
+        for net in self.trainer.networks:
+            net.train(mode)
 
 
 #         algo_log = OrderedDict()

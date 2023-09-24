@@ -307,8 +307,9 @@ def experiment(doodad_config, variant):
     from rlkit.torch.dqn.dqn import DQNTrainer
     from rlkit.data_management.env_replay_buffer import EnvReplayBuffer
     from rlkit.samplers.data_collector import MdpPathCollector
+    from rlkit.samplers.data_collector.step_collector import MdpStepCollector
     from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
-    from surprise.utils.rendering_algorithm import TorchBatchRLRenderAlgorithm
+    from surprise.utils.rendering_algorithm import TorchBatchRLRenderAlgorithm, TorchOnlineRLRenderAlgorithm
     from surprise.envs.tetris.tetris import TetrisEnv
     from surprise.wrappers.obsresize import ResizeObservationWrapper, RenderingObservationWrapper, SoftResetWrapper
     import pdb
@@ -371,15 +372,6 @@ def experiment(doodad_config, variant):
                 EpsilonGreedy(expl_env.action_space, prob_random_action=0.8, prob_end=0.05),
                 eval_policy,
             )
-    eval_path_collector = MdpPathCollector(
-        eval_env,
-        eval_policy,
-        render_kwargs=variant['render_kwargs']
-    )
-    expl_path_collector = MdpPathCollector(
-        expl_env,
-        expl_policy,
-    )
     trainer = DQNTrainer(
         qf=qf,
         target_qf=target_qf,
@@ -391,6 +383,36 @@ def experiment(doodad_config, variant):
         expl_env,
     )
     
+
+    online = variant.get("online")
+    if online is not None and online:
+        eval_step_collector = MdpPathCollector(
+            eval_env, eval_policy, render_kwargs=variant["render_kwargs"]
+        )
+        expl_step_collector = MdpStepCollector(
+            expl_env,
+            expl_policy,
+        )
+        algorithm = TorchOnlineRLRenderAlgorithm(
+        trainer=trainer,
+        exploration_env=expl_env,
+        evaluation_env=eval_env,
+        exploration_data_collector=expl_step_collector,
+        evaluation_data_collector=eval_step_collector,
+        replay_buffer=replay_buffer,
+        **{
+            **variant["algorithm_kwargs"],
+            **{"max_steps": variant["env_kwargs"]["max_steps"]},
+        },
+        )
+    else:
+        eval_path_collector = MdpPathCollector(
+            eval_env, eval_policy, render_kwargs=variant["render_kwargs"]
+        )
+        expl_path_collector = MdpPathCollector(
+            expl_env,
+            expl_policy,
+        )
     algorithm = TorchBatchRLRenderAlgorithm(
         trainer=trainer,
         exploration_env=expl_env,
