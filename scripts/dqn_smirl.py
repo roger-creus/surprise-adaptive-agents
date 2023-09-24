@@ -413,13 +413,13 @@ def experiment(doodad_config, variant):
             expl_env,
             expl_policy,
         )
-    algorithm = TorchBatchRLRenderAlgorithm(
-        trainer=trainer,
-        exploration_env=expl_env,
-        evaluation_env=eval_env,
-        exploration_data_collector=expl_path_collector,
-        evaluation_data_collector=eval_path_collector,
-        replay_buffer=replay_buffer,
+        algorithm = TorchBatchRLRenderAlgorithm(
+            trainer=trainer,
+            exploration_env=expl_env,
+            evaluation_env=eval_env,
+            exploration_data_collector=expl_path_collector,
+            evaluation_data_collector=eval_path_collector,
+            replay_buffer=replay_buffer,
         **{**variant['algorithm_kwargs'], **{"max_steps": variant["env_kwargs"]["max_steps"]}}
     )
     algorithm.to(ptu.device)
