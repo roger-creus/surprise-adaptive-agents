@@ -33,8 +33,9 @@ def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
 
 class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
-    def __init__(self, render_agent_pos=False, log_episode_alphas=False, max_steps = 200, *args, **kwargs):
+    def __init__(self, render_agent_pos=False, log_episode_alphas=False, max_steps = 200, render=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.render = render
         self.render_agent_pos = render_agent_pos
         self.log_episode_alphas = log_episode_alphas
         
@@ -97,7 +98,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 gt.stamp('training', unique=False)
                 self.training_mode(False)
             
-            if ((epoch % 25) == 0):
+            if ((epoch % 25) == 0) and self.render:
                 print("Rendering video")
                 self.render_video("eval_video_", counter=epoch)
 
