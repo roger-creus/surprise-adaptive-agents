@@ -83,6 +83,82 @@ class MixedIdentMlpCNN(nn.Module):
             dict_input[key] = input[:, :flat_dim]
             input = input[:, flat_dim:]
         return dict_input
+    
+
+
+import torch
+import torch.nn as nn
+import numpy as np
+from typing import Any, Callable, Dict, Optional, Sequence, Tuple, Type, Union
+
+
+def layer_init(
+    layer: nn.Module, std: float = np.sqrt(2), bias_const: float = 0.0
+) -> nn.Module:
+    """
+    Code from: https://github.com/thu-ml/tianshou/blob/master/examples/atari/atari_network.py
+    """
+    torch.nn.init.orthogonal_(layer.weight, std)
+    torch.nn.init.constant_(layer.bias, bias_const)
+    return layer
+
+
+class MinAtarDQN(nn.Module):
+    """
+    DQN-style network for MinAtar environment
+
+    Reference: MinAtar: An Atari-Inspired Testbed for Thorough and Reproducible Reinforcement Learning Experiments
+    """
+
+    def __init__(
+        self,
+        c: int,
+        h: int,
+        w: int,
+        action_shape: Sequence[int],
+        device: Union[str, int, torch.device] = "cpu",
+        features_only: bool = False,
+        output_dim: Optional[int] = None,
+        layer_init: Callable[[nn.Module], nn.Module] = lambda x: x,
+    ) -> None:
+        super().__init__()
+        self.device = device
+        self.c = c
+        self.h = h
+        self.w = w
+        self.net = nn.Sequential(
+            layer_init(nn.Conv2d(c, 16, kernel_size=3, stride=1)),
+            nn.ReLU(inplace=True),
+            nn.Flatten(),
+        )
+        with torch.no_grad():
+            self.output_dim = np.prod(self.net(torch.zeros(1, c, h, w)).shape[1:])
+        if not features_only:
+            self.net = nn.Sequential(
+                self.net,
+                layer_init(nn.Linear(self.output_dim, 128)),
+                nn.ReLU(inplace=True),
+                layer_init(nn.Linear(128, np.prod(action_shape))),
+            )
+            self.output_dim = np.prod(action_shape)
+        elif output_dim is not None:
+            self.net = nn.Sequential(
+                self.net,
+                layer_init(nn.Linear(self.output_dim, output_dim)),
+                nn.ReLU(inplace=True),
+            )
+            self.output_dim = output_dim
+
+    def forward(
+        self,
+        obs: Union[np.ndarray, torch.Tensor],
+        state: Optional[Any] = None,
+        info: Dict[str, Any] = {},
+    ) -> Tuple[torch.Tensor, Any]:
+        r"""Mapping: s -> Q(s, \*)."""
+        batch_sz = obs.shape[0]
+        obs = torch.as_tensor(obs, device=self.device, dtype=torch.float32).view(batch_sz, self.c, self.h, self.w)
+        return self.net(obs)
 
 
 
