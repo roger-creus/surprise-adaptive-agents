@@ -126,6 +126,81 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 train_episode_alphas.extend([y['alpha'] for x in train_epoch_paths for y in x['env_infos']])
                 
             self._end_epoch(epoch)
+    def log_alphas(self, agent_alpha_history, counter, tag, **kwargs):
+        import numpy as np
+
+        alphas = np.array(agent_alpha_history).reshape(-1, self.episode_length)
+        alphas = alphas[np.random.choice(alphas.shape[0], 5, replace=False)]
+        mean_alphas = np.mean(alphas, axis=0)
+        std_alphas = np.std(alphas, axis=0)
+        x_axis = np.arange(self.episode_length)
+        
+        cl = logger.get_comet_logger()
+        logdir = logger.get_snapshot_dir()  + tag + str(counter) + ".png"
+        
+        plt.figure(num=1, clear=True)
+        plt.plot(x_axis, mean_alphas)
+        plt.fill_between(x_axis, mean_alphas - std_alphas, mean_alphas + std_alphas, alpha=0.5)
+        plt.savefig(logdir)
+        
+        if (cl is not None):
+            cl.log_image(image_data=logdir, overwrite=True, image_format="png")
+            
+        plt.close()
+        plt.clf()
+
+    def render_heatmap(self, agent_pos_history, counter, tag):
+        import numpy as np
+        _, (grid_width, grid_height) = agent_pos_history[0]
+        heat_map = np.zeros((grid_height, grid_width))
+        for (col, row), _ in agent_pos_history:
+            heat_map[row, col] += 1
+
+        cl = logger.get_comet_logger()
+        logdir = logger.get_snapshot_dir()  + tag + str(counter) + ".png"
+        fig = plt.figure(num=1, clear=True, figsize=(grid_width * 4, grid_height * 4))
+        ax = fig.add_subplot(111)
+        ax.imshow(heat_map, interpolation='nearest')
+        fig.savefig(logdir)
+
+        if (cl is not None):
+            cl.log_image(image_data=logdir, overwrite=True, image_format="png")
+
+
+    def render_video(self, tag, counter):
+        import numpy as np
+        import pdb
+        
+        path = self.eval_data_collector.collect_new_paths(
+            self.max_path_length,
+            self.num_eval_steps_per_epoch,
+            discard_incomplete_paths=True
+        )
+
+        # plotting the eval alphas for the 2 episodes
+        if self.log_episode_alphas == True:
+            eval_alphas = np.array([y['alpha'] for x in path for y in x['env_infos']]).reshape(-1, self.episode_length)
+            x_axis = np.arange(self.episode_length)
+            
+            cl = logger.get_comet_logger()
+            logdir = logger.get_snapshot_dir()  + "eval_alphas_" + str(counter) + ".png"
+
+            plt.figure()
+            plt.plot(x_axis, eval_alphas[0])
+            plt.plot(x_axis, eval_alphas[1])
+            plt.savefig(logdir)
+
+            if (cl is not None):
+                cl.log_image(image_data=logdir, overwrite=True, image_format="png")
+
+            plt.close()
+        
+        if ("vae_reconstruction" in path[0]['env_infos'][0]):
+            video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
+            display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
+
+        video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
+        display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
 
 from rlkit.samplers.data_collector import (
     PathCollector,
