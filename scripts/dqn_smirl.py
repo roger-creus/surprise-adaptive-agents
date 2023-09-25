@@ -332,6 +332,10 @@ def add_surprise_adapt_bandit(env, variant, ep_length=500, device=0, eval=False)
     if "latent_obs_size" in variant:
         obs_size = variant["latent_obs_size"]
     else:
+        if isinstance(env.observation_space, gym.spaces.Dict):
+            obs_size = env.observation_space['observation'].low.size
+            obs_shape = env.observation_space['observation'].low.shape
+        else:
         obs_size = env.observation_space.low.size
 
     if variant["buffer_type"] == "Bernoulli":
