@@ -223,7 +223,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
                 num_trains_per_train_loop,
                 num_train_loops_per_epoch=1,
                 min_num_steps_before_training=0,
-                render_agent_pos=False, log_episode_alphas=False, max_steps = 200, render=True):
+                render_agent_pos=False, log_episode_alphas=False, max_steps = 200, render=True, set_eval_alpha=False):
         super().__init__(
             trainer,
             exploration_env,
@@ -244,7 +244,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
         self.render = render
         self.render_agent_pos = render_agent_pos
         self.log_episode_alphas = log_episode_alphas
-        
+        self.set_eval_alpha = set_eval_alpha
         self.episode_length = max_steps
         
     def _train(self):
@@ -273,7 +273,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
                 save_itrs=True,
         ):
             from surprise.wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
-            if isinstance(self.eval_data_collector._env, BaseSurpriseAdaptBanditWrapper):
+            if self.set_eval_alpha:
                 self.eval_data_collector._env.set_alpha_one_mean(self.expl_data_collector._env.alpha_one_mean)
                 self.eval_data_collector._env.set_alpha_zero_mean(self.expl_data_collector._env.alpha_zero_mean)
             cl = logger.get_comet_logger()

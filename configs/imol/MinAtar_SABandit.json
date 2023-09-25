@@ -23,6 +23,7 @@
     },
     "replay_buffer_size": 100000,
     "algorithm_kwargs": {
+        "set_eval_alpha": true,
         "render":false,
 		"render_agent_pos": false,
         "log_episode_alphas" : false,
