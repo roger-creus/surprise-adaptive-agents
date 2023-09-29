@@ -113,7 +113,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         obs = self.get_obs(obs)
 
         try:
-            x, y = self._env.agent_pos[0]
+            x, y = self._env.agent_pos
             self.heatmap[x, y] += 1
             info["heatmap"] = self.heatmap.copy()
         except:
