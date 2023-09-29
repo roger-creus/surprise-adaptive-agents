@@ -97,7 +97,18 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    run_name = f"{args.env_id}__{args.exp_name}__{args.seed}__{int(time.time())}"
+    if "Adapt" in args.env_id:
+        env_name = f"{args.env_id}_NoisyRoom_{args.noisy_room}"
+    else:
+        env_name = args.env_id
+    
+    if args.add_true_rew:
+        env_name += "_withExtrinsic"
+    else:
+        env_name += "_noExtrinsic" 
+    
+    run_name = f"ppo_{env_name}_{args.model}_s{args.seed}"
+    
     if args.track:
         import wandb
 
@@ -197,12 +208,10 @@ if __name__ == "__main__":
             rewards[step] = torch.tensor(reward).to(device).view(-1)
             next_obs, next_theta, next_done = torch.Tensor(o_["obs"]).to(device), torch.Tensor(o_["theta"]).to(device), torch.Tensor(done).to(device)
             
-            
             if "surprise" in infos:
                 for i in range(args.num_envs):
                     ep_surprise[i].append(infos["surprise"][i])
                     ep_entropy[i].append(infos["theta_entropy"][i])
-            
         
             if "final_info" in infos:
                 c = 0
@@ -222,7 +231,7 @@ if __name__ == "__main__":
                         ])
                         
                         if update_idx > 100 and "Rooms" in args.env_id and logged_heatmap == False:
-                            log_heatmap(envs.envs[0], infos["heatmap"][0], ep_counter, writer, f"runs/{run_name}")
+                            log_heatmap(envs.envs[c], infos["heatmap"][c], ep_counter, writer, f"runs/{run_name}")
                             logged_heatmap = True
                             update_idx = 0
                     

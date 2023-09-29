@@ -125,7 +125,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     else:
         env_name += "_noExtrinsic" 
     
-    run_name = f"{env_name}_{args.model}_s{args.seed}"
+    run_name = f"dqn_{env_name}_{args.model}_s{args.seed}"
     if args.track:
         import wandb
 
