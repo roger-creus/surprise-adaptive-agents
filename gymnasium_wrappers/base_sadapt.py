@@ -27,6 +27,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         '''
         super().__init__(env)
 
+        self._env = env
         self.buffer = buffer
         theta = self.buffer.get_params()
         

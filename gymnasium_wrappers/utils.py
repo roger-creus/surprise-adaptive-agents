@@ -131,7 +131,7 @@ def make_csv_logger(csv_path):
     return logger_
 
 
-def log_heatmap(env, heatmap, ep_counter, writer):
+def log_heatmap(env, heatmap, ep_counter, writer, save_path):
     cmap = plt.get_cmap('Greens')
     cmap.set_under((0,0,0,0))
     cmap_args = dict(cmap=cmap, vmin=1, vmax=500)
@@ -144,7 +144,7 @@ def log_heatmap(env, heatmap, ep_counter, writer):
     plt.xticks([])
     plt.yticks([])
     plt.colorbar()
-    plt.savefig(f"heatmap_{ep_counter}.png")
+    plt.savefig(f"{save_path}/heatmap_{ep_counter}.png")
     writer.add_figure(f"trajectory/heatmap_{ep_counter}", fig, close=True)
     plt.clf()
     
