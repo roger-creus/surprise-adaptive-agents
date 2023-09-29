@@ -48,8 +48,6 @@ def parse_args():
     # Algorithm specific arguments
     parser.add_argument("--env-id", type=str, default="SurpriseAdaptRooms-v0",
         help="the id of the environment")
-    parser.add_argument("--model", type=str, default="none",
-        help="can be none, smax, smin, sadapt, sadapt-inverse")
     parser.add_argument("--total-timesteps", type=int, default=10000000,
         help="total timesteps of the experiments")
     parser.add_argument("--learning-rate", type=float, default=1e-4,
@@ -82,6 +80,8 @@ def parse_args():
         help="can be none, smax, smin, sadapt, sadapt-inverse")
     
     # OBJECTIVE PARAMS
+    parser.add_argument("--model", type=str, default="none",
+        help="can be none, smax, smin, sadapt, sadapt-inverse")
     parser.add_argument("--buffer-type", type=str, default="gaussian",
         help="can be gaussian, or multinoulli")
     parser.add_argument("--surprise_window_len", type=int, default=10)

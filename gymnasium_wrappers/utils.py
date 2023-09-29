@@ -24,6 +24,7 @@ def make_env(args):
             
             env = gym.make(args.env_id, render_mode='rgb_array', max_steps=500, noisy_room=args.noisy_room)
             env = ImgObsWrapper(env)
+            env = gym.wrappers.NormalizeObservation(env)
             
         elif "tetris" in args.env_id:
             from surprise.envs.tetris.tetris import TetrisEnv
@@ -32,6 +33,7 @@ def make_env(args):
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = ImgObsWrapper(env)
+            env = gym.wrappers.NormalizeObservation(env)
             
         elif "griddly" in args.env_id:
             register_griddly_envs()

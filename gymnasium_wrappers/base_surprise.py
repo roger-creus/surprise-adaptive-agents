@@ -52,7 +52,7 @@ class BaseSurpriseWrapper(gym.Env):
 
 
     def step(self, action):
-        obs, env_rew, envtrunc, envdone, info = self._env.step(action)
+        obs, env_rew, envdone, envtrunc, info = self._env.step(action)
         info['task_reward'] = env_rew
 
         surprise = -self.buffer.logprob(obs)
@@ -88,7 +88,7 @@ class BaseSurpriseWrapper(gym.Env):
             pass
         
         self.num_steps += 1
-        return obs, rew, envtrunc, envdone, info
+        return obs, rew, envdone, envtrunc, info
 
     def get_obs(self, obs):
         '''

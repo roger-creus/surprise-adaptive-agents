@@ -64,7 +64,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         self.surprise_window = deque()
 
     def step(self, action):
-        obs, env_rew, envtrunc, envdone, info = self._env.step(action)
+        obs, env_rew, envdone, envtrunc, info = self._env.step(action)
         info['task_reward'] = env_rew
         info["alpha"] = self.alpha_t
 
@@ -122,7 +122,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
 
         self.surprise_counter += 1
         self.num_steps += 1
-        return obs, rew, envtrunc, envdone, info
+        return obs, rew, envdone, envtrunc, info
 
     def get_obs(self, obs):
         theta = self.buffer.get_params()
