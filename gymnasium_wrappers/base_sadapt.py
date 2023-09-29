@@ -27,6 +27,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         '''
         super().__init__(env)
 
+        self._env = env
         self.buffer = buffer
         theta = self.buffer.get_params()
         
@@ -113,7 +114,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         obs = self.get_obs(obs)
 
         try:
-            x, y = self._env.agent_pos[0]
+            x, y = self._env.agent_pos
             self.heatmap[x, y] += 1
             info["heatmap"] = self.heatmap.copy()
         except:

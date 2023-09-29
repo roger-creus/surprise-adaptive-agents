@@ -78,7 +78,7 @@ def parse_args():
         help="the frequency of training")
     
     # ENV PARAMS
-    parser.add_argument("--noisy_room", type=int, default=2,
+    parser.add_argument("--noisy-room", type=int, default=2,
         help="can be none, smax, smin, sadapt, sadapt-inverse")
     
     # OBJECTIVE PARAMS
@@ -114,7 +114,18 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         
         
     args = parse_args()
-    run_name = f"{args.env_id}_NoisyRoom_{args.noisy_room}_{args.model}_s{args.seed}"
+    
+    if "Adapt" in args.env_id:
+        env_name = f"{args.env_id}_NoisyRoom_{args.noisy_room}"
+    else:
+        env_name = args.env_id
+    
+    if args.add_true_rew:
+        env_name += "_withExtrinsic"
+    else:
+        env_name += "_noExtrinsic" 
+    
+    run_name = f"{env_name}_{args.model}_s{args.seed}"
     if args.track:
         import wandb
 
@@ -235,7 +246,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 ])
                 
                 if ep_counter % 500 == 0 and "Rooms" in args.env_id:
-                    log_heatmap(envs.envs[0], infos["heatmap"][0], ep_counter, writer)
+                    log_heatmap(envs.envs[0], infos["heatmap"][0], ep_counter, writer, f"runs/{run_name}")
                 
                 ep_surprise.clear()
                 ep_entropy.clear()
