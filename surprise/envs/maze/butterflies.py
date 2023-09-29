@@ -1,7 +1,6 @@
-import gym
-
-from gym import ObservationWrapper
-from gym.spaces import Box
+import gymnasium as gym
+from gymnasium import ObservationWrapper
+from gymnasium.spaces import Box
 import numpy as np
 from griddly import gd
 from IPython import embed

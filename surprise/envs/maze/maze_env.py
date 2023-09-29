@@ -1,7 +1,6 @@
-import gym
+import gymnasium as gym
 
 class MazeEnvFullyObserved(gym.Env):
-    #metadata = {'render.modes': ['human']}
 
     def __init__(self):
         super(MazeEnvFullyObserved, self).__init__()

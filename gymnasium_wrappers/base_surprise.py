@@ -10,7 +10,7 @@ class BaseSurpriseWrapper(gym.Env):
                  buffer, 
                  add_true_rew=False,
                  minimize=True,
-                 int_rew_scale=None,
+                 int_rew_scale=1.0,
                  ext_only=False,
                 ):
         '''
@@ -43,7 +43,11 @@ class BaseSurpriseWrapper(gym.Env):
             "theta": Box(-np.inf, np.inf, shape=(np.prod(theta.shape) + 1,))
         })
 
-        self.heatmap = np.zeros((env.width, env.height))
+        try:
+            self.heatmap = np.zeros((env.width, env.height))
+        except:
+            self.heatmap = None
+            
         print(self.observation_space)
 
 
@@ -51,10 +55,7 @@ class BaseSurpriseWrapper(gym.Env):
         obs, env_rew, envtrunc, envdone, info = self._env.step(action)
         info['task_reward'] = env_rew
 
-        # Get wrapper outputs
         surprise = -self.buffer.logprob(obs)
-        
-        # For numerical stability, clip stds to not be 0
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         
@@ -79,9 +80,12 @@ class BaseSurpriseWrapper(gym.Env):
         info['surprise'] = surprise
         info["theta_entropy"] = self.buffer.entropy()
         
-        x, y = info["agent_pos"][0]
-        self.heatmap[x, y] += 1
-        info["heatmap"] = self.heatmap.copy()
+        try:
+            x, y = self._env.agent_pos
+            self.heatmap[x, y] += 1
+            info["heatmap"] = self.heatmap.copy()
+        except:
+            pass
         
         self.num_steps += 1
         return obs, rew, envtrunc, envdone, info
@@ -103,8 +107,14 @@ class BaseSurpriseWrapper(gym.Env):
         self.buffer.reset()
         self.num_steps = 0
         obs = self.get_obs(obs)
-        info["heatmap"] = self.heatmap.copy()
-        self.heatmap = np.zeros((self._env.width, self._env.height))
+        
+        if self.heatmap is not None:
+            info["heatmap"] = self.heatmap.copy()
+        try:
+            self.heatmap = np.zeros((self._env.width, self._env.height))
+        except:
+            self.heatmap = None
+            
         return obs, info
 
     def render(self, **kwargs):

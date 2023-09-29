@@ -1,6 +1,6 @@
 import os
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -191,7 +191,7 @@ class TetrisEnv(gym.Env):
         if self._render:
             infos["rendering"] = self.render(save=False, mode='rgb_array')
 #             print (infos["rendering"].shape)
-        return self.get_obs(), r, self.done, infos
+        return self.get_obs(), r, self.done, self.done, infos
 
     def get_reward(self, obs):
         if self.done:
@@ -213,13 +213,13 @@ class TetrisEnv(gym.Env):
         actionSpace = self.get_actionSpace()
         return actionSpace[np.random.randint(len(actionSpace))]
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
         self.chooseNextBlock()
         self.grid = np.zeros((self.height, self.width))
         self.done = False
         self.time = 0
         self.img_ctr = 0
-        return self.get_obs()
+        return self.get_obs(), {}
 
 '''
 env = TetrisEnv()

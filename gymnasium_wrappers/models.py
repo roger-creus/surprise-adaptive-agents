@@ -4,7 +4,43 @@ import numpy as np
 import gymnasium as gym
 
 
-# ALGO LOGIC: initialize agent here:
+class TetrisQNetwork(nn.Module):
+    def __init__(self, env, use_theta=False):
+        super().__init__()
+        n_inputs = env.single_observation_space["obs"].shape[-1]
+        policy_inputs = 84
+        
+        self.network = nn.Sequential(
+            nn.Linear(n_inputs, 120),
+            nn.ReLU(),
+            nn.Linear(120, 84),
+            nn.ReLU(),
+        )
+        
+        if use_theta:
+            self.theta_fc = nn.Sequential(
+                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
+                nn.ReLU(),
+                nn.Linear(120, 84),
+                nn.ReLU(),
+            )
+            policy_inputs += 84
+            
+        self.q_net = nn.Linear(policy_inputs, env.single_action_space.n)
+        self.use_theta = use_theta
+
+    def forward(self, x):
+        x_ = x["obs"]
+        y_ = x["theta"]
+        obs_features = self.network(x_.float())
+        if self.use_theta:
+            theta_features = self.theta_fc(y_.float())
+            x = torch.cat([obs_features, theta_features], dim=1)
+        else:
+            x = obs_features
+
+        return self.q_net(x)
+
 class MinigridQNetwork(nn.Module):
     def __init__(self, env, use_theta=False):
         super().__init__()
@@ -22,9 +58,9 @@ class MinigridQNetwork(nn.Module):
         
         if use_theta:
             self.theta_fc = nn.Sequential(
-                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 64),
+                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
                 nn.ReLU(),
-                nn.Linear(64, 64),
+                nn.Linear(120, 84),
                 nn.ReLU(),
             )
             
@@ -33,7 +69,7 @@ class MinigridQNetwork(nn.Module):
             n_flatten = self.network(torch.as_tensor(s_).float().permute(0,3,1,2)).shape[1]
 
         if use_theta:
-            n_flatten += 64
+            n_flatten += 84
 
         self.linear = nn.Sequential(
             nn.Linear(n_flatten, 512), 

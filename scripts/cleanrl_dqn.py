@@ -50,8 +50,6 @@ def parse_args():
         help="the id of the environment")
     parser.add_argument("--model", type=str, default="none",
         help="can be none, smax, smin, sadapt, sadapt-inverse")
-    parser.add_argument("--noisy_room", type=int, default=2,
-        help="can be none, smax, smin, sadapt, sadapt-inverse")
     parser.add_argument("--total-timesteps", type=int, default=10000000,
         help="total timesteps of the experiments")
     parser.add_argument("--learning-rate", type=float, default=1e-4,
@@ -78,8 +76,23 @@ def parse_args():
         help="timestep to start learning")
     parser.add_argument("--train-frequency", type=int, default=4,
         help="the frequency of training")
+    
+    # ENV PARAMS
+    parser.add_argument("--noisy_room", type=int, default=2,
+        help="can be none, smax, smin, sadapt, sadapt-inverse")
+    
+    # OBJECTIVE PARAMS
+    parser.add_argument("--buffer-type", type=str, default="gaussian",
+        help="can be gaussian, or multinoulli")
+    parser.add_argument("--surprise_window_len", type=int, default=10)
+    parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
+    parser.add_argument("--add-true-rew", type=bool, default=False)
+    
     args = parser.parse_args()
-    # fmt: on
+    
+    if args.env_id == "tetris":
+        assert args.buffer_type == "bernoulli", "tetris only supports bernoulli buffer"
+    
     assert args.num_envs == 1, "vectorized envs are not supported at the moment"
 
     return args
@@ -99,12 +112,6 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 """
         )
         
-    # Surprise Adapt Rooms
-    from gymnasium.envs.registration import register as gym_register
-    gym_register(
-        id='SurpriseAdaptRooms-v0',
-        entry_point='surprise.envs.minigrid.envs.surprise_adapt_rooms:SurpriseAdaptRoomsEnv'
-    )
         
     args = parse_args()
     run_name = f"{args.env_id}_NoisyRoom_{args.noisy_room}_{args.model}_s{args.seed}"
@@ -136,14 +143,22 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
     # env setup
     envs = gym.vector.SyncVectorEnv(
-        [make_env(args.env_id, args.seed + i, args.model, args.noisy_room) for i in range(args.num_envs)]
+        [make_env(args) for i in range(args.num_envs)]
     )
     assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
 
     use_theta = args.model in ["smax", "smin", "sadapt", "sadapt-inverse"]
-    q_network = MinigridQNetwork(envs, use_theta=use_theta).to(device)
+    
+    if "Rooms" in args.env_id:
+        net = MinigridQNetwork
+    elif args.env_id == "tetris":
+        net = TetrisQNetwork
+    else:
+        raise NotImplementedError
+    
+    q_network = net(envs, use_theta=use_theta).to(device)
     optimizer = optim.Adam(q_network.parameters(), lr=args.learning_rate)
-    target_network = MinigridQNetwork(envs, use_theta=use_theta).to(device)
+    target_network = net(envs, use_theta=use_theta).to(device)
     target_network.load_state_dict(q_network.state_dict())
 
     logger_ = make_csv_logger(f"runs/{run_name}/log.csv")
@@ -219,7 +234,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     np.mean(ep_entropy),
                 ])
                 
-                if ep_counter % 500 == 0:
+                if ep_counter % 500 == 0 and "Rooms" in args.env_id:
                     log_heatmap(envs.envs[0], infos["heatmap"][0], ep_counter, writer)
                 
                 ep_surprise.clear()
