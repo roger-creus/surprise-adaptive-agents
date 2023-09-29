@@ -1,6 +1,15 @@
 from __future__ import annotations
 
-from gym_minigrid.minigrid import *
+import gymnasium as gym
+from minigrid.core.world_object import WorldObj, Goal
+from minigrid.core.constants import *
+from minigrid.core.mission import MissionSpace
+from minigrid.minigrid_env import MiniGridEnv
+from minigrid.core.grid import Grid
+from minigrid.utils.rendering import *
+
+from enum import IntEnum
+import numpy as np
 
 class Floor(WorldObj):
     """
@@ -55,8 +64,7 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
     - `MiniGrid-FourRooms-v0`
     """
 
-    def __init__(self, max_steps=100, noisy_room=2, num_doors=1, noisy_prob=1,
-                 agent_view="front", **kwargs):
+    def __init__(self, max_steps=500, noisy_room=2, num_doors=1, noisy_prob=1, agent_view="front", **kwargs):
         self._agent_default_pos = None
         self._goal_default_pos = None
 
@@ -80,10 +88,11 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
             height=self.height,
             max_steps=max_steps,
             see_through_walls=see_through_walls,
+            mission_space=MissionSpace(mission_func=self._gen_mission),
             **kwargs,
         )
         self.actions = SurpriseAdaptRoomsEnv.Actions
-        self.action_space = spaces.Discrete(len(self.actions))
+        self.action_space = gym.spaces.Discrete(len(self.actions))
 
     @staticmethod
     def _gen_mission():
@@ -91,10 +100,10 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
 
     def step(self, action):
         self._randomize_floor_colors()
-        obs, reward, done, info = super().step(action)
+        obs, reward, trunc, done, info = super().step(action)
         info.update({'agent_pos': (self.agent_pos, (self.width, self.height))})
 
-        return obs, reward, done, info
+        return obs, reward, trunc, done, info
 
     def _randomize_floor_colors(self):
         color_names = [color for color in COLOR_NAMES if color != 'grey']
@@ -156,7 +165,7 @@ class SurpriseAdaptRoomsEnv(MiniGridEnv):
 
         self.mission = self._gen_mission()
 
-    def get_view_exts(self):
+    def get_view_exts(self, agent_view_size=None):
         """
         Get the extents of the square set of tiles visible to the agent
         Note: the bottom extent indices are not included in the set

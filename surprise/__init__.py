@@ -29,9 +29,7 @@ gym_register(
     max_episode_steps=5000,
 )
 
-
 # Surprise Adapt Rooms
-
 gym_register(
     id='MiniGrid-SurpriseAdaptRooms-v0',
     entry_point='surprise.envs.minigrid.envs.surprise_adapt_rooms:SurpriseAdaptRoomsEnv'
