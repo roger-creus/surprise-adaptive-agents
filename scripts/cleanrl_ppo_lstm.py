@@ -40,7 +40,7 @@ def parse_args():
     # Algorithm specific arguments
     parser.add_argument("--env-id", type=str, default="SurpriseAdaptRooms-v0",
         help="the id of the environment")
-    parser.add_argument("--total-timesteps", type=int, default=10000000,
+    parser.add_argument("--total-timesteps", type=int, default=20000000,
         help="total timesteps of the experiments")
     parser.add_argument("--learning-rate", type=float, default=2.5e-4,
         help="the learning rate of the optimizer")
@@ -352,6 +352,8 @@ if __name__ == "__main__":
         writer.add_scalar("losses/explained_variance", explained_var, global_step)
         print("SPS:", int(global_step / (time.time() - start_time)))
         writer.add_scalar("charts/SPS", int(global_step / (time.time() - start_time)), global_step)
+
+        update_idx += 1
 
     envs.close()
     writer.close()
