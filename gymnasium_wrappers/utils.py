@@ -32,7 +32,6 @@ def make_env(args):
             
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
-            env = FullyObsWrapper(env)
             env = ImgObsWrapper(env)
             #env = gym.wrappers.NormalizeObservation(env)
             
@@ -137,7 +136,7 @@ def make_csv_logger(csv_path):
 def log_heatmap(env, heatmap, ep_counter, writer, save_path):
     cmap = plt.get_cmap('Greens')
     cmap.set_under((0,0,0,0))
-    cmap_args = dict(cmap=cmap, vmin=0, vmax=500)
+    cmap_args = dict(cmap=cmap, vmin=1, vmax=500)
     
     fig = plt.figure(num=1)
     background_img = env.render()

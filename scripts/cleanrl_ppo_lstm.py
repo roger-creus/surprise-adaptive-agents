@@ -223,6 +223,8 @@ if __name__ == "__main__":
                         print(f"global_step={global_step}, episodic_return={item['episode']['r'][0]}")
                         writer.add_scalar("charts/episodic_return", item["episode"]["r"], global_step)
                         writer.add_scalar("charts/episodic_length", item["episode"]["l"], global_step)
+                        writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise[c]), global_step)
+                        writer.add_scalar("charts/episodic_entropy", np.mean(ep_entropy[c]), global_step)
                         logger_.logs_a([
                             global_step,
                             item["episode"]["r"][0],
