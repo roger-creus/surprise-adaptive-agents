@@ -230,7 +230,7 @@ if __name__ == "__main__":
                             np.mean(ep_entropy[c]),
                         ])
                         
-                        if update_idx > 100 and "Rooms" in args.env_id and logged_heatmap == False:
+                        if update_idx > 10 and "Rooms" in args.env_id and logged_heatmap == False:
                             log_heatmap(envs.envs[c], infos["heatmap"][c], ep_counter, writer, f"runs/{run_name}")
                             logged_heatmap = True
                             update_idx = 0
