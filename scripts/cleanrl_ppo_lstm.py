@@ -74,7 +74,7 @@ def parse_args():
         help="the target KL divergence threshold")
 
     # ENV PARAMS
-    parser.add_argument("--noisy_room", type=int, default=2,
+    parser.add_argument("--noisy-room", type=int, default=2,
         help="can be none, smax, smin, sadapt, sadapt-inverse")
     
     # OBJECTIVE PARAMS
