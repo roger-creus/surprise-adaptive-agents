@@ -134,14 +134,14 @@ def make_csv_logger(csv_path):
 
 
 def log_heatmap(env, heatmap, ep_counter, writer, save_path):
-    cmap = plt.get_cmap('Greens')
+    cmap = plt.get_cmap('Reds')
     cmap.set_under((0,0,0,0))
-    cmap_args = dict(cmap=cmap, vmin=1)
+    cmap_args = dict(cmap=cmap)
     
     fig = plt.figure(num=1)
-    background_img = env.render()
-    background = cv2.resize(background_img, dsize=(env._env.width, env._env.height), interpolation=cv2.INTER_AREA)
-    plt.imshow(background.transpose(1,0,2) , alpha=0.75)
+    #background_img = env.render()
+    #background = cv2.resize(background_img, dsize=(env._env.width, env._env.height), interpolation=cv2.INTER_AREA)
+    #plt.imshow(background.transpose(1,0,2) , alpha=0.75)
     plt.imshow(heatmap, **cmap_args, interpolation='nearest')
     plt.xticks([])
     plt.yticks([])

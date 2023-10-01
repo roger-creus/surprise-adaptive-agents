@@ -25,7 +25,6 @@ class BaseSurpriseWrapper(gym.Env):
         self.buffer = buffer
 
         theta = self.buffer.get_params()
-        self.num_steps = 0
 
         # Add true reward to surprise
         self.add_true_rew = add_true_rew
@@ -74,8 +73,6 @@ class BaseSurpriseWrapper(gym.Env):
             
         if self.ext_only:
             rew = env_rew
-
-        obs = self.get_obs(obs)
         
         info['surprise'] = surprise
         info["theta_entropy"] = self.buffer.entropy()
@@ -86,9 +83,20 @@ class BaseSurpriseWrapper(gym.Env):
             info["heatmap"] = self.heatmap.copy()
         except:
             pass
+
+        # soft reset
+        if envdone:
+            obs, _ = self._env.reset()
+
+        if self.num_steps == self._env.max_episode_steps:
+            envdone = True
+            envtrunc = False
+        else:
+            envdone = False
+            envtrunc = False
         
         self.num_steps += 1
-        return obs, rew, envdone, envtrunc, info
+        return self.get_obs(obs), rew, envdone, envtrunc, info
 
     def get_obs(self, obs):
         '''

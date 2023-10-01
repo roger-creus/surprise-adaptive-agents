@@ -109,9 +109,6 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
             self.alpha_t = 0 if np.sign(sum(surprise_change)) > 0 else 1
         else:
             self.alpha_t = 1 if np.sign(sum(surprise_change)) > 0 else 0
-        
-        # augment next state
-        obs = self.get_obs(obs)
 
         try:
             x, y = self._env.agent_pos
@@ -122,7 +119,19 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
 
         self.surprise_counter += 1
         self.num_steps += 1
-        return obs, rew, envdone, envtrunc, info
+
+        # soft reset
+        if envdone:
+            obs, _ = self._env.reset()
+
+        if self.num_steps == self._env.max_episode_steps:
+            envdone = True
+            envtrunc = False
+        else:
+            envdone = False
+            envtrunc = False
+
+        return self.get_obs(obs), rew, envdone, envtrunc, info
 
     def get_obs(self, obs):
         theta = self.buffer.get_params()
