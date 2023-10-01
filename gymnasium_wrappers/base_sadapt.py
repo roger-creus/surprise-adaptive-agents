@@ -17,6 +17,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
                  momentum=False,
                  add_true_rew=False,
                  int_rew_scale=1,
+                 max_steps=500,
                 ):
         '''
         params
@@ -36,6 +37,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         self.int_rew_scale = int_rew_scale
         self.surprise_window_len = surprise_window_len
         self.momentum = momentum
+        self.max_steps = max_steps
 
         # Gym spaces
         self.action_space = env.action_space
@@ -124,7 +126,7 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         if envdone:
             obs, _ = self._env.reset()
 
-        if self.num_steps == self._env.max_episode_steps:
+        if self.num_steps == self.max_steps:
             envdone = True
             envtrunc = False
         else:

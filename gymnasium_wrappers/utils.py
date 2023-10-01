@@ -24,15 +24,18 @@ def make_env(args):
             
             env = gym.make(args.env_id, render_mode='rgb_array', max_steps=500, noisy_room=args.noisy_room)
             env = ImgObsWrapper(env)
+            max_steps = 500
             #env = gym.wrappers.NormalizeObservation(env)
             
         elif "tetris" in args.env_id:
             from surprise.envs.tetris.tetris import TetrisEnv
             env = TetrisEnv()
+            max_steps = 100
             
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = ImgObsWrapper(env)
+            max_steps = 500
             #env = gym.wrappers.NormalizeObservation(env)
             
         elif "griddly" in args.env_id:
@@ -60,7 +63,8 @@ def make_env(args):
                 buffer,
                 add_true_rew=args.add_true_rew,
                 minimize=False,
-                int_rew_scale=1.0
+                int_rew_scale=1.0,
+                max_steps=max_steps
             )
         
         elif args.model == "smin":
@@ -69,7 +73,8 @@ def make_env(args):
                 buffer,
                 add_true_rew=args.add_true_rew,
                 minimize=True,
-                int_rew_scale=1.0
+                int_rew_scale=1.0,
+                max_steps=max_steps
             )
         
         elif args.model == "sadapt":
@@ -80,7 +85,8 @@ def make_env(args):
                 surprise_change_threshold=args.surprise_change_threshold,
                 momentum=True,
                 add_true_rew=args.add_true_rew,
-                int_rew_scale=1.0
+                int_rew_scale=1.0,
+                max_steps=max_steps
             )
         
         elif args.model == "sadapt-inverse":
@@ -91,7 +97,8 @@ def make_env(args):
                 surprise_change_threshold=args.surprise_change_threshold,
                 momentum=False,
                 add_true_rew=args.add_true_rew,
-                int_rew_scale=1.0
+                int_rew_scale=1.0,
+                max_steps=max_steps
             )
         
         elif args.model == "none":
@@ -101,7 +108,8 @@ def make_env(args):
                 add_true_rew=True,
                 minimize=False,
                 int_rew_scale=0.0,
-                ext_only=True
+                ext_only=True,
+                max_steps=max_steps
             )
             
         else:

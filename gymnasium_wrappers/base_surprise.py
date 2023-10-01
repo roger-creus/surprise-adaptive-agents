@@ -12,6 +12,7 @@ class BaseSurpriseWrapper(gym.Env):
                  minimize=True,
                  int_rew_scale=1.0,
                  ext_only=False,
+                 max_steps = 500
                 ):
         '''
         params
@@ -32,6 +33,7 @@ class BaseSurpriseWrapper(gym.Env):
         self.num_steps = 0
         self.minimize = minimize
         self.ext_only = ext_only
+        self.max_steps = max_steps
 
         # Gym spaces
         self.action_space = env.action_space
@@ -88,7 +90,7 @@ class BaseSurpriseWrapper(gym.Env):
         if envdone:
             obs, _ = self._env.reset()
 
-        if self.num_steps == self._env.max_episode_steps:
+        if self.num_steps == self.max_steps:
             envdone = True
             envtrunc = False
         else:
