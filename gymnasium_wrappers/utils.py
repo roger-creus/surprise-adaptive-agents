@@ -7,7 +7,7 @@ import cv2
 from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
-from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer
+from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
 
 from IPython import embed
 from gymnasium.envs.registration import register as gym_register
@@ -48,12 +48,13 @@ def make_env(args):
         env = gym.wrappers.RecordEpisodeStatistics(env)
         
         ############ Create buffer ############
+        obs_size = env.observation_space.shape
         if args.buffer_type == "gaussian":
-            obs_size = env.observation_space.shape
             buffer = GaussianBufferIncremental(obs_size)
         elif args.buffer_type == "bernoulli":
-            obs_size = env.observation_space.shape
             buffer = BernoulliBuffer(obs_size)
+        elif args.buffer_type == "multinoulli":
+            buffer = MultinoulliBuffer(obs_size)
         else:
             raise ValueError(f"Unknown buffer type {args.buffer_type}")
         
