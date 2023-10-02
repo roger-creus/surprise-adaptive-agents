@@ -108,7 +108,7 @@ if __name__ == "__main__":
     else:
         env_name += "_noExtrinsic" 
     
-    run_name = f"ppolstm_{env_name}_{args.model}_s{args.seed}"
+    run_name = f"ppolstm_{env_name}_{args.model}_{args.buffer_type}_s{args.seed}"
     
     if args.track:
         import wandb
