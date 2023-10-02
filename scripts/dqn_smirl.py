@@ -275,7 +275,12 @@ def add_surprise_adapt(
     if "latent_obs_size" in variant:
         obs_size = variant["latent_obs_size"]
     else:
-        obs_size = env.observation_space.low.size
+        if isinstance(env.observation_space, gym.spaces.Dict):
+            obs_size = env.observation_space['observation'].low.size
+            obs_shape = env.observation_space['observation'].low.shape
+        else:
+            obs_size = env.observation_space.low.size
+            obs_shape = env.observation_space.low.shape
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
@@ -304,11 +309,16 @@ def add_surprise_adapt_v2(
 ):
     from surprise.buffers.buffers import BernoulliBuffer, MultinoulliBuffer, GaussianBufferIncremental
     from surprise.wrappers.base_surprise_adapt_v2 import BaseSurpriseAdaptV2Wrapper
-
+    
     if "latent_obs_size" in variant:
         obs_size = variant["latent_obs_size"]
     else:
-        obs_size = env.observation_space.low.size
+        if isinstance(env.observation_space, gym.spaces.Dict):
+            obs_size = env.observation_space['observation'].low.size
+            obs_shape = env.observation_space['observation'].low.shape
+        else:
+            obs_size = env.observation_space.low.size
+            obs_shape = env.observation_space.low.shape
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
@@ -373,6 +383,7 @@ def add_surprise_adapt_bandit(env, variant, ep_length=500, device=0, eval=False)
 def add_smirl(env, variant, ep_length=500, device=0):
     from surprise.buffers.buffers import (
         BernoulliBuffer,
+        MultinoulliBuffer,
         GaussianBufferIncremental,
         GaussianCircularBuffer,
     )
@@ -381,12 +392,19 @@ def add_smirl(env, variant, ep_length=500, device=0):
     if "latent_obs_size" in variant:
         obs_size = variant["latent_obs_size"]
     else:
-        obs_size = env.observation_space.low.size
+        if isinstance(env.observation_space, gym.spaces.Dict):
+            obs_size = env.observation_space['observation'].low.size
+            obs_shape = env.observation_space['observation'].low.shape
+        else:
+            obs_size = env.observation_space.low.size
+            obs_shape = env.observation_space.low.shape
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
         env = BaseSurpriseWrapper(env, buffer, time_horizon=ep_length, **variant)
-
+    elif variant["buffer_type"] == "Multinoulli":
+        buffer = MultinoulliBuffer(obs_shape)
+        env = BaseSurpriseWrapper(env, buffer, time_horizon=ep_length, **variant)
     elif variant["buffer_type"] == "Gaussian":
         #         buffer = GaussianCircularBuffer(obs_size, size=500)
         buffer = GaussianBufferIncremental(obs_size)

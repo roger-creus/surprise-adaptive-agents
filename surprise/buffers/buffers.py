@@ -101,14 +101,12 @@ class MultinoulliBuffer(BaseBuffer):
         thresh = 1e-5
         thetas = np.clip(thetas, thresh, 1 - thresh)
         thetas = np.concatenate([thetas, 1-thetas.sum(axis=0, keepdims=True)])
-        print(thetas)
-        print(obs)
+
         # Multinoulli log prob
         probs = np.sum(obs*thetas, axis=0)  
 
     
         logprob = np.sum(np.log(probs))
-        raise Exception
         return logprob
 
     def reset(self):
