@@ -8,6 +8,7 @@
     },
     "replay_buffer_size": 100000,
     "algorithm_kwargs": {
+	"render": false,
         "render_agent_pos": false,
         "log_episode_alphas": false,
         "num_epochs":5000,

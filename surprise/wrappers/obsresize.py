@@ -121,6 +121,7 @@ class DictObservationWrapper(gym.Wrapper):
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
         self.observation_space = Dict({self._obs_key: env.observation_space})
+        print(self.env_obs_space)
 
 
     def step(self, action):
@@ -351,7 +352,6 @@ class SoftResetWrapper(gym.Wrapper):
 #             info["life_length"] = self._last_death
             info["death"] = 1
             self._last_death = 0
-            obs = np.random.rand(*obs_.shape)
         else:
             info["death"] = 0
         

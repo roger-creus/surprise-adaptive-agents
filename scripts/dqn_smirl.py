@@ -266,6 +266,7 @@ def add_surprise_adapt(
 ):
     from surprise.buffers.buffers import (
         BernoulliBuffer,
+        MultinoulliBuffer,
         GaussianBufferIncremental,
         GaussianCircularBuffer,
     )
@@ -281,7 +282,11 @@ def add_surprise_adapt(
         env = BaseSurpriseAdaptWrapper(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
         )
-
+    elif variant["buffer_type"] == "Multinoulli":
+        buffer = MultinoulliBuffer(obs_size)
+        env = BaseSurpriseAdaptWrapper(
+            env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
+        )
     elif variant["buffer_type"] == "Gaussian":
         buffer = GaussianBufferIncremental(obs_size)
         env = BaseSurpriseAdaptWrapper(
@@ -297,7 +302,7 @@ def add_surprise_adapt(
 def add_surprise_adapt_v2(
     env, variant, ep_length=500, device=0, flip_alpha=False, flip_alpha_strategy="SA"
 ):
-    from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental
+    from surprise.buffers.buffers import BernoulliBuffer, MultinoulliBuffer, GaussianBufferIncremental
     from surprise.wrappers.base_surprise_adapt_v2 import BaseSurpriseAdaptV2Wrapper
 
     if "latent_obs_size" in variant:
@@ -309,8 +314,12 @@ def add_surprise_adapt_v2(
         buffer = BernoulliBuffer(obs_size)
         env = BaseSurpriseAdaptV2Wrapper(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
-        )
-
+        )    
+    elif variant["buffer_type"] == "Multinoulli":
+        buffer = MultinoulliBuffer(obs_size)
+        env = BaseSurpriseAdaptV2Wrapper(
+            env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
+    )
     elif variant["buffer_type"] == "Gaussian":
         buffer = GaussianBufferIncremental(obs_size)
         env = BaseSurpriseAdaptV2Wrapper(
@@ -324,7 +333,7 @@ def add_surprise_adapt_v2(
 
 
 def add_surprise_adapt_bandit(env, variant, ep_length=500, device=0, eval=False):
-    from surprise.buffers.buffers import BernoulliBuffer, GaussianBufferIncremental
+    from surprise.buffers.buffers import BernoulliBuffer, MultinoulliBuffer, GaussianBufferIncremental
     from surprise.wrappers.base_surprise_adapt_bandit import (
         BaseSurpriseAdaptBanditWrapper,
     )
@@ -336,14 +345,19 @@ def add_surprise_adapt_bandit(env, variant, ep_length=500, device=0, eval=False)
             obs_size = env.observation_space['observation'].low.size
             obs_shape = env.observation_space['observation'].low.shape
         else:
-        obs_size = env.observation_space.low.size
+            obs_size = env.observation_space.low.size
+            obs_shape = env.observation_space.low.shape
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
         env = BaseSurpriseAdaptBanditWrapper(
             env, buffer, time_horizon=ep_length, eval=eval, **variant
         )
-
+    elif variant["buffer_type"] == "Multinoulli":
+        buffer = MultinoulliBuffer(obs_shape)
+        env = BaseSurpriseAdaptBanditWrapper(
+            env, buffer, time_horizon=ep_length, eval=eval, **variant
+        )
     elif variant["buffer_type"] == "Gaussian":
         buffer = GaussianBufferIncremental(obs_size)
         env = BaseSurpriseAdaptBanditWrapper(
