@@ -99,6 +99,8 @@ if __name__ == "__main__":
     args = parse_args()
     if "Adapt" in args.env_id:
         env_name = f"{args.env_id}_NoisyRoom_{args.noisy_room}"
+    elif "/" in args.env_id:
+        env_name = args.env_id.split("/")[1]
     else:
         env_name = args.env_id
     
