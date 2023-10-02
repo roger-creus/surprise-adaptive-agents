@@ -2,7 +2,7 @@ import gymnasium as gym
 import csv_logger
 import logging
 import matplotlib.pyplot as plt
-import cv2
+import minatar
 
 from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
@@ -25,7 +25,6 @@ def make_env(args):
             env = gym.make(args.env_id, render_mode='rgb_array', max_steps=500, noisy_room=args.noisy_room)
             env = ImgObsWrapper(env)
             max_steps = 500
-            #env = gym.wrappers.NormalizeObservation(env)
             
         elif "tetris" in args.env_id:
             from surprise.envs.tetris.tetris import TetrisEnv
@@ -36,8 +35,11 @@ def make_env(args):
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = ImgObsWrapper(env)
             max_steps = 500
-            #env = gym.wrappers.NormalizeObservation(env)
             
+        elif "MinAtar" in args.env_id:
+            env = gym.make(args.env_id+"-v1", render_mode='rgb_array', max_episode_steps=1000)
+            max_steps = 1000
+
         elif "griddly" in args.env_id:
             register_griddly_envs()
             env = gym.make("GDY-MazeEnv-v0")

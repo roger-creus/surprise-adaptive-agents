@@ -147,6 +147,8 @@ if __name__ == "__main__":
         net = MinigridPPOAgent
     elif args.env_id == "tetris":
         net = TetrisPPOAgent
+    elif "MinAtar" in args.env_id:
+        net = MinAtarPPOAgent
     else:
         raise NotImplementedError
 

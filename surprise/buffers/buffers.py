@@ -228,7 +228,7 @@ class MultinoulliBuffer(BaseBuffer):
     def __init__(self, obs_dim):
         super().__init__()
         self.buffer = np.ones(obs_dim) 
-        self.buffer_size = 1
+        self.buffer_size = obs_dim[-1] + 1
         self.obs_dim = obs_dim
         
     def add(self, obs):
@@ -242,28 +242,27 @@ class MultinoulliBuffer(BaseBuffer):
         return theta.flatten()
 
     def logprob(self, obs):
-        obs = obs.copy().reshape(self.obs_dim)[None,:]
-        obs = np.concatenate([obs, 1-obs])
+        obs = obs.copy().reshape(self.obs_dim)
+        obs = np.concatenate([obs, 1-obs.sum(axis=-1, keepdims=True)])
         # ForkedPdb().set_trace()
         thetas = self.get_params().reshape(self.obs_dim)
         # For numerical stability, clip probs to not be 0 or 1
         thresh = 1e-5
-        thetas = np.clip(thetas, thresh, 1 - thresh)[None,:]
-        thetas = np.concatenate([thetas, 1-thetas])
-
+        thetas = np.clip(thetas, thresh, 1 - thresh)
+        thetas = np.concatenate([thetas, 1-thetas.sum(axis=-1, keepdims=True)])
         # Multinoulli log prob
-        probs = np.sum(obs*thetas, axis=0)  
+        probs = np.sum(obs*thetas, axis=-1)  
 
         logprob = np.sum(np.log(probs))
         return logprob
 
     def reset(self):
         self.buffer = np.ones(self.obs_dim) 
-        self.buffer_size = 1
+        self.buffer_size = self.obs_dim[-1] + 1
         
     def entropy(self):
         thetas = self.get_params().reshape(self.obs_dim)
-        thetas = np.concatenate([thetas, 1-thetas])
+        thetas = np.concatenate([thetas, 1-thetas.sum(axis=-1, keepdims=True)])
         thresh = 1e-4
         thetas = np.clip(thetas, a_min=thresh, a_max=(1-thresh))
-        return np.sum(-np.sum(thetas*np.log(thetas), 0))
+        return np.sum(-np.sum(thetas*np.log(thetas), -1))
