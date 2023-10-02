@@ -245,7 +245,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     np.mean(ep_entropy),
                 ])
                 
-                if ep_counter % 500 == 0 and "Rooms" in args.env_id:
+                if ep_counter % 1000 == 0 and "Rooms" in args.env_id:
                     log_heatmap(envs.envs[0], infos["heatmap"][0], ep_counter, writer, f"runs/{run_name}")
                 
                 ep_surprise.clear()
