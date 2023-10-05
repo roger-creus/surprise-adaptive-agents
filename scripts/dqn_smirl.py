@@ -288,7 +288,8 @@ def add_surprise_adapt(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
         )
     elif variant["buffer_type"] == "Multinoulli":
-        buffer = MultinoulliBuffer(obs_size)
+        num_cat = int(env.observation_space.high[0,0]+1) if len(env.observation_space.shape) == 2 else None
+        buffer = MultinoulliBuffer(obs_dim=obs_shape, num_cat=num_cat)
         env = BaseSurpriseAdaptWrapper(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
         )
@@ -326,7 +327,8 @@ def add_surprise_adapt_v2(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
         )    
     elif variant["buffer_type"] == "Multinoulli":
-        buffer = MultinoulliBuffer(obs_size)
+        num_cat = int(env.observation_space.high[0,0]+1) if len(env.observation_space.shape) == 2 else None
+        buffer = MultinoulliBuffer(obs_dim=obs_shape, num_cat=num_cat)
         env = BaseSurpriseAdaptV2Wrapper(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
     )
@@ -364,7 +366,8 @@ def add_surprise_adapt_bandit(env, variant, ep_length=500, device=0, eval=False)
             env, buffer, time_horizon=ep_length, eval=eval, **variant
         )
     elif variant["buffer_type"] == "Multinoulli":
-        buffer = MultinoulliBuffer(obs_shape)
+        num_cat = int(env.observation_space.high[0,0]+1) if len(env.observation_space.shape) == 2 else None
+        buffer = MultinoulliBuffer(obs_dim=obs_shape, num_cat=num_cat)
         env = BaseSurpriseAdaptBanditWrapper(
             env, buffer, time_horizon=ep_length, eval=eval, **variant
         )
@@ -388,7 +391,6 @@ def add_smirl(env, variant, ep_length=500, device=0):
         GaussianCircularBuffer,
     )
     from surprise.wrappers.base_surprise import BaseSurpriseWrapper
-
     if "latent_obs_size" in variant:
         obs_size = variant["latent_obs_size"]
     else:
@@ -403,7 +405,8 @@ def add_smirl(env, variant, ep_length=500, device=0):
         buffer = BernoulliBuffer(obs_size)
         env = BaseSurpriseWrapper(env, buffer, time_horizon=ep_length, **variant)
     elif variant["buffer_type"] == "Multinoulli":
-        buffer = MultinoulliBuffer(obs_shape)
+        num_cat = int(env.observation_space.high[0,0]+1) if len(env.observation_space.shape) == 2 else None
+        buffer = MultinoulliBuffer(obs_dim=obs_shape, num_cat=num_cat)
         env = BaseSurpriseWrapper(env, buffer, time_horizon=ep_length, **variant)
     elif variant["buffer_type"] == "Gaussian":
         #         buffer = GaussianCircularBuffer(obs_size, size=500)
