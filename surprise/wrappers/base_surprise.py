@@ -33,6 +33,7 @@ class BaseSurpriseWrapper(gym.Env):
 
         # Gym spaces
         self.action_space = env.action_space
+
         if hasattr(env, "env_obs_space"):
             self.env_obs_space = env.env_obs_space
         else:

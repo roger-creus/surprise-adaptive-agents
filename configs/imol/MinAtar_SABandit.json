@@ -27,7 +27,7 @@
         "render":false,
 		"render_agent_pos": false,
         "log_episode_alphas" : false,
-        "num_epochs":50,
+        "num_epochs":500,
         "num_eval_steps_per_epoch":1000,
         "num_train_loops_per_epoch": 1000,
         "num_trains_per_train_loop":1,
