@@ -564,6 +564,11 @@ def experiment(doodad_config, variant):
         qf_criterion=qf_criterion,
         **variant["trainer_kwargs"],
     )
+    try:
+        eval_env.set_discount_rate(variant["trainer_kwargs"]["discount"])
+        expl_env.set_discount_rate(variant["trainer_kwargs"]["discount"])
+    except Exception:
+        print("No method for setting discount rate in environment, defaulting to 1.")
     replay_buffer = EnvReplayBuffer(
         variant["replay_buffer_size"],
         expl_env,

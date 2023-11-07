@@ -60,7 +60,7 @@ class BaseSurpriseWrapper(gym.Env):
 
         self.minimize = minimize
         self.returns = None
-        self.discount_rate = discount_rate
+        self.discount_rate = 1
 
         self.reset()
 
@@ -155,3 +155,6 @@ class BaseSurpriseWrapper(gym.Env):
             return np.array(obs).flatten().copy()
         else:
             return np.array(obs[self._obs_label]).flatten().copy()
+        
+    def set_discount_rate(self, discount_rate):
+        self.discount_rate = discount_rate
