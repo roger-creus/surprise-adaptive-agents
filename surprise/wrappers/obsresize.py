@@ -339,14 +339,21 @@ class SoftResetWrapper(gym.Wrapper):
 
         self.reset_alpha = True
 
+        self.deaths = 0
+        self.total_task_returns = 0
+
     def step(self, action):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
         self._time += 1
+        task_returns = info.pop("task_returns")
+        info['avg_task_returns']= (task_returns + self.total_task_returns)/(self.deaths + 1)
 
         info["life_length_avg"] = self._last_death
         if (envdone):
             self.reset_alpha = False
+            self.total_task_returns += task_returns
+            self.deaths += 1
             obs_ = self.reset()
             ### Trick to make "death" more surprising...
 #             info["life_length"] = self._last_death

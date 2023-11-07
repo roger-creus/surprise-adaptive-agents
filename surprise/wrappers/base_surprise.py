@@ -59,6 +59,8 @@ class BaseSurpriseWrapper(gym.Env):
             })
 
         self.minimize = minimize
+        self.returns = None
+        self.discount_rate = discount_rate
 
         self.reset()
 
@@ -66,6 +68,7 @@ class BaseSurpriseWrapper(gym.Env):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
         info['task_reward'] = env_rew
+        info['task_returns'] = self.returns * self.discount_rate + env_rew
 
 
         # Get wrapper outputs
@@ -138,6 +141,7 @@ class BaseSurpriseWrapper(gym.Env):
         self._num_steps = 0
         obs = self.get_obs(obs)
 #         print ("surprise obs shape2, ", obs.shape)
+        self.returns = 0
         return obs
 
     def render(self, **kwargs):
