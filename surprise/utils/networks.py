@@ -55,8 +55,8 @@ class MixedIdentMlpCNN(nn.Module):
                 mlp_input.append(val.flatten(start_dim=1))
             elif key in self.ident_keys:
                 ident_input.append(val.flatten(start_dim=1))
-            else:
-                print(f"Skipping input with key: {key}")
+            # else:
+            #     print(f"Skipping input with key: {key}")
         conv_input = torch.cat(conv_input, dim=-1)
         if len(mlp_input) > 0:
             mlp_input = torch.cat(mlp_input, dim=-1)

@@ -363,6 +363,7 @@ class SoftResetWrapper(gym.Wrapper):
 #             info["life_length"] = self._last_death
             info["death"] = 1
             self._last_death = 0
+            obs = np.random.rand(*obs_.shape)
         else:
             info["death"] = 0
         
