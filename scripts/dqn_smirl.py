@@ -8,18 +8,22 @@ try:
 except:
     pass
 import gym
-import random
-import numpy as np
-import torch
+import functools
+
 
 from IPython import embed
 
-def set_seed(seed):
+def set_seed(seed, torch, random, np):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     np.random.seed(seed)
     random.seed(seed)
-    return
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    # Set a fixed value for the hash seed
+    os.environ["PYTHONHASHSEED"] = str(seed)
+
+    return seed
 
 
 def get_network(network_args, obs_dim, action_dim, unflattened_obs_dim=None, device='cpu'):
@@ -294,7 +298,7 @@ def add_surprise_adapt(
         else:
             obs_space = env.observation_space
         obs_shape = obs_space.shape
-        obs_size = np.prod(obs_shape)
+        obs_size = functools.reduce(lambda a,b:a*b, obs_shape)
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
@@ -333,7 +337,7 @@ def add_surprise_adapt_v2(
         else:
             obs_space = env.observation_space
         obs_shape = obs_space.shape
-        obs_size = np.prod(obs_shape)
+        obs_size = functools.reduce(lambda a,b:a*b, obs_shape)
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
@@ -372,7 +376,7 @@ def add_surprise_adapt_bandit(env, variant, ep_length=500, device=0, eval=False)
         else:
             obs_space = env.observation_space
         obs_shape = obs_space.shape
-        obs_size = np.prod(obs_shape)
+        obs_size = functools.reduce(lambda a,b:a*b,obs_shape)
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
@@ -413,7 +417,7 @@ def add_smirl(env, variant, ep_length=500, device=0):
         else:
             obs_space = env.observation_space
         obs_shape = obs_space.shape
-        obs_size = np.prod(obs_shape)
+        obs_size = functools.reduce(lambda a,b:a*b,obs_shape)
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
@@ -481,8 +485,11 @@ def experiment(doodad_config, variant):
     import gym
     from torch import nn as nn
 
+
     import rlkit.torch.pytorch_util as ptu
     import torch
+    import random
+    import numpy
     from surprise.utils.exploration import EpsilonGreedy
     from rlkit.exploration_strategies.base import PolicyWrappedWithExplorationStrategy
     from rlkit.policies.argmax import ArgmaxDiscretePolicy
@@ -500,12 +507,16 @@ def experiment(doodad_config, variant):
     )
     import pdb
 
-    set_seed(variant["random_seed"])
+    seed = set_seed(variant["random_seed"], torch, random, numpy)
 
     print(f"Using seed: {variant['random_seed']}")
 
     base_env = get_env(variant)
+    base_env.seed(seed)
+    base_env.action_space.seed(seed)
     base_env2 = get_env(variant)
+    base_env2.seed(seed)
+    base_env2.action_space.seed(seed)
 
     print("GPU_BUS_Index", variant["GPU_BUS_Index"])
     if torch.cuda.is_available() and doodad_config.use_gpu:
@@ -591,6 +602,7 @@ def experiment(doodad_config, variant):
         variant["replay_buffer_size"],
         expl_env,
     )
+
 
 
     online = variant.get("online")
