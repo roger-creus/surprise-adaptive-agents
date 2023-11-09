@@ -86,7 +86,8 @@ class MultinoulliBuffer(BaseBuffer):
         else:
             self.num_cat = num_cat
             self.is_one_hot = False
-        self.buffer_dim = (num_cat - 1, *obs_dim[-2:])
+
+        self.buffer_dim = (self.num_cat - 1, *obs_dim[-2:])
         self.buffer = np.ones(self.buffer_dim) 
         self.buffer_size = self.num_cat
         self.obs_dim = obs_dim
@@ -134,11 +135,10 @@ class MultinoulliBuffer(BaseBuffer):
         thetas = np.clip(thetas, a_min=thresh, a_max=(1-thresh))
         return np.sum(-np.sum(thetas*np.log(thetas), 0))
     
-    @staticmethod
-    def _convert_obs_to_one_hot(obs):
+    def _convert_obs_to_one_hot(self, obs):
         assert len(obs.shape) == 2, "Wrong shaped observation for one hot encoding"
         m,n = obs.shape
-        out = np.zeros((np.max(obs) + 1, m, n), dtype=int)
+        out = np.zeros((self.num_cat, m, n), dtype=int)
         I,J = np.ogrid[:m,:n]
         out[obs, I, J] = 1
         return out[:-1,:,:]

@@ -9,6 +9,8 @@ except:
     pass
 import gym
 
+import numpy as np
+
 from IPython import embed
 
 
@@ -129,6 +131,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
         AddAlphaWrapper,
         FlattenDictObservationWrapper,
         AddTextInfoToRendering,
+        StrictOneHotWrapper
     )
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
@@ -245,12 +248,15 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = AddTextInfoToRendering(
                 env=env, **wrapper["add_text_info_to_rendering"]
             )
+        elif "strict_one_hot_wrapper" in wrapper:
+            env = StrictOneHotWrapper(env, **wrapper["strict_one_hot_wrapper"])
         else:
             if not eval:
                 pass
             else:
                 print("wrapper not known: ", wrapper)
                 sys.exit()
+
 
     if isinstance(env.observation_space, gym.spaces.Dict):
         obs_dim = {
@@ -276,11 +282,11 @@ def add_surprise_adapt(
         obs_size = variant["latent_obs_size"]
     else:
         if isinstance(env.observation_space, gym.spaces.Dict):
-            obs_size = env.observation_space['observation'].low.size
-            obs_shape = env.observation_space['observation'].low.shape
+            obs_space = env.observation_space['observation']
         else:
-            obs_size = env.observation_space.low.size
-            obs_shape = env.observation_space.low.shape
+            obs_space = env.observation_space
+        obs_shape = obs_space.shape
+        obs_size = np.prod(obs_shape)
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
@@ -288,7 +294,7 @@ def add_surprise_adapt(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
         )
     elif variant["buffer_type"] == "Multinoulli":
-        num_cat = int(env.observation_space.high[0,0]+1) if len(env.observation_space.shape) == 2 else None
+        num_cat = int(obs_space.high[0,0]+1) if len(obs_shape) == 2 else None
         buffer = MultinoulliBuffer(obs_dim=obs_shape, num_cat=num_cat)
         env = BaseSurpriseAdaptWrapper(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
@@ -315,11 +321,11 @@ def add_surprise_adapt_v2(
         obs_size = variant["latent_obs_size"]
     else:
         if isinstance(env.observation_space, gym.spaces.Dict):
-            obs_size = env.observation_space['observation'].low.size
-            obs_shape = env.observation_space['observation'].low.shape
+            obs_space = env.observation_space['observation']
         else:
-            obs_size = env.observation_space.low.size
-            obs_shape = env.observation_space.low.shape
+            obs_space = env.observation_space
+        obs_shape = obs_space.shape
+        obs_size = np.prod(obs_shape)
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
@@ -327,7 +333,7 @@ def add_surprise_adapt_v2(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
         )    
     elif variant["buffer_type"] == "Multinoulli":
-        num_cat = int(env.observation_space.high[0,0]+1) if len(env.observation_space.shape) == 2 else None
+        num_cat = int(obs_space.high[0,0]+1) if len(obs_shape) == 2 else None
         buffer = MultinoulliBuffer(obs_dim=obs_shape, num_cat=num_cat)
         env = BaseSurpriseAdaptV2Wrapper(
             env, buffer, time_horizon=ep_length, flip_alpha=flip_alpha, **variant
@@ -354,11 +360,11 @@ def add_surprise_adapt_bandit(env, variant, ep_length=500, device=0, eval=False)
         obs_size = variant["latent_obs_size"]
     else:
         if isinstance(env.observation_space, gym.spaces.Dict):
-            obs_size = env.observation_space['observation'].low.size
-            obs_shape = env.observation_space['observation'].low.shape
+            obs_space = env.observation_space['observation']
         else:
-            obs_size = env.observation_space.low.size
-            obs_shape = env.observation_space.low.shape
+            obs_space = env.observation_space
+        obs_shape = obs_space.shape
+        obs_size = np.prod(obs_shape)
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
@@ -366,7 +372,7 @@ def add_surprise_adapt_bandit(env, variant, ep_length=500, device=0, eval=False)
             env, buffer, time_horizon=ep_length, eval=eval, **variant
         )
     elif variant["buffer_type"] == "Multinoulli":
-        num_cat = int(env.observation_space.high[0,0]+1) if len(env.observation_space.shape) == 2 else None
+        num_cat = int(obs_space.high[0,0]+1) if len(obs_shape) == 2 else None
         buffer = MultinoulliBuffer(obs_dim=obs_shape, num_cat=num_cat)
         env = BaseSurpriseAdaptBanditWrapper(
             env, buffer, time_horizon=ep_length, eval=eval, **variant
@@ -395,17 +401,17 @@ def add_smirl(env, variant, ep_length=500, device=0):
         obs_size = variant["latent_obs_size"]
     else:
         if isinstance(env.observation_space, gym.spaces.Dict):
-            obs_size = env.observation_space['observation'].low.size
-            obs_shape = env.observation_space['observation'].low.shape
+            obs_space = env.observation_space['observation']
         else:
-            obs_size = env.observation_space.low.size
-            obs_shape = env.observation_space.low.shape
+            obs_space = env.observation_space
+        obs_shape = obs_space.shape
+        obs_size = np.prod(obs_shape)
 
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
         env = BaseSurpriseWrapper(env, buffer, time_horizon=ep_length, **variant)
     elif variant["buffer_type"] == "Multinoulli":
-        num_cat = int(env.observation_space.high[0,0]+1) if len(env.observation_space.shape) == 2 else None
+        num_cat = int(obs_space.high[0,0]+1) if len(obs_shape) == 2 else None
         buffer = MultinoulliBuffer(obs_dim=obs_shape, num_cat=num_cat)
         env = BaseSurpriseWrapper(env, buffer, time_horizon=ep_length, **variant)
     elif variant["buffer_type"] == "Gaussian":

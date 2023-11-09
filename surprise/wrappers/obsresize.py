@@ -511,6 +511,54 @@ class MazeEnvOneMaskObs(gym.Wrapper):
         max_num = np.max(obs)
         obs[x, y] = max_num + 1
         return obs
+    
+class StrictOneHotWrapper(gym.Wrapper):
+    def __init__(self, env, channel_first=True):
+        """Enforces strict one-hot (i.e. only one channel can be active at a time))"""
+        super().__init__(env)
+        self.channel_first = channel_first
+        if self.channel_first:
+            self.num_channel = env.observation_space.shape[0]
+            obs_shape = env.observation_space.shape[1:]
+        else:
+            self.num_channel = env.observation_space.shape[-1]
+            obs_shape = env.observation_space.shape[0:-1]
+
+
+    def step(self, action):
+        # Take Action
+        obs, rew, done, info = super().step(action)
+        obs = self.to_one_hot(self.to_categorical(obs))
+        return obs, rew, done, info
+    def reset(self):
+        '''
+        Reset the wrapped env and the buffer
+        '''
+        obs = super().reset()
+        obs = self.to_one_hot(self.to_categorical(obs))
+        return obs
+
+    def to_categorical(self, obs):
+        
+        # tranform to one channel only with indexes
+        obs = np.amax(
+                obs * np.reshape(np.arange(self.num_channel) + 1, (1,1,-1)), 2).astype(int)
+
+        return obs
+    
+    def to_one_hot(self, obs):
+        m,n = obs.shape
+        I,J = np.ogrid[:m,:n]
+
+        if self.channel_first:
+            out = np.zeros((self.num_channel + 1, m, n), dtype=int)
+            out[obs, I, J] = 1
+            out = out[:-1,:,:]
+        else:
+            out = np.zeros((m, n, self.num_channel + 1), dtype=int)
+            out[I, J, obs] = 1
+            out = out[:,:,:-1]
+        return out
 
 
 class RescaleImageWrapper(TransformObservation):
