@@ -37,11 +37,25 @@ gym_register(
     entry_point='surprise.envs.minigrid.envs.surprise_adapt_rooms:SurpriseAdaptRoomsEnv'
 )
 
-from griddly import GymWrapperFactory, gd
-import os
-wrapper = GymWrapperFactory()
-wrapper.build_gym_from_yaml('_ButterfliesEnv', "/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/butterflies.yaml") #f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
-gym_register(
-    id='GDY-ButterfliesEnv-v0',
-    entry_point='surprise.envs.maze.butterflies:ButterfliesEnv'
-)
+#from griddly import GymWrapperFactory, gd
+#import os
+#wrapper = GymWrapperFactory()
+#wrapper.build_gym_from_yaml('_ButterfliesEnv', "/home/roger/Desktop/surprise-adaptive-agents/surprise/envs/maze/butterflies.yaml") #f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
+#gym_register(
+#    id='GDY-ButterfliesEnv-v0',
+#    entry_point='surprise.envs.maze.butterflies:ButterfliesEnv'
+#)
+
+
+for game in ["asterix", "breakout", "freeway", "seaquest", "space_invaders"]:
+    name = game.title().replace('_', '')   
+    gym_register(                   
+        id="MinAtar/{}-v0".format(name),          
+        entry_point="surprise.envs.minatar:MinAtarEnv", 
+        kwargs=dict(game=game, display_time=50, use_minimal_action_set=False)
+    )        
+    gym_register(                   
+        id="MinAtar/{}-v1".format(name),          
+        entry_point="surprise.envs.minatar:MinAtarEnv", 
+        kwargs=dict(game=game, display_time=50, use_minimal_action_set=True)
+    )  

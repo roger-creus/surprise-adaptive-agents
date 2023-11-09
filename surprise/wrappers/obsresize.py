@@ -1,6 +1,6 @@
 import numpy as np
 import gym
-from gym.spaces import Box
+from gym.spaces import Box, Dict
 import pdb
 import cv2
 import util.class_util as classu
@@ -120,7 +120,8 @@ class DictObservationWrapper(gym.Wrapper):
         # Gym spaces
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
-        self.observation_space = env.observation_space
+        self.observation_space = Dict({self._obs_key: env.observation_space})
+        print(self.env_obs_space)
 
 
     def step(self, action):
@@ -338,14 +339,25 @@ class SoftResetWrapper(gym.Wrapper):
 
         self.reset_alpha = True
 
+        self.deaths = 0
+        self.total_task_returns = 0
+        self.returns = None
+        self.discount_rate = 1
+
     def step(self, action):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
         self._time += 1
+        self.returns = self.returns * self.discount_rate + env_rew
+
+        info['avg_task_returns']= (self.returns + self.total_task_returns)/(self.deaths + 1)
 
         info["life_length_avg"] = self._last_death
         if (envdone):
             self.reset_alpha = False
+            self.total_task_returns += self.returns
+            self.returns = 0
+            self.deaths += 1
             obs_ = self.reset()
             ### Trick to make "death" more surprising...
 #             info["life_length"] = self._last_death
@@ -373,11 +385,15 @@ class SoftResetWrapper(gym.Wrapper):
             self.reset_alpha = True
 
         obs = self._env.reset()
+        self.returns = 0
         return obs
     
     def render(self, mode=None):
 #         print ("self._env: ", self, self._env, self._env.render, mode, self._env.render(mode=mode).shape)
         return self._env.render(mode=mode)
+
+    def set_discount_rate(self, discount_rate):
+        self.discount_rate = discount_rate
     
 class ObsHistoryWrapper(gym.Wrapper):
 
@@ -495,6 +511,54 @@ class MazeEnvOneMaskObs(gym.Wrapper):
         max_num = np.max(obs)
         obs[x, y] = max_num + 1
         return obs
+    
+class StrictOneHotWrapper(gym.Wrapper):
+    def __init__(self, env, channel_first=True):
+        """Enforces strict one-hot (i.e. only one channel can be active at a time))"""
+        super().__init__(env)
+        self.channel_first = channel_first
+        if self.channel_first:
+            self.num_channel = env.observation_space.shape[0]
+            obs_shape = env.observation_space.shape[1:]
+        else:
+            self.num_channel = env.observation_space.shape[-1]
+            obs_shape = env.observation_space.shape[0:-1]
+
+
+    def step(self, action):
+        # Take Action
+        obs, rew, done, info = super().step(action)
+        obs = self.to_one_hot(self.to_categorical(obs))
+        return obs, rew, done, info
+    def reset(self):
+        '''
+        Reset the wrapped env and the buffer
+        '''
+        obs = super().reset()
+        obs = self.to_one_hot(self.to_categorical(obs))
+        return obs
+
+    def to_categorical(self, obs):
+        
+        # tranform to one channel only with indexes
+        obs = np.amax(
+                obs * np.reshape(np.arange(self.num_channel) + 1, (1,1,-1)), 2).astype(int)
+
+        return obs
+    
+    def to_one_hot(self, obs):
+        m,n = obs.shape
+        I,J = np.ogrid[:m,:n]
+
+        if self.channel_first:
+            out = np.zeros((self.num_channel + 1, m, n), dtype=int)
+            out[obs, I, J] = 1
+            out = out[:-1,:,:]
+        else:
+            out = np.zeros((m, n, self.num_channel + 1), dtype=int)
+            out[I, J, obs] = 1
+            out = out[:,:,:-1]
+        return out
 
 
 class RescaleImageWrapper(TransformObservation):

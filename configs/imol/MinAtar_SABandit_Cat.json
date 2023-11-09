@@ -1,0 +1,73 @@
+{
+    "algorithm":"SAC",
+    "version":"normal",
+    "layer_size":256,
+    "online": true,
+    "network_args": 
+    {
+    	"type": "cnn",
+        "cnn_keys": ["observation"],
+        "ident_keys": [],
+        "mlp_keys": ["theta"],
+        "mlp_kwargs": {
+        "hidden_sizes": [64],
+        "output_size":  32
+        },
+        "cnn_kwargs": {
+                "output_size": 128,
+                "n_channels": [16],
+                "kernel_sizes": [3],
+                "strides": [1],
+                "paddings": [0]
+        }
+    },
+    "replay_buffer_size": 100000,
+    "algorithm_kwargs": {
+        "set_eval_alpha": true,
+        "render":true,
+		"render_agent_pos": false,
+        "log_episode_alphas" : false,
+        "num_epochs":500,
+        "num_eval_steps_per_epoch":1000,
+        "num_train_loops_per_epoch": 1000,
+        "num_trains_per_train_loop":1,
+        "num_expl_steps_per_train_loop":10,
+        "min_num_steps_before_training":5000,
+        "max_path_length":5000,
+        "batch_size":32
+    },
+    "exploration_kwargs": {
+        "prob_random_action": 1,
+        "prob_end": 0.03,
+        "steps": 100000
+    },
+    "trainer_kwargs": {
+        "discount":0.99,
+        "learning_rate":0.0001
+    },
+    "render_kwargs":{
+        "render": true
+    },
+    "wrappers": [
+		{"add_alpha" : true},
+        {"rendering_observation":{"rescale": 255, "resize": [40,40,3]}},
+    	{"soft_reset_wrapper": {"max_time": 500}},
+        {"strict_one_hot_wrapper":{"channel_first": false}},
+        {"channel_first_observation_wrapper": {}},
+		{"dict_obs_wrapper": {
+    		"obs_key": "observation"
+    		}
+    	},
+        { "surprise_adapt_bandit_wrapper": {
+			"buffer_type": "Multinoulli",
+			"obs_out_label": "theta",
+			"obs_label": "observation"
+        }},
+        {"flatten_dict_observation":  true}
+    ],
+    "log_comet": false,
+    "env": "MinAtar/Breakout-v0",
+	"env_kwargs": {
+        "max_steps": 500
+    }
+}
