@@ -8,10 +8,18 @@ try:
 except:
     pass
 import gym
-
+import random
 import numpy as np
+import torch
 
 from IPython import embed
+
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    return
 
 
 def get_network(network_args, obs_dim, action_dim, unflattened_obs_dim=None, device='cpu'):
@@ -491,6 +499,10 @@ def experiment(doodad_config, variant):
         SoftResetWrapper,
     )
     import pdb
+
+    set_seed(variant["random_seed"])
+
+    print(f"Using seed: {variant['random_seed']}")
 
     base_env = get_env(variant)
     base_env2 = get_env(variant)
