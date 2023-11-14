@@ -99,6 +99,8 @@ if __name__ == "__main__":
     args = parse_args()
     if "Adapt" in args.env_id:
         env_name = f"{args.env_id}_NoisyRoom_{args.noisy_room}"
+    elif "/" in args.env_id:
+        env_name = args.env_id.split("/")[1]
     else:
         env_name = args.env_id
     
@@ -107,7 +109,7 @@ if __name__ == "__main__":
     else:
         env_name += "_noExtrinsic" 
     
-    run_name = f"ppo_{env_name}_{args.model}_s{args.seed}"
+    run_name = f"ppo_{env_name}_{args.model}_{args.buffer_type}_s{args.seed}"
     
     if args.track:
         import wandb

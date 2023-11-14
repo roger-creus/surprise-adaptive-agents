@@ -3,6 +3,7 @@ import torch.nn as nn
 import numpy as np
 import gymnasium as gym
 
+from IPython import embed
 from torch.distributions.categorical import Categorical
 
 class TetrisQNetwork(nn.Module):
@@ -214,7 +215,69 @@ class TetrisPPOAgent(nn.Module):
         if action is None:
             action = probs.sample()
         return action, probs.log_prob(action), probs.entropy(), self.critic(x)
+    
 
+class MinAtarPPOAgent(nn.Module):
+    def __init__(self, env, use_theta=False):
+        super().__init__()
+        self.use_theta = use_theta
+        n_input_channels = env.single_observation_space["obs"].shape[-1]
+
+        self.network = nn.Sequential(
+            layer_init(nn.Conv2d(n_input_channels, 16, kernel_size=3, stride=1)),
+            nn.ReLU(),
+            nn.Flatten(),
+        )
+
+        if use_theta:
+            self.theta_fc = nn.Sequential(
+                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
+                nn.ReLU(),
+                nn.Linear(120, 84),
+                nn.ReLU(),
+            )
+
+        with torch.no_grad():
+            s_ = env.single_observation_space["obs"].sample()[None]
+            n_flatten = self.network(torch.as_tensor(s_).float().permute(0,3,1,2)).shape[1]
+        
+        if use_theta:
+            n_flatten += 84
+
+        self.actor = layer_init(nn.Linear(n_flatten, env.single_action_space.n), std=0.01)
+        self.critic = layer_init(nn.Linear(n_flatten, 1), std=1)
+
+    def get_value(self, x):
+        x_ = x["obs"]
+        y_ = x["theta"]
+        img_features = self.network(x_.permute(0,3,1,2).float())
+        
+        if self.use_theta:
+            theta_features = self.theta_fc(y_.float())
+            x = torch.cat([img_features, theta_features], dim=1)
+        else:
+            x = img_features
+            
+        return self.critic(x)
+
+    def get_action_and_value(self, x, action=None):
+        x_ = x["obs"]
+        y_ = x["theta"]
+
+        img_features = self.network(x_.permute(0,3,1,2).float())
+        
+        if self.use_theta:
+            theta_features = self.theta_fc(y_.float())
+            x = torch.cat([img_features, theta_features], dim=1)
+        else:
+            x = img_features
+        
+        logits = self.actor(x)
+        probs = Categorical(logits=logits)
+        if action is None:
+            action = probs.sample()
+        return action, probs.log_prob(action), probs.entropy(), self.critic(x)
+    
 class MinigridPPOLSTMAgent(nn.Module):
     def __init__(self, env, use_theta=False):
         super().__init__()
