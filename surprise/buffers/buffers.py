@@ -125,10 +125,10 @@ class GaussianBufferIncremental(BaseBuffer):
     
     def add(self, state):
         if (self.inserts() == 0):
-             self._state_mean = state
+             self._state_mean = state.astype(np.float32)
              self._state_var = np.ones_like(state)
         else:
-            x_mean_old = self._state_mean
+            x_mean_old = self._state_mean.astype(np.float32)
             self._state_mean = self._state_mean + ((state - self._state_mean)/self.inserts())
             
         if (self.inserts() == 2):

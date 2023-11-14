@@ -297,3 +297,43 @@ class MinigridPPOLSTMAgent(nn.Module):
         if action is None:
             action = probs.sample()
         return action, probs.log_prob(action), probs.entropy(), self.critic(hidden), lstm_state
+    
+class MinAtarPPOAgent(nn.Module):
+    def __init__(self, envs, use_theta = False):
+        super().__init__()
+        in_channels = envs.single_observation_space["obs"].shape[-1]
+        
+        self.network = nn.Sequential(
+            layer_init(nn.Conv2d(in_channels, 16, kernel_size=3, stride=1)),
+            nn.ReLU(),
+            nn.Flatten(),
+        )
+        def size_linear_unit(size, kernel_size=3, stride=1):
+            return (size - (kernel_size - 1) - 1) // stride + 1
+        num_linear_units = size_linear_unit(10) * size_linear_unit(10) * 16
+        
+        self.actor = nn.Sequential(
+            layer_init(nn.Linear(num_linear_units, num_linear_units), std=0.01),
+            nn.ReLU(),
+            layer_init(nn.Linear(num_linear_units, envs.single_action_space.n), std=0.01),
+        )
+        self.critic = layer_init(nn.Linear(num_linear_units, 1), std=0.01)
+
+    def get_action_and_value(self, x, action=None):
+        x = x["obs"]
+        hidden = self.network(x.permute(0,3,1,2))
+        logits = self.actor(hidden)
+        probs = Categorical(logits=logits)
+        if action is None:
+            action = probs.sample()
+        return (
+            action,
+            probs.log_prob(action),
+            probs.entropy(),
+            self.critic(hidden),
+        )
+
+    def get_value(self, x):
+        x = x["obs"]
+        hidden = self.network(x.permute(0,3,1,2))
+        return self.critic(hidden)

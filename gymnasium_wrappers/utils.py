@@ -4,7 +4,7 @@ import logging
 import matplotlib.pyplot as plt
 import cv2
 
-from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper
+from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper, OneHotPartialObsWrapper
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
@@ -12,6 +12,39 @@ from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer,
 from IPython import embed
 from gymnasium.envs.registration import register as gym_register
 
+
+class RecordEpisodeStatistics(gym.Wrapper):
+    def __init__(self, env, deque_size=100):
+        super().__init__(env)
+        self.num_envs = getattr(env, "num_envs", 1)
+        self.episode_returns = None
+        self.episode_lengths = None
+
+    def reset(self, **kwargs):
+        observations = super().reset(**kwargs)
+        self.episode_returns = np.zeros(self.num_envs, dtype=np.float32)
+        self.episode_lengths = np.zeros(self.num_envs, dtype=np.int32)
+        self.lives = np.zeros(self.num_envs, dtype=np.int32)
+        self.returned_episode_returns = np.zeros(self.num_envs, dtype=np.float32)
+        self.returned_episode_lengths = np.zeros(self.num_envs, dtype=np.int32)
+        return observations
+
+    def step(self, action):
+        observations, rewards, dones, infos = super().step(action)
+        self.episode_returns += infos["reward"]
+        self.episode_lengths += 1
+        self.returned_episode_returns[:] = self.episode_returns
+        self.returned_episode_lengths[:] = self.episode_lengths
+        self.episode_returns *= 1 - infos["terminated"]
+        self.episode_lengths *= 1 - infos["terminated"]
+        infos["r"] = self.returned_episode_returns
+        infos["l"] = self.returned_episode_lengths
+        return (
+            observations,
+            rewards,
+            dones,
+            infos,
+        )
 
 def make_env(args):
     def thunk():
@@ -34,7 +67,9 @@ def make_env(args):
             
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
+            env = OneHotPartialObsWrapper(env)
             env = ImgObsWrapper(env)
+
             max_steps = 500
             #env = gym.wrappers.NormalizeObservation(env)
             
@@ -43,9 +78,9 @@ def make_env(args):
             env = gym.make("GDY-MazeEnv-v0")
         
         else:
-            raise ValueError(f"Unknown env {args.env_id}")
-            
-        env = gym.wrappers.RecordEpisodeStatistics(env)
+            print(f"Making {args.env_id}")
+            env = gym.make(args.env_id, render_mode='rgb_array', max_episode_steps = 500)
+            max_steps = 500
         
         ############ Create buffer ############
         obs_size = env.observation_space.shape
@@ -116,6 +151,7 @@ def make_env(args):
         else:
             raise ValueError(f"Unknown model {args.model}")
                 
+        env = gym.wrappers.RecordEpisodeStatistics(env)
         env.action_space.seed(args.seed)
         return env
     return thunk

@@ -37,9 +37,9 @@ def parse_args():
         help="whether to capture videos of the agent performances (check out `videos` folder)")
 
     # Algorithm specific arguments
-    parser.add_argument("--env-id", type=str, default="SurpriseAdaptRooms-v0",
+    parser.add_argument("--env-id", type=str, default="MinAtar/SpaceInvaders",
         help="the id of the environment")
-    parser.add_argument("--total-timesteps", type=int, default=20000000,
+    parser.add_argument("--total-timesteps", type=int, default=10000000,
         help="total timesteps of the experiments")
     parser.add_argument("--learning-rate", type=float, default=2.5e-4,
         help="the learning rate of the optimizer")
@@ -79,7 +79,7 @@ def parse_args():
     # OBJECTIVE PARAMS
     parser.add_argument("--model", type=str, default="none",
         help="can be none, smax, smin, sadapt, sadapt-inverse")
-    parser.add_argument("--buffer-type", type=str, default="gaussian",
+    parser.add_argument("--buffer-type", type=str, default="bernoulli",
         help="can be gaussian, or multinoulli")
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
@@ -142,11 +142,12 @@ if __name__ == "__main__":
     assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
 
     use_theta = args.model in ["smax", "smin", "sadapt", "sadapt-inverse"]
-    
     if "Rooms" in args.env_id:
         net = MinigridPPOAgent
     elif args.env_id == "tetris":
         net = TetrisPPOAgent
+    elif "MinAtar" in args.env_id:
+        net = MinAtarPPOAgent
     else:
         raise NotImplementedError
 
@@ -178,8 +179,8 @@ if __name__ == "__main__":
     ep_surprise = {i : [] for i in range(args.num_envs)}
     ep_entropy = {i : [] for i in range(args.num_envs)}
     ep_counter = 0
-
     update_idx = 0
+    
     for update in range(1, num_updates + 1):
         # Annealing the rate if instructed to do so.
         if args.anneal_lr:
@@ -208,40 +209,42 @@ if __name__ == "__main__":
             rewards[step] = torch.tensor(reward).to(device).view(-1)
             next_obs, next_theta, next_done = torch.Tensor(o_["obs"]).to(device), torch.Tensor(o_["theta"]).to(device), torch.Tensor(done).to(device)
             
-            if "surprise" in infos:
-                for i in range(args.num_envs):
-                    ep_surprise[i].append(infos["surprise"][i])
-                    ep_entropy[i].append(infos["theta_entropy"][i])
-        
-            if "final_info" in infos:
-                c = 0
-                logged_heatmap = False
-                for item in infos["final_info"]:
-                    # Skip the envs that are not done
-                    if item is not None and "episode" in item:
-                        print(f"global_step={global_step}, episodic_return={item['episode']['r'][0]}")
-                        writer.add_scalar("charts/episodic_return", item["episode"]["r"], global_step)
-                        writer.add_scalar("charts/episodic_length", item["episode"]["l"], global_step)
-                        writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise[c]), global_step)
-                        writer.add_scalar("charts/episodic_entropy", np.mean(ep_entropy[c]), global_step)
-                        logger_.logs_a([
-                            global_step,
-                            item["episode"]["r"][0],
-                            item["episode"]["l"][0],
-                            np.mean(ep_surprise[c]),
-                            np.mean(ep_entropy[c]),
-                        ])
-                        
-                        if update_idx > 200 and "Rooms" in args.env_id and logged_heatmap == False:
-                            log_heatmap(envs.envs[c], infos["heatmap"][c], ep_counter, writer, f"runs/{run_name}")
-                            logged_heatmap = True
-                            update_idx = 0
-                    
-                        ep_surprise[c].clear()
-                        ep_entropy[c].clear()
-                        ep_counter += 1
-                        c += 1
+            for i in range(args.num_envs):
+                try:
+                    ep_surprise[i].append(infos['surprise'][i])
+                    ep_entropy[i].append(infos['theta_entropy'][i])
+                except:
+                    pass
+                
+            # Only print when at least 1 env is done
+            if "final_info" not in infos:
+                continue
 
+            c = 0
+            for info in infos["final_info"]:
+                # Skip the envs that are not done
+                if "episode" not in info:
+                    c += 1
+                    continue       
+                 
+                print(f"global_step={global_step}, episodic_return={info['episode']['r'][0]}, episodic_length={info['episode']['l'][0]}")
+                writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
+                writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
+                writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise[c]), global_step)
+                writer.add_scalar("charts/episodic_entropy", np.mean(ep_entropy[c]), global_step)
+                logger_.logs_a([
+                    global_step,
+                    info["episode"]["r"][0],
+                    info["episode"]["l"][0],
+                    np.mean(ep_surprise[c]),
+                    np.mean(ep_entropy[c]),
+                ])
+                
+                ep_surprise[c].clear()
+                ep_entropy[c].clear()
+                ep_counter += 1
+                c += 1
+                
         # bootstrap value if not done
         with torch.no_grad():
             next_value = agent.get_value({

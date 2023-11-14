@@ -34,7 +34,8 @@ class BaseSurpriseWrapper(gym.Env):
         self.minimize = minimize
         self.ext_only = ext_only
         self.max_steps = max_steps
-
+        self.deaths = 0
+        
         # Gym spaces
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
@@ -55,18 +56,34 @@ class BaseSurpriseWrapper(gym.Env):
     def step(self, action):
         obs, env_rew, envdone, envtrunc, info = self._env.step(action)
         info['task_reward'] = env_rew
+        
+        # soft reset
+        if envdone:
+            obs, _ = self._env.reset()
+            obs = np.random.rand(*obs.shape)
+            self.deaths += 1
 
-        surprise = -self.buffer.logprob(obs)
+        if self.num_steps == self.max_steps:
+            envdone = True
+            envtrunc = True
+        else:
+            envdone = False
+            envtrunc = False
+
+        surprise = -self.buffer.logprob(obs.astype(np.float32))
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        
+        self.buffer.add(obs.astype(np.float32))
+        info['surprise'] = surprise
+        info["theta_entropy"] = self.buffer.entropy()
+        info['deaths'] = self.deaths
         
         # Add observation to buffer
         if self.minimize:
             rew = -surprise
         else:
             rew = surprise
-
-        self.buffer.add(obs)
         
         if self.add_true_rew:
             rew = env_rew + (rew * self.int_rew_scale)
@@ -75,10 +92,7 @@ class BaseSurpriseWrapper(gym.Env):
             
         if self.ext_only:
             rew = env_rew
-        
-        info['surprise'] = surprise
-        info["theta_entropy"] = self.buffer.entropy()
-        
+                
         try:
             x, y = self._env.agent_pos
             self.heatmap[x, y] += 1
@@ -86,17 +100,6 @@ class BaseSurpriseWrapper(gym.Env):
         except:
             pass
 
-        # soft reset
-        if envdone:
-            obs, _ = self._env.reset()
-
-        if self.num_steps == self.max_steps:
-            envdone = True
-            envtrunc = False
-        else:
-            envdone = False
-            envtrunc = False
-        
         self.num_steps += 1
         return self.get_obs(obs), rew, envdone, envtrunc, info
 
@@ -116,6 +119,7 @@ class BaseSurpriseWrapper(gym.Env):
         obs, info = self._env.reset()
         self.buffer.reset()
         self.num_steps = 0
+        self.deaths = 0
         obs = self.get_obs(obs)
         
         if self.heatmap is not None:
