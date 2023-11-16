@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --partition=lab-real                               # Ask for unkillable job
+#SBATCH --partition=long                               # Ask for unkillable job
 #SBATCH --cpus-per-task=3
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16G                                                # Ask for 10 GB of RAM
@@ -13,7 +13,7 @@ conda activate surprise_adapt
 
 # 4. Launch your job, tell it to save the model in $SLURM_TMPDIR
 #    and look for the dataset into $SLURM_TMPDIR
-python3 scripts/dqn_smirl.py --config=configs/MinAtar_DQN.json --run_mode=local --exp_name=DQN --training_processor_type=gpu --log_comet=true --random_seeds=3 --meta_sim_threads=3 --env=MinAtar/Freeway-v0
+python3 scripts/dqn_smirl.py --config=configs/imol/MinAtar_DQN.json --run_mode=local --exp_name=DQN --training_processor_type=gpu --log_comet=true --random_seeds=3 --meta_sim_threads=3 --env=MinAtar/Freeway-v0
 
 cp $SLURM_TMPDIR/output/ $SCRATCH/surprise-adaptive-agents/output
 cp $SLURM_TMPDIR/output/ $SCRATCH/surprise-adaptive-agents/logs

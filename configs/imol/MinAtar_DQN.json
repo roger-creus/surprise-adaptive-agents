@@ -5,16 +5,27 @@
     "online": true,
     "network_args": 
     {
-    	"type": "cnn_minatar"
-
+    	"type": "cnn",
+        "cnn_keys": ["observation"],
+        "ident_keys": [],
+        "mlp_keys": [],
+        "mlp_kwargs": {
+        },
+        "cnn_kwargs": {
+                "output_size": 128,
+                "n_channels": [16],
+                "kernel_sizes": [3],
+                "strides": [1],
+                "paddings": [0]
+        }
     },
     "replay_buffer_size": 100000,
     "algorithm_kwargs": {
-        "render":false,
+        "render": true,
 	"render_agent_pos": false,
         "log_episode_alphas" : false,
         "num_epochs":500,
-        "num_eval_steps_per_epoch":5000,
+        "num_eval_steps_per_epoch":1000,
         "num_train_loops_per_epoch": 1000,
         "num_trains_per_train_loop":1,
         "num_expl_steps_per_train_loop":10,
@@ -35,16 +46,24 @@
         "render": true
     },
     "wrappers": [
+	    {"soft_reset_wrapper": {"max_time": 500}},
+	    {"rendering_observation":{"rescale": 255, "resize": [40,40,3]}},
 		{"channel_first_observation_wrapper": {}},
 		{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
 		},
+	{ "smirl_wrapper": {
+    		"buffer_type": "Bernoulli",
+    		"add_true_rew": "only",
+    		"obs_label": "observation",
+    		"obs_out_label": "theta"
+        }},
         {"flatten_dict_observation":  true}
     ],
     "log_comet": false,
     "env": "MinAtar/Asterix-v0",
 	"env_kwargs": {
-        "max_steps": 5000
+        "max_steps": 500
     }
 }

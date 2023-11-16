@@ -24,8 +24,8 @@
     "replay_buffer_size": 100000,
     "algorithm_kwargs": {
         "set_eval_alpha": true,
-        "render":false,
-		"render_agent_pos": false,
+        "render":true,
+	"render_agent_pos": false,
         "log_episode_alphas" : false,
         "num_epochs":500,
         "num_eval_steps_per_epoch":1000,
@@ -50,7 +50,8 @@
     },
     "wrappers": [
 		{"add_alpha" : true},
-    	{"soft_reset_wrapper": {"max_time": 500}},
+    		{"soft_reset_wrapper": {"max_time": 500}},
+		{"rendering_observation":{"rescale": 255, "resize": [40,40,3]}},
 		{"channel_first_observation_wrapper": {}},
 		{"dict_obs_wrapper": {
     		"obs_key": "observation"
