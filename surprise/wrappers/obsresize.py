@@ -348,7 +348,7 @@ class SoftResetWrapper(gym.Wrapper):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
         self._time += 1
-        self.returns = self.returns * self.discount_rate + env_rew
+        self.returns = self.returns + env_rew
 
         info['avg_task_returns']= (self.returns + self.total_task_returns)/(self.deaths + 1)
 
