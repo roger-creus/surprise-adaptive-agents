@@ -73,6 +73,75 @@ class BernoulliBuffer(BaseBuffer):
         thresh = 1e-4
         thetas = np.clip(thetas, a_min=thresh, a_max=(1-thresh))
         return np.sum(-thetas * np.log(thetas) - (1-thetas) * np.log(1-thetas))
+    
+
+class MultinoulliBuffer(BaseBuffer):
+    def __init__(self, obs_dim, num_cat=None):
+
+        super().__init__()
+
+        if num_cat is None:
+            self.num_cat = obs_dim[0] + 1
+            self.is_one_hot = True
+        else:
+            self.num_cat = num_cat
+            self.is_one_hot = False
+
+        self.buffer_dim = (self.num_cat - 1, *obs_dim[-2:])
+        self.buffer = np.ones(self.buffer_dim) 
+        self.buffer_size = self.num_cat
+        self.obs_dim = obs_dim
+        
+    def add(self, obs):
+        obs = obs.reshape(self.obs_dim)
+        if not self.is_one_hot:
+            obs = self._convert_obs_to_one_hot(obs)
+
+        self.buffer += obs
+        self.buffer_size += 1
+
+    def get_params(self):
+        theta = np.array(self.buffer) / self.buffer_size
+        thresh = 1e-4
+        theta = np.clip(theta, a_min=thresh, a_max=(1-thresh))
+        return theta.flatten()
+
+    def logprob(self, obs):
+        obs = obs.copy().reshape(self.obs_dim)
+        if not self.is_one_hot:
+            obs = self._convert_obs_to_one_hot(obs)
+        obs = np.concatenate([obs, 1-obs.sum(axis=0, keepdims=True)])
+
+        thetas = self.get_params().reshape(self.buffer_dim)
+
+        # For numerical stability, clip probs to not be 0 or 1
+        thresh = 1e-5
+        thetas = np.clip(thetas, thresh, 1 - thresh)
+        thetas = np.concatenate([thetas, 1-thetas.sum(axis=0, keepdims=True)])
+
+        # Multinoulli log prob
+        probs = np.sum(obs*thetas, axis=0)  
+        logprob = np.sum(np.log(probs))
+        return logprob
+
+    def reset(self):
+        self.buffer = np.ones(self.buffer_dim) 
+        self.buffer_size = self.num_cat + 1
+        
+    def entropy(self):
+        thetas = self.get_params().reshape(self.buffer_dim)
+        thetas = np.concatenate([thetas, 1-thetas.sum(axis=0, keepdims=True)])
+        thresh = 1e-4
+        thetas = np.clip(thetas, a_min=thresh, a_max=(1-thresh))
+        return np.sum(-np.sum(thetas*np.log(thetas), 0))
+    
+    def _convert_obs_to_one_hot(self, obs):
+        assert len(obs.shape) == 2, "Wrong shaped observation for one hot encoding"
+        m,n = obs.shape
+        out = np.zeros((self.num_cat, m, n), dtype=int)
+        I,J = np.ogrid[:m,:n]
+        out[obs, I, J] = 1
+        return out[:-1,:,:]
 
 class GaussianBuffer(BaseBuffer):
     def __init__(self, obs_dim):

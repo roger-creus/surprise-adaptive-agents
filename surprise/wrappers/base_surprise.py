@@ -33,7 +33,11 @@ class BaseSurpriseWrapper(gym.Env):
 
         # Gym spaces
         self.action_space = env.action_space
-        self.env_obs_space = env.observation_space
+
+        if hasattr(env, "env_obs_space"):
+            self.env_obs_space = env.env_obs_space
+        else:
+            self.env_obs_space = env.observation_space
         if self._obs_out_label is None:
             self.observation_space = Box(
                     np.concatenate(
@@ -55,6 +59,8 @@ class BaseSurpriseWrapper(gym.Env):
             })
 
         self.minimize = minimize
+        self.returns = None
+        self.discount_rate = 1
 
         self.reset()
 
@@ -62,7 +68,6 @@ class BaseSurpriseWrapper(gym.Env):
         # Take Action
         obs, env_rew, envdone, info = self._env.step(action)
         info['task_reward'] = env_rew
-
 
         # Get wrapper outputs
         surprise = -self._buffer.logprob(self.encode_obs(obs))
@@ -147,3 +152,4 @@ class BaseSurpriseWrapper(gym.Env):
             return np.array(obs).flatten().copy()
         else:
             return np.array(obs[self._obs_label]).flatten().copy()
+        
