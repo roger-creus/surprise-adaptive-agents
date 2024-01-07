@@ -41,6 +41,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         else:
             self.env_obs_space = env.observation_space
 
+        print(f"env observation: {self.env_obs_space}")
+        print(f"env action space: {self.action_space}")
+
         self.eval = eval
 
         # adding theta and t for consistent MDP (same as SMiRL)

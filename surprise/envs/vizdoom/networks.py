@@ -41,6 +41,11 @@ class VizdoomQF(nn.Module):
                                 nn.Linear(128, 64),
                                 nn.ReLU(True),
                                 nn.Linear(64, actions))
+        
+        print("conv_mixed policy")
+        print(self.conv)
+        print(self.fc)
+
 
     def forward(self, obs):
         import numpy as np

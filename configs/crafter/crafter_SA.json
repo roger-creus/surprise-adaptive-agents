@@ -54,11 +54,6 @@
     		"channel_dim": 2,
     		"obs_key": "observation"
     	}},
-    	{ "surprise_adapt_bandit_wrapper": {
-			"buffer_type": "Gaussian",
-			"obs_label": "observation",
-			"obs_out_label": "theta"
-		}},
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation", "theta"],
             "obs_size": 25346
