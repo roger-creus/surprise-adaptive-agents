@@ -58,7 +58,7 @@
 			"obs_key": "observation",
 			"obs_label": "small_img",
 			"obs_out_label": "theta",
-			"latent_obs_size": 521
+			"latent_obs_size": 520
 		}},
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation", "theta"],
