@@ -58,6 +58,8 @@ class VizdoomQF(nn.Module):
 
         # Concat and return fc output
         concat = torch.cat([img_feats, params_obs], dim=1)
+        # print(f"params_obs.shape:{params_obs.shape}")
+        # print(f"img_feats.shape:{img_feats.shape}")
         return self.fc(concat)
 
 class VAE(nn.Module):
