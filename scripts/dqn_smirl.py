@@ -262,10 +262,11 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = StrictOneHotWrapper(env, **wrapper["strict_one_hot_wrapper"])
         elif "crafter_wrapper" in wrapper:
             from launchers.config import CODE_DIRS_TO_MOUNT
+            base_path = CODE_DIRS_TO_MOUNT[0]
             metric_path = wrapper["crafter_wrapper"]["save_metrics_path"]
             exp_name = variant["exp_name"]
             # /home/mila/f/faisal.mohamed/scratch/doodad-output//smirl/test_crafter/./metrics
-            metrics_save_path = f"{CODE_DIRS_TO_MOUNT}smirl/{exp_name}/{metric_path}"
+            metrics_save_path = f"{base_path}/{exp_name}/{metric_path}"
             os.makedirs(metrics_save_path, exist_ok=True)
             env = CrafterWrapper(env, save_metrics=True, save_metrics_path=metrics_save_path)
         else:
