@@ -586,11 +586,11 @@ def experiment(doodad_config, variant):
         variant["replay_buffer_size"],
         expl_env,
     )
-    # printing for debugging
-    print(f"replay_buffer:{replay_buffer.env}")
+    # # printing for debugging
+    # print(f"replay_buffer:{replay_buffer.env}")
     obs_sample = expl_env.observation_space.sample()
-    print(f"env_obs space:{expl_env.observation_space}")
-    print(f"obs sample shape:{obs_sample.shape}")
+    # print(f"env_obs space:{expl_env.observation_space}")
+    # print(f"obs sample shape:{obs_sample.shape}")
 
 
 

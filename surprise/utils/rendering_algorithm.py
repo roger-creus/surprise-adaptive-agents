@@ -51,6 +51,9 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 self.min_num_steps_before_training,
                 discard_incomplete_paths=False,
             )
+            print(self.expl_env.observation_space.shape)
+            print(self.eval_env.observation_space.shape)
+            print(init_expl_paths.observations.shape)
             self.replay_buffer.add_paths(init_expl_paths)
             self.expl_data_collector.end_epoch(-1)
 
