@@ -49,7 +49,7 @@
     	{ "surprise_adapt_bandit_wrapper": {
 			"buffer_type": "Gaussian",
 			"obs_key": "observation",
-			"obs_label": "observation",
+			"obs_label": "small_img",
 			"obs_out_label": "theta"
 		}},
     	{"dict_to_obs_wrapper": {

@@ -18,7 +18,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         smirl_rew_scale=None,
         buffer_type=None,
         latent_obs_size=None,
-        obs_key = None,
         obs_label=None,
         obs_out_label=None,
     ):
@@ -69,27 +68,11 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
                 ),
             )
 
-        elif obs_key is None:
-            self.observation_space = Dict(
-                {
-                    self._obs_label: Box(
-                        self.env_obs_space.low, self.env_obs_space.high
-                    ),
-                    self._obs_out_label: Box(
-                        np.concatenate(
-                            (np.zeros(theta.shape), np.zeros(1), np.ones(1) * -1)
-                        ),
-                        np.concatenate(
-                            (np.zeros(theta.shape), np.zeros(1), np.ones(1))
-                        ),
-                    ),
-                }
-            )
         else:
             self.observation_space = Dict(
                 {
                     self._obs_label: Box(
-                        self.env_obs_space[obs_key].low, self.env_obs_space[obs_key].high
+                        self.env_obs_space.low, self.env_obs_space.high
                     ),
                     self._obs_out_label: Box(
                         np.concatenate(
@@ -158,8 +141,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         # Compute surprise as the negative log probability of the observation
         # print(self.encode_obs(obs))
         obs_shape = obs["observation"].shape
-        # print(f"obs shape:{obs_shape}")
-        # print(f"self.theta.shape: {self._buffer.get_params().shape}")
+        print(f"obs shape:{obs_shape}")
+        print(f"self.theta.shape: {self._buffer.get_params().shape}")
         surprise = -self._buffer.logprob(self.encode_obs(obs))
         # print(surprise)
         # For numerical stability, clip stds to not be 0
@@ -291,4 +274,4 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         if self._obs_label is None:
             return np.array(obs).flatten().copy()
         else:
-            return np.array(obs[self._obs_key]).flatten().copy()
+            return np.array(obs[self._obs_label]).flatten().copy()
