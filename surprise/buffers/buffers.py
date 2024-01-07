@@ -185,6 +185,7 @@ class GaussianBufferIncremental(BaseBuffer):
     def __init__(self, obs_dim):
         super().__init__()
         self.obs_dim = obs_dim
+        print(f"obs_dim in buffer: {self.obs_dim}")
         self.reset()
         
     def inserts(self):
