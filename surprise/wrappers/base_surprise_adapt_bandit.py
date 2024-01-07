@@ -158,8 +158,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         # Compute surprise as the negative log probability of the observation
         # print(self.encode_obs(obs))
         obs_shape = obs["observation"].shape
-        print(f"obs shape:{obs_shape}")
-        print(f"self.theta.shape: {self._buffer.get_params().shape}")
+        # print(f"obs shape:{obs_shape}")
+        # print(f"self.theta.shape: {self._buffer.get_params().shape}")
         surprise = -self._buffer.logprob(self.encode_obs(obs))
         # print(surprise)
         # For numerical stability, clip stds to not be 0
