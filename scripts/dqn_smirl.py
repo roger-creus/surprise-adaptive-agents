@@ -66,8 +66,15 @@ def get_env(variant):
 
     if variant["env"] == "Tetris":
         from surprise.envs.tetris.tetris import TetrisEnv
-
         env = TetrisEnv(render=True, **variant["env_kwargs"])
+
+    #### Added crafter
+    elif variant["env"] == "Crafter":
+        import gym
+        import crafter
+        env_wargs = variant["env_kwargs"]
+        env = gym.make("CrafterNoReward-v1", length=env_wargs["max_steps"], **env_wargs)
+        
     elif variant["env"] == "VizDoom":
         from surprise.envs.vizdoom.VizdoomWrapper import VizDoomEnv
 
