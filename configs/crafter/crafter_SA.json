@@ -5,7 +5,7 @@
     "network_args": 
     {
     	"type": "conv_mixed",
-    	"size": 25346
+    	"size": 1810
     },
     "replay_buffer_size": 25000,
     "algorithm_kwargs": {
