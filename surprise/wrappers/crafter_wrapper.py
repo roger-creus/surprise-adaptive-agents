@@ -33,15 +33,15 @@ class CrafterWrapper(gym.Env):
             self.update_achievements(info["achievements"])
             success_rates = self.compute_success_rates()
             crafter_score = self.compute_crafter_score()
+            metrics_dict["episode"] = self.episode_count
+            metrics_dict["crafter_score"] = crafter_score
             for k in success_rates:
                 metrics_dict[f"{k}_success_rate"] = success_rates[k]
-            metrics_dict["crafter_score"] = crafter_score
-            metrics_dict["episode"] = self.episode_count
             self.metrics_list.append(metrics_dict)
-            self.episode_count += 1
             if self.episode_count % self.save_freq == 0:
                 df = pd.DataFrame.from_dict(self.metrics_list)
                 df.to_csv(f"{self.save_metrics_path}/crafter_metrics_{self.episode_count}.csv")
+            self.episode_count += 1
 
 
         info  = self._flat_info(info)

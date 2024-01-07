@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH --partition=long
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --gres=gpu:1
+#SBATCH --mem=64G
+#SBATCH --time=100:00:00
+#SBATCH --cpus-per-task=16
+#SBATCH -o /network/scratch/f/faisal.mohamed/slurm-%j.out  # Write the log on scratch
+
+# 1. Load your environment
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia
+module load anaconda/3
+conda activate /home/mila/f/faisal.mohamed/.conda/envs/surprise_adapt
+
+# copy the code to temp to save storage space
+cp -r /home/mila/f/faisal.mohamed/smirl/surprise-adaptive-agents $SLURM_TMPDIR
+cd $SLURM_TMPDIR/surprise-adaptive-agents
+# 4. Launch your job
+python $1 $2 $3 $4 $5 $6 $7 $8
