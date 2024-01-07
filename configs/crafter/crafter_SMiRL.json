@@ -45,7 +45,7 @@
 	        }},
     	{"rendering_observation": 
 			{
-				"resize": [64,48,1]
+				"resize": [256,256,1]
 			}},
     	{"ObsHistoryWrapper": {
     		"history_length": 4,
