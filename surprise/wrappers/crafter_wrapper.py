@@ -4,17 +4,22 @@ from gym.spaces import Box, Dict
 import pdb
 import cv2
 import util.class_util as classu
+import pandas as pd
 from collections import defaultdict
 
 
 class CrafterWrapper(gym.Env):
     
     @classu.hidden_member_initialize
-    def __init__(self, env, save_metrics=True):
+    def __init__(self, env, save_metrics=True, save_metrics_path=None):
         self.observation_space = env.observation_space
         self.action_space = env.action_space
         # track achievements over all episodes
         self.achievements = "none"
+        self.save_metrics_path = save_metrics_path
+        print(f"Crafter save metrics path: {self.save_metrics_path}")
+        self.episode_count = 0
+        self.save_freq = 25
     
     def reset(self):
         return self._env.reset()
@@ -22,17 +27,24 @@ class CrafterWrapper(gym.Env):
     def step(self, action):
         obs, reward, done, info = self._env.step(action)
         # compute crafter metrics
-        # if done:
-        #     self.update_achievements(info["achievements"])
-        #     success_rates = self.compute_success_rates()
-        #     crafter_score = self.compute_crafter_score()
+        if done:
+            metrics_dict = {}
+            self.update_achievements(info["achievements"])
+            success_rates = self.compute_success_rates()
+            crafter_score = self.compute_crafter_score()
+            for k in success_rates:
+                metrics_dict[f"{k}_success_rate"] = success_rates[k]
+            metrics_dict["crafter_score"] = crafter_score
+            metrics_dict["episode"] = self.episode_count
+            self.episode_count += 1
+            if self.episode_count % self.save_freq == 0
+                df = pd.DataFrame.from_dict(metrics_dict)
+                df.to_csv(f"{self.save_metrics_path}/crafter_metrics_{self.episode_count}.csv")
+
 
         info  = self._flat_info(info)
         # add crafter metrics to the info dict
-        # if done:
-        #     for k in success_rates:
-        #         info[f"{k}_success_rate"] = success_rates[k]
-        #     info["crafter_score"] = crafter_score
+            
         
         return obs, reward, done, info
     

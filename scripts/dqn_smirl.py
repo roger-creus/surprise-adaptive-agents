@@ -261,7 +261,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
         elif "strict_one_hot_wrapper" in wrapper:
             env = StrictOneHotWrapper(env, **wrapper["strict_one_hot_wrapper"])
         elif "crafter_wrapper" in wrapper:
-            env = CrafterWrapper(env)
+            metrics_save_path = f"{doodad_config.base_log_dir}/{wrapper["crafter_wrapper"]["save_metrics_path"]}"
+            env = CrafterWrapper(env, save_metrics=True, save_metrics_path=metrics_save_path)
         else:
             if not eval:
                 pass
