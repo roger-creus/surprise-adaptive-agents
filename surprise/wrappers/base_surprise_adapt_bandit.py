@@ -103,7 +103,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         done = False
         while not done:
             obs, rew, done, info = super().step(self.action_space.sample())
-            print(f"obs in random:{obs.shape}")
             self._buffer.add(self.encode_obs(obs))
         random_entropy = self._buffer.entropy()
         super().reset()
@@ -269,6 +268,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         """
         Used to encode the observation before putting on the buffer
         """
+        print(f"obs in get obs:{obs}")
+        shape = obs[self._obs_label].shape
+        print(f"obs in get obs shpae:{shape}")
         if self._obs_label is None:
             return np.array(obs).flatten().copy()
         else:
