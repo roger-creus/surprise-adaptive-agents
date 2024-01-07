@@ -588,7 +588,7 @@ def experiment(doodad_config, variant):
     )
     # printing for debugging
     print(f"replay_buffer:{replay_buffer.env}")
-    print(f"env_obs space:{env.observation_space}")
+    print(f"env_obs space:{expl_env.observation_space}")
 
 
 

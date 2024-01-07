@@ -25,7 +25,7 @@
         "render": true
     },
     "wrappers": [
-    	{"soft_reset_wrapper": {"max_time": 500}},
+    	{"soft_reset_wrapper": {"max_time": 1000}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
@@ -57,9 +57,9 @@
     		"buffer_type": "Gaussian",
     		"obs_label": "small_img",
     		"obs_out_label": "theta",
-    		"smirl_rew_scale": 0.1,
+    		"smirl_rew_scale": 1,
     		"latent_obs_size": 520,
-    		"add_true_rew": true
+    		"add_true_rew": false
     	}},
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation", "theta"]
