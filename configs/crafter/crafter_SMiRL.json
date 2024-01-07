@@ -4,17 +4,16 @@
     "layer_size":256,
     "network_args": 
     {
-    	"type": "conv_mixed",
-    	"size": 1809
+    	"type": "conv_mixed"
     },
-    "replay_buffer_size": 25000,
+    "replay_buffer_size": 50000,
     "algorithm_kwargs": {
         "num_epochs":3000,
         "num_eval_steps_per_epoch":1000,
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
         "min_num_steps_before_training":1000,
-        "max_path_length":1000,
+        "max_path_length":500,
         "batch_size":256
     },
     "trainer_kwargs": {
@@ -25,7 +24,7 @@
         "render": true
     },
     "wrappers": [
-    	{"soft_reset_wrapper": {"max_time": 1000}},
+    	{"soft_reset_wrapper": {"max_time": 500}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
@@ -53,22 +52,43 @@
     		"channel_dim": 2,
     		"obs_key": "observation"
     	}},
+        {"vae_wrapper": {
+	        "vae": null,
+	        "channel_last": true,
+	        "image_channels": 4,
+	        "latent_size": 130,
+	        "h_dim": 768,
+	        "obs_key": "observation",
+	        "obs_label": "latent_obs",
+	        "conv_net": true,
+	        "steps": 250,
+	        "step_skip": 10
+    	}},
+    	{"smirl_wrapper": {
+    		"buffer_type": "Gaussian",
+    		"obs_label": "latent_obs",
+    		"obs_out_label": "theta",
+    		"smirl_rew_scale": 0.001,
+    		"latent_obs_size": 130
+    	}},
     	{"smirl_wrapper": {
     		"buffer_type": "Gaussian",
     		"obs_label": "small_img",
-    		"obs_out_label": "theta",
-    		"smirl_rew_scale": 1,
-    		"latent_obs_size": 520,
-    		"add_true_rew": false
+    		"obs_out_label": "theta2",
+    		"add_true_rew": "only",
+    		"smirl_rew_scale": 0.001,
+    		"latent_obs_size": 520
     	}},
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation", "theta"],
-            "obs_size": 13329
+    		"obs_size": 12549
     	}}
     ],
-    "log_comet": true,
-    "env": "Crafter",
-    "env_kwargs": {
-        "max_steps": 1000
+    "log_comet": false,
+    "env": "VizDoom",
+        "env_kwargs": {
+	    "doom_scenario": "surprise/envs/vizdoom/scenarios/defend_the_line.cfg",
+	    "god": false,
+	    "render": false
     }
 }
