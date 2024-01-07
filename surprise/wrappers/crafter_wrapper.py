@@ -29,9 +29,10 @@ class CrafterWrapper(gym.Env):
 
         info  = self._flat_info(info)
         # add crafter metrics to the info dict
-        for k in success_rates:
-            info[f"{k}_success_rate"] = success_rates[k]
-        info["crafter_score"] = crafter_score
+        if done:
+            for k in success_rates:
+                info[f"{k}_success_rate"] = success_rates[k]
+            info["crafter_score"] = crafter_score
         
         return obs, reward, done, info
     
