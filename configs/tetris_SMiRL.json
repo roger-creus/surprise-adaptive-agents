@@ -36,6 +36,7 @@
     "log_comet": false,
     "env": "Tetris",
     "env_kwargs": {
-    	"reward_func": null
+    	"reward_func": null,
+        "max_steps": 500
     }
 }
