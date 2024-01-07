@@ -72,8 +72,10 @@ def get_env(variant):
     elif variant["env"] == "Crafter":
         import gym
         import crafter
+        from surprise.wrappers.crafter_wrapper import CrafterWrapper
         env_wargs = variant["env_kwargs"]
         env = gym.make("CrafterNoReward-v1", length=env_wargs["max_steps"])
+        env = CrafterWrapper(env)
         
     elif variant["env"] == "VizDoom":
         from surprise.envs.vizdoom.VizdoomWrapper import VizDoomEnv
