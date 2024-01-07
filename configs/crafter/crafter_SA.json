@@ -56,11 +56,12 @@
     	}},
     	{ "surprise_adapt_bandit_wrapper": {
 			"buffer_type": "Gaussian",
-			"obs_label": "observation"
+			"obs_label": "observation",
+			"obs_out_label": "theta"
 		}},
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation", "theta"],
-            "obs_size": 13329
+            "obs_size": 24579
     	}},
         {"crafter_wrapper": {
     		"save_metrics": true,
