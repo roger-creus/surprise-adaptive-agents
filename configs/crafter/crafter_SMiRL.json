@@ -64,6 +64,9 @@
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation", "theta"],
             "obs_size": 13329
+    	}},
+        {"crafter_wrapper": {
+    		
     	}}
     ],
     "log_comet": true,

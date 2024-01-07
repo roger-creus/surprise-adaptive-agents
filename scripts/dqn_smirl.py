@@ -75,7 +75,7 @@ def get_env(variant):
         from surprise.wrappers.crafter_wrapper import CrafterWrapper
         env_wargs = variant["env_kwargs"]
         env = gym.make("CrafterNoReward-v1", length=env_wargs["max_steps"])
-        env = CrafterWrapper(env)
+        # env = CrafterWrapper(env)
         
     elif variant["env"] == "VizDoom":
         from surprise.envs.vizdoom.VizdoomWrapper import VizDoomEnv
@@ -143,6 +143,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
         StrictOneHotWrapper
     )
     from surprise.wrappers.VAE_wrapper import VAEWrapper
+    from surprise.wrappers.crafter_wrapper import CrafterWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
 
@@ -259,6 +260,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             )
         elif "strict_one_hot_wrapper" in wrapper:
             env = StrictOneHotWrapper(env, **wrapper["strict_one_hot_wrapper"])
+        elif "crafter_wrapper" in wrapper:
+            env = CrafterWrapper(env)
         else:
             if not eval:
                 pass
@@ -267,6 +270,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
                 sys.exit()
 
 
+    
     if isinstance(env.observation_space, gym.spaces.Dict):
         obs_dim = {
             key: obs.low.shape for key, obs in env.observation_space.spaces.items()
