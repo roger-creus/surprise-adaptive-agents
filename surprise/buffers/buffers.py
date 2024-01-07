@@ -205,6 +205,8 @@ class GaussianBufferIncremental(BaseBuffer):
             self._state_var = (self._state_var/float(self.inserts()-1))
             
         self._prev_state = state
+        print(f"self._state_var:{self._state_var}")
+        input()
         self._state_var = np.fabs(self._state_var)
 #         print ("self._state_var: ", np.sqrt(self._state_var))
         self.buffer_size += 1
