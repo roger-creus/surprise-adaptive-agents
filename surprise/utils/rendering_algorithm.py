@@ -198,9 +198,9 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
             plt.close()
         
-        if ("vae_reconstruction" in path[0]['env_infos'][0]):
-            video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
-            display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
+        # if ("vae_reconstruction" in path[0]['env_infos'][0]):
+        #     video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
+        #     display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
 
         video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
         display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
