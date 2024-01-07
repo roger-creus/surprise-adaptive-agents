@@ -89,7 +89,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
             self.observation_space = Dict(
                 {
                     self._obs_label: Box(
-                        self.env_obs_space[obs_key].low, self.env_obs_space[obs_key].high
+                        self.env_obs_space.low, self.env_obs_space.high
                     ),
                     self._obs_out_label: Box(
                         np.concatenate(
