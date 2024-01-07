@@ -14,7 +14,7 @@
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
         "min_num_steps_before_training":1000,
-        "max_path_length":500,
+        "max_path_length":1000,
         "batch_size":256
     },
     "trainer_kwargs": {
@@ -62,7 +62,8 @@
     		"add_true_rew": false
     	}},
     	{"dict_to_obs_wrapper": {
-    		"obs_keys": ["observation", "theta"]
+    		"obs_keys": ["observation", "theta"],
+            "obs_size": 1561
     	}}
     ],
     "log_comet": true,
