@@ -648,6 +648,8 @@ def experiment(doodad_config, variant):
                 **{"max_steps": variant["env_kwargs"]["max_steps"]},
             },
         )
+    print(f"exp env:{expl_env.observation_space}")
+    print(f"eval env:{eval_env.observation_space}")
     algorithm.to(ptu.device)
     algorithm.train()
 

@@ -2,6 +2,7 @@
     "algorithm":"SAC",
     "version":"normal",
     "layer_size":256,
+	"online": true,
     "network_args": 
     {
     	"type": "conv_mixed",
