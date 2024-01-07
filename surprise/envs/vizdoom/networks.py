@@ -62,6 +62,7 @@ class VizdoomQF(nn.Module):
         # Encode img features
         img_feats = self.conv(img_obs).view(batch_size, -1)
         print(f"img_feats.shape:{img_feats.shape}")
+        print(f'params_obs:{params_obs.shape}')
 
         # Concat and return fc output
         concat = torch.cat([img_feats, params_obs], dim=1)
