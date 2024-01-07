@@ -5,7 +5,7 @@
     "network_args": 
     {
     	"type": "conv_mixed",
-    	"size": 1809
+    	"size": 13578
     },
     "replay_buffer_size": 25000,
     "algorithm_kwargs": {
@@ -61,7 +61,7 @@
 		}},
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["small_img", "theta"],
-            "obs_size": 24579
+            "obs_size": 13578
     	}},
         {"crafter_wrapper": {
     		"save_metrics": true,
