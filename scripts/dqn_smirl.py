@@ -307,7 +307,7 @@ def add_surprise_adapt(
             obs_space = env.observation_space
         obs_shape = obs_space.shape
         obs_size = np.prod(obs_shape)
-
+        print(f'obs shape in buffer: {obs_size}')
     if variant["buffer_type"] == "Bernoulli":
         buffer = BernoulliBuffer(obs_size)
         env = BaseSurpriseAdaptWrapper(
