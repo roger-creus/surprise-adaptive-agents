@@ -586,6 +586,10 @@ def experiment(doodad_config, variant):
         variant["replay_buffer_size"],
         expl_env,
     )
+    # printing for debugging
+    print(f"replay_buffer:{replay_buffer.env}")
+    print(f"env_obs space:{env.observation_space}")
+
 
 
     online = variant.get("online")
