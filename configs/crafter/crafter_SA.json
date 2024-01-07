@@ -30,6 +30,13 @@
     		"obs_key": "observation"
     		}
     	},
+		{"resize_observation_wrapper": {
+	        "new_size": [26,20,1],
+	        "new_shape": [20,26,1],
+	        "grayscale": true,
+	        "obs_key": "observation",
+	        "out_key_name": "small_img"
+	        }},
     	{"resize_observation_wrapper": {
 	        "new_size": [64,48,1],
 	        "new_shape": [48,64,1],
