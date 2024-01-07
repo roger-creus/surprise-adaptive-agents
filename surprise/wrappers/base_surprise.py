@@ -134,12 +134,11 @@ class BaseSurpriseWrapper(gym.Env):
         Reset the wrapped env and the buffer
         '''
         obs = self._env.reset()
-        print ("surprise obs shape1, ", obs.shape)
+#         print ("surprise obs shape1, ", obs.shape)
         self._buffer.reset()
         self._num_steps = 0
-        # print(obs.shape)
         obs = self.get_obs(obs)
-        print ("surprise obs shape2, ", obs.shape)
+#         print ("surprise obs shape2, ", obs.shape)
         return obs
 
     def render(self, **kwargs):
