@@ -59,7 +59,8 @@
     		"obs_out_label": "theta",
     		"smirl_rew_scale": 1,
     		"latent_obs_size": 520,
-    		"add_true_rew": false
+    		"add_true_rew": false,
+			"minimize": false
     	}},
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation", "theta"],
