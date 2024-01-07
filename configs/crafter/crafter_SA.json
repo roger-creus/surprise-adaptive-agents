@@ -55,7 +55,8 @@
     		"obs_key": "observation"
     	}},
 		{"dict_to_obs_wrapper": {
-    		"obs_keys": ["observation", "theta"]
+    		"obs_keys": ["observation", "theta"],
+            "obs_size": 13329
     	}},
     	{ "surprise_adapt_bandit_wrapper": {
 			"buffer_type": "Gaussian",
