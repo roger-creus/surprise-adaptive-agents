@@ -68,6 +68,6 @@
     "log_comet": true,
     "env": "Crafter",
     "env_kwargs": {
-	    "length": 1000
+        "max_steps": 1000
     }
 }
