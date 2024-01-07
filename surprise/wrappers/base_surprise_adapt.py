@@ -93,8 +93,8 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         # Compute surprise as the negative log probability of the observation
         surprise = - self._buffer.logprob(self.encode_obs(obs))
         # For numerical stability, clip stds to not be 0
-        thresh = 10000
-        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        thresh = 300
+        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
         
         rew = ((-1)**self.alpha_t) * surprise
         
