@@ -17,7 +17,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         add_true_rew=False,
         smirl_rew_scale=None,
         buffer_type=None,
-        obs_key = None
+        obs_key = None,
         latent_obs_size=None,
         obs_label=None,
         obs_out_label=None,
