@@ -291,4 +291,4 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         if self._obs_label is None:
             return np.array(obs).flatten().copy()
         else:
-            return np.array(obs[self._obs_keyl]).flatten().copy()
+            return np.array(obs[self._obs_key]).flatten().copy()
