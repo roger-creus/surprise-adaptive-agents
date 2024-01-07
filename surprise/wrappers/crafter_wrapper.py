@@ -10,11 +10,11 @@ from collections import defaultdict
 class CrafterWrapper(gym.Env):
     
     @classu.hidden_member_initialize
-    def __init__(self, env):
+    def __init__(self, env, save_metrics=True):
         self.observation_space = env.observation_space
         self.action_space = env.action_space
         # track achievements over all episodes
-        self.achievements = {}
+        self.achievements = "none"
     
     def reset(self):
         return self._env.reset()
@@ -50,6 +50,7 @@ class CrafterWrapper(gym.Env):
         return flatted_info
     
     def update_achievements(self, achievements):
+        self.achievements = {} if self.achievements == "none" else self.achievements
         for k,v in achievements.items():
             if not k in self.achievements:
                 self.achievements[k] = []

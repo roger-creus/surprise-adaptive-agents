@@ -66,7 +66,7 @@
             "obs_size": 13329
     	}},
         {"crafter_wrapper": {
-    		
+    		"save_metrics": true
     	}}
     ],
     "log_comet": true,
