@@ -53,7 +53,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             )
             print(self.expl_env.observation_space.shape)
             print(self.eval_env.observation_space.shape)
-            print(init_expl_paths.observations.shape)
+            print((init_expl_paths[0]).observations.shape)
             self.replay_buffer.add_paths(init_expl_paths)
             self.expl_data_collector.end_epoch(-1)
 
