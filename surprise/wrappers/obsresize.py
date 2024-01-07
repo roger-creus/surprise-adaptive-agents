@@ -95,6 +95,9 @@ class DictToObservationWrapper(gym.Wrapper):
     
     def encode_obs(self, obs):
 #         print ("obs keys: ", obs.keys())
+        print(f"obs: {obs.shape}")
+        print(f"self._obs_keys:{self._obs_keys}")
+        input()
         obs_ = np.concatenate([ np.array(obs[x]).flatten() for x in self._obs_keys])
 #         print ("obs dict to obs: ", obs_.shape)
         return obs_
