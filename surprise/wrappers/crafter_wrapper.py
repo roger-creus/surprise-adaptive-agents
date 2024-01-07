@@ -22,17 +22,17 @@ class CrafterWrapper(gym.Env):
     def step(self, action):
         obs, reward, done, info = self._env.step(action)
         # compute crafter metrics
-        if done:
-            self.update_achievements(info["achievements"])
-            success_rates = self.compute_success_rates()
-            crafter_score = self.compute_crafter_score()
+        # if done:
+        #     self.update_achievements(info["achievements"])
+        #     success_rates = self.compute_success_rates()
+        #     crafter_score = self.compute_crafter_score()
 
         info  = self._flat_info(info)
         # add crafter metrics to the info dict
-        if done:
-            for k in success_rates:
-                info[f"{k}_success_rate"] = success_rates[k]
-            info["crafter_score"] = crafter_score
+        # if done:
+        #     for k in success_rates:
+        #         info[f"{k}_success_rate"] = success_rates[k]
+        #     info["crafter_score"] = crafter_score
         
         return obs, reward, done, info
     
