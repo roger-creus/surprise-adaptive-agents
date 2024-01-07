@@ -14,7 +14,7 @@
         "num_trains_per_train_loop":1000,
         "num_expl_steps_per_train_loop":1000,
         "min_num_steps_before_training":1000,
-        "max_path_length":1000,
+        "max_path_length":100,
         "batch_size":256
     },
     "trainer_kwargs": {
@@ -26,7 +26,7 @@
     },
     "wrappers": [
 		{"add_alpha" : true},
-    	{"soft_reset_wrapper": {"max_time": 1000}},
+    	{"soft_reset_wrapper": {"max_time": 100}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
