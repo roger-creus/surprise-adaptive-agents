@@ -103,6 +103,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         done = False
         while not done:
             obs, rew, done, info = super().step(self.action_space.sample())
+            print(f"obs in random:{obs.shpae}")
             self._buffer.add(self.encode_obs(obs))
         random_entropy = self._buffer.entropy()
         super().reset()

@@ -231,6 +231,9 @@ class GaussianBufferIncremental(BaseBuffer):
 #         print ("stds, means: ", np.mean(stds), np.mean(means))
 #         import pdb; pdb.set_trace()
         # Gaussian log prob
+        print(f"std:{stds.shape}")
+        print(f"obs:{obs.shape}")
+        print(f"means:{means.shape}")
         logprob = -0.5*np.sum(np.log(2*np.pi*stds)) - np.sum(np.square(obs-means)/(2*np.square(stds)))
         return logprob
 
