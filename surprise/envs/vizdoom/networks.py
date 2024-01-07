@@ -57,9 +57,11 @@ class VizdoomQF(nn.Module):
 
         # Reshape img and add channel dim
         img_obs = img_obs.view(batch_size, *self._input_shape)
+        print(f"img_obs: {img_obs.shape}")
 
         # Encode img features
         img_feats = self.conv(img_obs).view(batch_size, -1)
+        print(f"img_feats.shape:{img_feats.shape}")
 
         # Concat and return fc output
         concat = torch.cat([img_feats, params_obs], dim=1)
