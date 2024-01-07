@@ -14,7 +14,7 @@ class CrafterWrapper(gym.Env):
         self.observation_space = env.observation_space
         self.action_space = env.action_space
         # track achievements over all episodes
-        self.achievements = defaultdict(lambda : [])
+        self.achievements = {}
     
     def reset(self):
         return self._env.reset()
@@ -51,6 +51,8 @@ class CrafterWrapper(gym.Env):
     
     def update_achievements(self, achievements):
         for k,v in achievements.items():
+            if not k in self.achievements:
+                self.achievements[k] = []
             self.achievements[k].append(v)
 
     def compute_success_rates(self):
