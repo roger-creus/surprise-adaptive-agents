@@ -67,7 +67,7 @@
     	}},
         {"crafter_wrapper": {
     		"save_metrics": true,
-            "save_metrics_path": "./metrics"
+            "save_metrics_path": "metrics"
     	}}
     ],
     "log_comet": true,

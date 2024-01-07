@@ -264,7 +264,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             from launchers.config import LOCAL_LOG_DIR
             metric_path = wrapper["crafter_wrapper"]["save_metrics_path"]
             exp_name = variant["exp_name"]
-            metrics_save_path = f"{LOCAL_LOG_DIR}/smirl/{exp_name}/{metric_path}"
+            # /home/mila/f/faisal.mohamed/scratch/doodad-output//smirl/test_crafter/./metrics
+            metrics_save_path = f"{LOCAL_LOG_DIR}smirl/{exp_name}/{metric_path}"
             env = CrafterWrapper(env, save_metrics=True, save_metrics_path=metrics_save_path)
         else:
             if not eval:
