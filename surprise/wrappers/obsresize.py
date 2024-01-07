@@ -76,6 +76,7 @@ class DictToObservationWrapper(gym.Wrapper):
                 np.zeros(self._obs_size),
                 np.ones(self._obs_size)
             )
+        print(f"obs space size:{self.observation_space}")
 
 
     def step(self, action):
