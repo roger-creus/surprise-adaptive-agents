@@ -37,7 +37,7 @@ class CrafterWrapper(gym.Env):
             metrics_dict["crafter_score"] = crafter_score
             metrics_dict["episode"] = self.episode_count
             self.episode_count += 1
-            if self.episode_count % self.save_freq == 0
+            if self.episode_count % self.save_freq == 0:
                 df = pd.DataFrame.from_dict(metrics_dict)
                 df.to_csv(f"{self.save_metrics_path}/crafter_metrics_{self.episode_count}.csv")
 
