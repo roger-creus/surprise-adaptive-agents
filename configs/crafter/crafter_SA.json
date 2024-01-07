@@ -53,8 +53,7 @@
 			"obs_out_label": "theta"
 		}},
     	{"dict_to_obs_wrapper": {
-    		"obs_keys": ["observation", "theta"],
-            "obs_size": 25346
+    		"obs_keys": ["observation", "theta"]
     	}},
         {"crafter_wrapper": {
     		"save_metrics": true,
