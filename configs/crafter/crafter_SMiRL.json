@@ -22,7 +22,7 @@
         "learning_rate":3E-4
     },
     "render_kwargs":{
-        "render": false
+        "render": true
     },
     "wrappers": [
     	{"soft_reset_wrapper": {"max_time": 1000}},
