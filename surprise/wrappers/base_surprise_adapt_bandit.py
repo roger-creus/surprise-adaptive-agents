@@ -17,6 +17,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         add_true_rew=False,
         smirl_rew_scale=None,
         buffer_type=None,
+        obs_key = None
         latent_obs_size=None,
         obs_label=None,
         obs_out_label=None,
@@ -68,11 +69,27 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
                 ),
             )
 
-        else:
+        elif obs_key is None:
             self.observation_space = Dict(
                 {
                     self._obs_label: Box(
                         self.env_obs_space.low, self.env_obs_space.high
+                    ),
+                    self._obs_out_label: Box(
+                        np.concatenate(
+                            (np.zeros(theta.shape), np.zeros(1), np.ones(1) * -1)
+                        ),
+                        np.concatenate(
+                            (np.zeros(theta.shape), np.zeros(1), np.ones(1))
+                        ),
+                    ),
+                }
+            )
+        else:
+            self.observation_space = Dict(
+                {
+                    self._obs_label: Box(
+                        self.env_obs_space[obs_key].low, self.env_obs_space[obs_key].high
                     ),
                     self._obs_out_label: Box(
                         np.concatenate(
