@@ -202,7 +202,9 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         #     video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
         #     display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
 
+        
         video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
+        print(f"Video: video")
         display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
 
 from rlkit.samplers.data_collector import (

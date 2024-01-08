@@ -305,6 +305,7 @@ class RenderingObservationWrapper(gym.Wrapper):
                 agent_obs = np.array(agent_obs * self._rescale_agent_obs, dtype='uint8')
             render_obs = np.concatenate([render_obs, agent_obs], axis=0)
         info['rendering'] = render_obs
+        print(f"rendering shape in rendering obs:{render_obs.shape}")
         return obs, env_rew, envdone, info
     
 
