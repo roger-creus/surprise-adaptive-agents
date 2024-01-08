@@ -651,6 +651,8 @@ def experiment(doodad_config, variant):
         )
     print(f"exp env:{expl_env.observation_space}")
     print(f"eval env:{eval_env.observation_space}")
+    print(f"device is:{ptu.device}")
+    input()
     algorithm.to(ptu.device)
     algorithm.train()
 
