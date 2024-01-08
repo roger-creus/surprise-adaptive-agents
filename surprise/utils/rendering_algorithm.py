@@ -204,7 +204,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
 
         
         video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
-        print(f"Video: video")
+        print(f"Video: {video.shape}")
         display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
 
 from rlkit.samplers.data_collector import (
