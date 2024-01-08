@@ -177,7 +177,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
         path = self.eval_data_collector.collect_new_paths(
             self.max_path_length,
             self.num_eval_steps_per_epoch,
-            discard_incomplete_paths=True
+            discard_incomplete_paths=False
         )
 
         # plotting the eval alphas for the 2 episodes
