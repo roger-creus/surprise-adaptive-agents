@@ -254,6 +254,9 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
         
     def _train(self):
         self.training_mode(False)
+        print(f"self.trainer.networks:{self.trainer.networks}")
+        input()
+        # print(f"self.trainer.networks:{self.trainer.networks}")
         if self.min_num_steps_before_training > 0:
             self.expl_data_collector.collect_new_steps(
                 self.max_path_length,

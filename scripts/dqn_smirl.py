@@ -517,6 +517,10 @@ def experiment(doodad_config, variant):
     base_env2 = get_env(variant)
 
     print("GPU_BUS_Index", variant["GPU_BUS_Index"])
+    cuda_is_available = torch.cuda.is_available()
+    print(f"torch.cuda.is_available():{cuda}")
+    print(f"doodad_config.use_gpu: {doodad_config.use_gpu}")
+    input()
     if torch.cuda.is_available() and doodad_config.use_gpu:
         print("Using the GPU for learning")
         #         ptu.set_gpu_mode(True, gpu_id=doodad_config.gpu_id)
@@ -651,8 +655,8 @@ def experiment(doodad_config, variant):
         )
     print(f"exp env:{expl_env.observation_space}")
     print(f"eval env:{eval_env.observation_space}")
-    print(f"device is:{ptu.device}")
-    input()
+    # print(f"device is:{ptu.device}")
+    # input()
     algorithm.to(ptu.device)
     algorithm.train()
 
