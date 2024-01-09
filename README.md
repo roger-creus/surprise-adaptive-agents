@@ -13,6 +13,9 @@ doodad: https://github.com/montrealrobotics/doodad
 
 rlkit: https://github.com/Neo-X/rlkit/tree/surprise
 
+- Crafter
+https://github.com/FaisalAhmed0/crafter
+
 ### Build Instruction
 
 ```
