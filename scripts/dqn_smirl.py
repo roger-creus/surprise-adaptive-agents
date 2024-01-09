@@ -596,7 +596,8 @@ def experiment(doodad_config, variant):
         **variant["trainer_kwargs"],
     )
     try:
-        print(f"discount:{variant["trainer_kwargs"]["discount"]}")
+        discount = variant["trainer_kwargs"]["discount"]
+        print(f"discount:{discount}")
         eval_env.set_discount_rate(variant["trainer_kwargs"]["discount"])
         expl_env.set_discount_rate(variant["trainer_kwargs"]["discount"])
         print(f"expl.discount_rate:{expl_env.discount_rate}")
