@@ -596,8 +596,12 @@ def experiment(doodad_config, variant):
         **variant["trainer_kwargs"],
     )
     try:
+        print(f"discount:{variant["trainer_kwargs"]["discount"]}")
         eval_env.set_discount_rate(variant["trainer_kwargs"]["discount"])
         expl_env.set_discount_rate(variant["trainer_kwargs"]["discount"])
+        print(f"expl.discount_rate:{expl_env.discount_rate}")
+        print(f"eval_env.discount_rate:{eval_env.discount_rate}")
+        input()
     except Exception as e:
         print("No method for setting discount rate in environment, defaulting to 1.")
         print(f"error is: {e}")

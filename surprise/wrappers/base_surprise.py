@@ -60,7 +60,7 @@ class BaseSurpriseWrapper(gym.Env):
 
         self.minimize = minimize
         self.returns = None
-        self.discount_rate = 1
+        self.discount_rate = 0.99
 
         self.reset()
 
