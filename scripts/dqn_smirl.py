@@ -598,8 +598,11 @@ def experiment(doodad_config, variant):
     try:
         eval_env.set_discount_rate(variant["trainer_kwargs"]["discount"])
         expl_env.set_discount_rate(variant["trainer_kwargs"]["discount"])
-    except Exception:
+    except Exception as e:
         print("No method for setting discount rate in environment, defaulting to 1.")
+        print(f"error is: {e}")
+        input()
+
     replay_buffer = EnvReplayBuffer(
         variant["replay_buffer_size"],
         expl_env,
