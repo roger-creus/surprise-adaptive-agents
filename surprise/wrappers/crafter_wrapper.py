@@ -27,6 +27,7 @@ class CrafterWrapper(gym.Env):
     
     def step(self, action):
         obs, reward, done, info = self._env.step(action)
+        info["discount"] = self.discount_rate
         # compute crafter metrics
         if done:
             metrics_dict = {}
