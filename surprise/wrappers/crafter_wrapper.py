@@ -82,5 +82,8 @@ class CrafterWrapper(gym.Env):
         assert (0 <= success_rates_values).all() and (success_rates_values <= 100).all()
         scores = np.exp(np.nanmean(np.log(1 + success_rates_values), -1)) - 1
         return scores
+    
+    def set_discount_rate(self, discount_rate):
+        self.discount_rate = discount_rate
 
     
