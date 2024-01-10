@@ -529,7 +529,7 @@ def experiment(doodad_config, variant):
     else:
         print("NOT Using the GPU for learning")
         if not torch.cuda.is_available() and doodad_config.use_gpu:
-            raise Exception("You are requesting a gpu but it is not avalible, change the processing device to cpu")
+            raise Exception("You are requesting a gpu but it is not available, change the processing device to cpu")
 
 
     #     base_env2 = RenderingObservationWrapper(base_env2)
