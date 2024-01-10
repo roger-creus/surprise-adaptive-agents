@@ -39,15 +39,13 @@
 
 
 ####### More training steps per env steps and large replay ############
-
+# you need to modify the config files
 # # Smin
-sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SMIN_more_train_steps.json --run_mode=local --exp_name=crafter_smin_short_more_train_steps_large_replay  --training_processor_type=gpu --log_comet=true --replay_buffer_size=100000
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SMIN_more_train_steps.json --run_mode=local --exp_name=crafter_smin_short_more_train_steps_large_replay  --training_processor_type=gpu --log_comet=true
 # # Smax
-sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SMAX_more_train_steps.json --run_mode=local --exp_name=crafter_smax_short_more_train_steps_large_replay  --training_processor_type=gpu --log_comet=true --replay_buffer_size=100000
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SMAX_more_train_steps.json --run_mode=local --exp_name=crafter_smax_short_more_train_steps_large_replay  --training_processor_type=gpu --log_comet=true
 # # Sa
-sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_more_train_steps.json --run_mode=local --exp_name=crafter_sa_short_more_train_steps_large_replay  --training_processor_type=gpu --log_comet=true --replay_buffer_size=100000
-
-
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_more_train_steps.json --run_mode=local --exp_name=crafter_sa_short_more_train_steps_large_replay  --training_processor_type=gpu --log_comet=true
 
 ####### More training steps per env steps and large replay ############
 
