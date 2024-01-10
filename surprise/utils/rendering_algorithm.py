@@ -69,18 +69,6 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 save_itrs=True,
         ):
             from surprise.wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
-            if isinstance(self.eval_data_collector._env, BaseSurpriseAdaptBanditWrapper):
-                self.eval_data_collector._env.set_alpha_one_mean(self.expl_data_collector._env.alpha_one_mean)
-                self.eval_data_collector._env.set_alpha_zero_mean(self.expl_data_collector._env.alpha_zero_mean)
-            cl = logger.get_comet_logger()
-            if (cl is not None):
-                cl.set_step(step=epoch)
-            self.eval_data_collector.collect_new_paths(
-                self.max_path_length,
-                self.num_eval_steps_per_epoch,
-                discard_incomplete_paths=True,
-            )
-            gt.stamp('evaluation sampling')
 
             for _ in range(self.num_train_loops_per_epoch):
                 new_expl_paths = self.expl_data_collector.collect_new_paths(
@@ -101,9 +89,22 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
                 gt.stamp('training', unique=False)
                 self.training_mode(False)
             
-            if ((epoch % 25) == 0) and self.render:
-                print("Rendering video")
-                self.render_video("eval_video_", counter=epoch)
+            if ((epoch % 25) == 0):
+                if isinstance(self.eval_data_collector._env, BaseSurpriseAdaptBanditWrapper):
+                self.eval_data_collector._env.set_alpha_one_mean(self.expl_data_collector._env.alpha_one_mean)
+                self.eval_data_collector._env.set_alpha_zero_mean(self.expl_data_collector._env.alpha_zero_mean)
+                cl = logger.get_comet_logger()
+                if (cl is not None):
+                    cl.set_step(step=epoch)
+                self.eval_data_collector.collect_new_paths(
+                    self.max_path_length,
+                    self.num_eval_steps_per_epoch,
+                    discard_incomplete_paths=True,
+                )
+                gt.stamp('evaluation sampling')
+                if self.render:
+                    print("Rendering video")
+                    self.render_video("eval_video_", counter=epoch)
 
                 if self.render_agent_pos and len(eval_agent_pos_history) > 0 :
                     self.render_heatmap(eval_agent_pos_history, epoch, "eval_heatmap_")
