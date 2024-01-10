@@ -414,8 +414,8 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
         import pdb
 
         self.eval_data_collector.collect_new_paths(
-        10000,
-        10000,
+        self.max_path_length,
+        self.num_eval_steps_per_epoch,
         discard_incomplete_paths=True,
         )
 

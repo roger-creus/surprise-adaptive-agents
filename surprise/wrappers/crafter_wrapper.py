@@ -44,7 +44,7 @@ class CrafterWrapper(gym.Env):
             self.metrics_list.append(metrics_dict)
             if self.episode_count % self.save_freq == 0:
                 df = pd.DataFrame.from_dict(self.metrics_list)
-                df.to_csv(f"{self.save_metrics_path}/crafter_metrics_{self.episode_count}_timesteps_{self.t}.csv")
+                df.to_csv(f"{self.save_metrics_path}/crafter_metrics_{self.episode_count}.csv")
             self.episode_count += 1
 
 
