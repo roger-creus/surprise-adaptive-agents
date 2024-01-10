@@ -480,6 +480,7 @@ def experiment(doodad_config, variant):
                 api_key=COMET_API_KEY,
                 project_name=COMET_PROJECT_NAME,
                 workspace=COMET_WORKSPACE,
+                log_env_gpu=False # This is to disable comet gpu error, make sure that the logs prints 
             )
             logger.set_comet_logger(comet_logger)
             comet_logger.set_name(str(variant["env"]) + "_" + str(variant["exp_name"]))
@@ -518,15 +519,18 @@ def experiment(doodad_config, variant):
 
     # print("GPU_BUS_Index", variant["GPU_BUS_Index"])
     # cuda_is_available = torch.cuda.is_available()
-    # print(f"torch.cuda.is_available():{cuda_is_available}")
-    # print(f"doodad_config.use_gpu: {doodad_config.use_gpu}")
     # input()
-    if torch.cuda.is_available() and doodad_config.use_gpu:
+    print(f"torch.cuda.is_available():{cuda_is_available}")
+    print(f"doodad_config.use_gpu: {doodad_config.use_gpu}")
+    if torch.cuda.is_available() and doodad_config.use_gpu:    
         print("Using the GPU for learning")
         #         ptu.set_gpu_mode(True, gpu_id=doodad_config.gpu_id)
         ptu.set_gpu_mode(True, gpu_id=variant["GPU_BUS_Index"])
     else:
         print("NOT Using the GPU for learning")
+        if not torch.cuda.is_available() and doodad_config.use_gpu:
+            raise Exception("You are requesting a gpu but it is not avalible, change the processing device to cpu")
+
 
     #     base_env2 = RenderingObservationWrapper(base_env2)
     expl_env, network = add_wrappers(base_env, variant, device=ptu.device)
