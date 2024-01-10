@@ -518,7 +518,7 @@ def experiment(doodad_config, variant):
     base_env2 = get_env(variant)
 
     # print("GPU_BUS_Index", variant["GPU_BUS_Index"])
-    # cuda_is_available = torch.cuda.is_available()
+    cuda_is_available = torch.cuda.is_available()
     # input()
     print(f"torch.cuda.is_available():{cuda_is_available}")
     print(f"doodad_config.use_gpu: {doodad_config.use_gpu}")
