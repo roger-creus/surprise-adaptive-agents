@@ -19,15 +19,18 @@ class CrafterWrapper(gym.Env):
         self.save_metrics_path = save_metrics_path
         print(f"Crafter save metrics path: {self.save_metrics_path}")
         self.episode_count = 0
-        self.save_freq = 25
+        self.save_freq = 2
+        self.t = 0
         self.metrics_list = []
     
     def reset(self):
+        self.t = 0
         return self._env.reset()
     
     def step(self, action):
         obs, reward, done, info = self._env.step(action)
         info["discount"] = self.discount_rate
+        self.t += 1
         # compute crafter metrics
         if done:
             metrics_dict = {}
@@ -41,7 +44,7 @@ class CrafterWrapper(gym.Env):
             self.metrics_list.append(metrics_dict)
             if self.episode_count % self.save_freq == 0:
                 df = pd.DataFrame.from_dict(self.metrics_list)
-                df.to_csv(f"{self.save_metrics_path}/crafter_metrics_{self.episode_count}.csv")
+                df.to_csv(f"{self.save_metrics_path}/crafter_metrics_{self.episode_count}_timesteps_{self.t}.csv")
             self.episode_count += 1
 
 

@@ -75,11 +75,8 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             cl = logger.get_comet_logger()
             if (cl is not None):
                 cl.set_step(step=epoch)
-
-            max_path_length = 10000 if epoch % 2 == 0 else self.max_path_length
-            print(f"max_path_length_in_epoch_{epoch}_eval:{max_path_length}")
             self.eval_data_collector.collect_new_paths(
-                max_path_length,
+                self.max_path_length,
                 self.num_eval_steps_per_epoch,
                 discard_incomplete_paths=True,
             )
@@ -292,10 +289,11 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
                 cl.set_step(step=epoch)
 
             self.eval_data_collector.collect_new_paths(
-                self.max_path_length,
-                self.num_eval_steps_per_epoch,
-                discard_incomplete_paths=True,
+            self.max_path_length,
+            self.num_eval_steps_per_epoch,
+            discard_incomplete_paths=True,
             )
+            
             gt.stamp('evaluation sampling')
 
             for _ in range(self.num_train_loops_per_epoch):
@@ -319,7 +317,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
             self.replay_buffer.add_paths(new_expl_paths)
             gt.stamp('data storing', unique=False)
             
-            if ((epoch % 25) == 0) and self.render:
+            if ((epoch % 2) == 0) and self.render:
                 print("Rendering video")
                 self.render_video("eval_video_", counter=epoch)
 
@@ -414,11 +412,11 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
     def render_video(self, tag, counter):
         import numpy as np
         import pdb
-        
-        path = self.eval_data_collector.collect_new_paths(
-            self.max_path_length,
-            self.num_eval_steps_per_epoch,
-            discard_incomplete_paths=False
+
+        self.eval_data_collector.collect_new_paths(
+        10000,
+        10000,
+        discard_incomplete_paths=True,
         )
 
         # plotting the eval alphas for the 2 episodes
