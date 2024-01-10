@@ -75,8 +75,11 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             cl = logger.get_comet_logger()
             if (cl is not None):
                 cl.set_step(step=epoch)
+
+            max_path_length = 10000 if epoch % 2 == 0 else self.max_path_length
+            print(f"max_path_length_in_epoch_{epoch}_eval:{max_path_length}")
             self.eval_data_collector.collect_new_paths(
-                self.max_path_length,
+                max_path_length,
                 self.num_eval_steps_per_epoch,
                 discard_incomplete_paths=True,
             )
