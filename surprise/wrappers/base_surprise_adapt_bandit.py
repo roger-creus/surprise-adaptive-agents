@@ -68,7 +68,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
                     )
                 ),
             )
-
+            
         elif obs_key is None:
             self.observation_space = Dict(
                 {
