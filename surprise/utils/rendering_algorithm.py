@@ -412,11 +412,11 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
     def render_video(self, tag, counter):
         import numpy as np
         import pdb
-
-        self.eval_data_collector.collect_new_paths(
-        self.max_path_length,
-        self.num_eval_steps_per_epoch,
-        discard_incomplete_paths=True,
+        
+        path = self.eval_data_collector.collect_new_paths(
+            self.max_path_length,
+            self.num_eval_steps_per_epoch,
+            discard_incomplete_paths=False
         )
 
         # plotting the eval alphas for the 2 episodes
@@ -437,11 +437,11 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
 
             plt.close()
         
-        if ("vae_reconstruction" in path[0]['env_infos'][0]):
-            video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
-            display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
+        # if ("vae_reconstruction" in path[0]['env_infos'][0]):
+        #     video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
+        #     display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
 
-        video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
-        display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
-            
         
+        video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
+        print(f"Video: {video.shape}")
+        display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
