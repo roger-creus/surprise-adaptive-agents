@@ -8,7 +8,7 @@
     	"type": "conv_mixed",
     	"size": 1809
     },
-    "replay_buffer_size": 300000,
+    "replay_buffer_size": 1000000,
     "algorithm_kwargs": {
         "num_epochs":5000,
         "num_eval_steps_per_epoch":1000,
