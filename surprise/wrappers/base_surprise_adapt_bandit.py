@@ -163,7 +163,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         surprise = -self._buffer.logprob(self.encode_obs(obs))
         # print(surprise)
         # For numerical stability, clip stds to not be 0
-        thresh = 10000
+        thresh = 8000
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
 
         rew = ((-1) ** self.alpha_t) * surprise
