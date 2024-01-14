@@ -53,7 +53,7 @@
 ## online
 
 # Sadapt
-sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_large_replay_buffer_online.json --run_mode=local --exp_name=crafter_sa_short_new_thresh_larger_replay_eps_greedy_online  --training_processor_type=gpu --log_comet=true
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_large_replay_buffer_online.json --run_mode=local --exp_name=crafter_sa_short_new_thresh_larger_replay_eps_greedy_online2  --training_processor_type=gpu --log_comet=true
 
 # Smin
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SMIN_large_replay_buffer_online.json --run_mode=local --exp_name=crafter_smin_short_larger_replay_eps_greedy_online  --training_processor_type=gpu --log_comet=true
