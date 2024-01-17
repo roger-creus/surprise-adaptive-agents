@@ -165,7 +165,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         # print(surprise)
         # For numerical stability, clip stds to not be 0
         if self._clip_surprise:
-            print(f"clip surprise for numerical stability")
+            # print(f"clip surprise for numerical stability")
             thresh = 300
             surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
 

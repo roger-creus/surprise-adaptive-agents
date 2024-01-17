@@ -18,8 +18,7 @@ class BaseSurpriseWrapper(gym.Env):
                  latent_obs_size=None,
                  obs_label=None,
                  obs_out_label=None,
-                 clip_surprise=True)
-                 :
+                 clip_surprise=True):
         '''
         params
         ======
