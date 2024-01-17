@@ -274,7 +274,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             env = CrafterWrapper(env, save_metrics=True, save_metrics_path=metrics_save_path)
         elif "rescale_reward_wrapper" in wrapper:
             print("rescale_reward_wrapper")
-            env = RescaleImageWrapper(env)
+            env = ReScaleRewardWrapper(env)
         else:
             if not eval:
                 pass
