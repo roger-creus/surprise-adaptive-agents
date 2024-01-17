@@ -144,6 +144,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
     )
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from surprise.wrappers.crafter_wrapper import CrafterWrapper
+    from surprise.wrappers.rescale_reward_wrapper import ReScaleRewardWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
 
@@ -269,6 +270,9 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             metrics_save_path = f"{base_path}/{exp_name}/{metric_path}"
             os.makedirs(metrics_save_path, exist_ok=True)
             env = CrafterWrapper(env, save_metrics=True, save_metrics_path=metrics_save_path)
+
+        elif "rescale_reward" in wrapper:
+            env = RescaleImageWrapper(env)
         else:
             if not eval:
                 pass
