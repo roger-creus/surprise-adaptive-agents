@@ -24,7 +24,7 @@ def display_gif(images, logdir, fps=10, max_outputs=1, counter=0):
         clip = mpy.ImageSequenceClip(list(images), fps=fps)
     else:
         images = images[0]
-        print(f"imgaes[0]:{images}")
+        # print(f"imgaes[0]:{images}")
         clip = mpy.ImageSequenceClip(images, fps=fps)
 #     clip.write_gif(logdir+str(counter)+".gif", fps=fps)
 #     clip.write_videofile(logdir+str(counter)+".webm", fps=fps)
