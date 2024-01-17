@@ -2,20 +2,27 @@
     "algorithm":"SAC",
     "version":"normal",
     "layer_size":256,
+	"online": true, 
     "network_args": 
     {
     	"type": "conv_mixed",
     	"size": 1809
     },
-    "replay_buffer_size": 25000,
+    "replay_buffer_size": 1000000,
     "algorithm_kwargs": {
-        "num_epochs":3000,
-        "num_eval_steps_per_epoch":10000,
-        "num_trains_per_train_loop":1000,
-        "num_expl_steps_per_train_loop":1000,
-        "min_num_steps_before_training":10000,
-        "max_path_length":10000,
-        "batch_size":256
+        "num_epochs":5000,
+        "num_eval_steps_per_epoch":1000,
+		"num_train_loops_per_epoch": 1000,
+        "num_trains_per_train_loop":1,
+		"num_expl_steps_per_train_loop":10,
+        "min_num_steps_before_training":5000,
+        "max_path_length":5000,
+        "batch_size":512
+    },
+	"exploration_kwargs": {
+        "prob_random_action": 1,
+        "prob_end": 0.03,
+        "steps": 1000000
     },
     "trainer_kwargs": {
         "discount":0.99,
@@ -25,7 +32,7 @@
         "render": true
     },
     "wrappers": [
-    	{"soft_reset_wrapper": {"max_time": 10000}},
+    	{"soft_reset_wrapper": {"max_time": 1000}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
@@ -69,11 +76,16 @@
         {"crafter_wrapper": {
     		"save_metrics": true,
             "save_metrics_path": "metrics"
-    	}}
+    	}},
+		{
+			"rescale_reward_wrapper":{
+				"kwargs": "none"
+			}
+		}
     ],
     "log_comet": true,
     "env": "Crafter",
     "env_kwargs": {
-        "max_steps": 10000
+        "max_steps": 1000
     }
 }

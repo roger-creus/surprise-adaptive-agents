@@ -6,7 +6,7 @@
     "network_args": 
     {
     	"type": "conv_mixed",
-    	"size": 1809
+    	"size": 1810
     },
     "replay_buffer_size": 1000000,
     "algorithm_kwargs": {
@@ -16,7 +16,7 @@
         "num_trains_per_train_loop":1,
 		"num_expl_steps_per_train_loop":10,
         "min_num_steps_before_training":5000,
-        "max_path_length":5000,
+        "max_path_length":1000,
         "batch_size":512
     },
 	"exploration_kwargs": {
@@ -37,7 +37,7 @@
     		"obs_key": "observation"
     		}
     	},
-    	{"resize_observation_wrapper": {
+		{"resize_observation_wrapper": {
 	        "new_size": [26,20,1],
 	        "new_shape": [20,26,1],
 	        "grayscale": true,
@@ -60,23 +60,26 @@
     		"channel_dim": 2,
     		"obs_key": "observation"
     	}},
-    	{"smirl_wrapper": {
-    		"buffer_type": "Gaussian",
-    		"obs_label": "small_img",
-    		"obs_out_label": "theta",
-    		"smirl_rew_scale": 1,
-    		"latent_obs_size": 520,
-    		"add_true_rew": false,
-			"minimize": false
-    	}},
+    	{ "surprise_adapt_bandit_wrapper": {
+			"buffer_type": "Gaussian",
+			"obs_key": "observation",
+			"obs_label": "small_img",
+			"obs_out_label": "theta",
+			"latent_obs_size": 520
+		}},
     	{"dict_to_obs_wrapper": {
     		"obs_keys": ["observation", "theta"],
-            "obs_size": 13329
+			"obs_size": 13330
     	}},
         {"crafter_wrapper": {
     		"save_metrics": true,
             "save_metrics_path": "metrics"
-    	}}
+    	}},
+		{
+			"rescale_reward_wrapper":{
+				"kwargs": "none"
+			}
+		}
     ],
     "log_comet": true,
     "env": "Crafter",
@@ -84,3 +87,5 @@
         "max_steps": 1000
     }
 }
+
+
