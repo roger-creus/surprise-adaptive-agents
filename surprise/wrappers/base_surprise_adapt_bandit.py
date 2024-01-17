@@ -161,6 +161,11 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         info["alpha_one_mean"] = self.alpha_one_mean
         info["alpha_one_cnt"] = self.alpha_one_cnt
         info["random_entropy"] = self.random_entropy
+        if self.ucb_alpha_zero:
+            info["ucb_alpha_zero"] = self.ucb_alpha_zero
+        if self.ucb_alpha_one:
+            info["ucb_alpha_one"] = self.ucb_alpha_one
+        info["alpha_rolling_average"] = self.alpha_rolling_average
 
         # Compute surprise as the negative log probability of the observation
         # print(self.encode_obs(obs))
@@ -277,15 +282,11 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
                     self.alpha_one_mean /= self.alpha_one_cnt
 
         # select new alpha
-        self.alpha_t, ucb_alpha_zero, ucb_alpha_one = self._get_alpha()
-        if ucb_alpha_zero:
-            info["ucb_alpha_zero"] = ucb_alpha_zero
-        if ucb_alpha_one:
-            info["ucb_alpha_one"] = ucb_alpha_one
+        self.alpha_t, self.ucb_alpha_zero, self.ucb_alpha_one = self._get_alpha()
+        
         # track the rolling average of alpha
         self.alpha_rolling_average = self.alpha_rolling_average + (1/self.alpha_count) * (self.alpha_t - self.alpha_rolling_average)
         self.alpha_count += 1
-        info["alpha_rolling_average"] = self.alpha_rolling_average
 
         self._buffer.reset()
         self._num_eps += 1
