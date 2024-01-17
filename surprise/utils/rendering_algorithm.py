@@ -21,7 +21,11 @@ def display_gif(images, logdir, fps=10, max_outputs=1, counter=0):
     images = images[:max_outputs]
     if max_outputs>1:
         images = np.concatenate(images, axis=-2)
-    clip = mpy.ImageSequenceClip(list(images), fps=fps)
+        clip = mpy.ImageSequenceClip(list(images), fps=fps)
+    else:
+        images = images[0]
+        print(f"else images shape:{images.shape}")
+        clip = mpy.ImageSequenceClip([images], fps=fps)
 #     clip.write_gif(logdir+str(counter)+".gif", fps=fps)
 #     clip.write_videofile(logdir+str(counter)+".webm", fps=fps)
 #     clip.write_videofile(logdir+".mp4", fps=fps)
