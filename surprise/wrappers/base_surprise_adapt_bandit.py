@@ -35,6 +35,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         theta = self._buffer.get_params()
         self._num_steps = 0
         self._num_eps = 0
+        self.alpha_rolling_average = 0
+        self.alpha_count = 1
 
         # Gym spaces
         self.action_space = env.action_space
@@ -127,6 +129,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         return random_entropy
 
     def _get_alpha(self):
+        ucb_alpha_zero = None
+        ucb_alpha_one = None
         if self.eval:
             alpha_t = np.argmax([self.alpha_zero_mean, self.alpha_one_mean])
         else:
@@ -135,15 +139,17 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
             elif self.alpha_one_cnt == 0:
                 alpha_t = 1
             else:
+                ucb_alpha_zero = np.sqrt(2 * np.log(self._num_eps) / self.alpha_zero_cnt)
+                ucb_alpha_one = np.sqrt(2 * np.log(self._num_eps) / self.alpha_one_cnt)
                 alpha_t = np.argmax(
                     [
                         self.alpha_zero_mean
-                        + np.sqrt(2 * np.log(self._num_eps) / self.alpha_zero_cnt),
+                        + ucb_alpha_zero,
                         self.alpha_one_mean
-                        + np.sqrt(2 * np.log(self._num_eps) / self.alpha_one_cnt),
+                        + ucb_alpha_one,
                     ]
                 )
-        return alpha_t
+        return alpha_t, ucb_alpha_zero, ucb_alpha_one
 
     def step(self, action):
         # Take Action
@@ -167,7 +173,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         if self._clip_surprise:
             # print(f"clip surprise for numerical stability")
             thresh = 300
-            surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+            surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
 
         rew = ((-1) ** self.alpha_t) * surprise
 
@@ -271,7 +277,15 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
                     self.alpha_one_mean /= self.alpha_one_cnt
 
         # select new alpha
-        self.alpha_t = self._get_alpha()
+        self.alpha_t, ucb_alpha_zero, ucb_alpha_one = self._get_alpha()
+        if ucb_alpha_zero:
+            info["ucb_alpha_zero"] = ucb_alpha_zero
+        if ucb_alpha_one:
+            info["ucb_alpha_one"] = ucb_alpha_one
+        # track the rolling average of alpha
+        self.alpha_rolling_average = self.alpha_rolling_average + (1/self.alpha_count) * (self.alpha_t - self.alpha_rolling_average)
+        self.alpha_count += 1
+        info["alpha_rolling_average"] = self.alpha_rolling_average
 
         self._buffer.reset()
         self._num_eps += 1

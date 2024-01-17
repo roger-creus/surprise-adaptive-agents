@@ -32,6 +32,7 @@
         "render": true
     },
     "wrappers": [
+		{"add_alpha" : true},
     	{"soft_reset_wrapper": {"max_time": 1000}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"

@@ -8,7 +8,7 @@ class ReScaleRewardWrapper(gym.Env):
     
     @classu.hidden_member_initialize
     def __init__(self, env, **kwargs):
-        print("Init in Recale wrapper")
+        # print("Init in Recale wrapper")
         self.observation_space = env.observation_space
         self.action_space = env.action_space
         # track achievements over all episodes
@@ -19,15 +19,15 @@ class ReScaleRewardWrapper(gym.Env):
     
     def step(self, action):
         obs, reward, done, info = self._env.step(action)
-        print(f"reward before scaling:{reward}")
+        # print(f"reward before scaling:{reward}")
         # update the running reward std
         self.rms.update(np.array([reward]))
         # rescale the reward by std
         reward_std = np.sqrt(self.rms.var)
         reward /= reward_std
         # For debugging 
-        print(f"reward_std: {reward_std}")
-        print(f"rescaled_reward: {reward}")
+        # print(f"reward_std: {reward_std}")
+        # print(f"rescaled_reward: {reward}")
         info["reward_std"] = reward_std
         info["rescaled_reward"] = reward
         return obs, reward, done, info
