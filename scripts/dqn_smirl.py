@@ -154,6 +154,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
 
     obs_dim = env.observation_space.low.shape
     print("obs dim", obs_dim)
+    print(f"wrappers")
+    print(variant["wrappers"])
     for wrapper in variant["wrappers"]:
         if "smirl_wrapper" in wrapper:
             env = add_smirl(
@@ -270,8 +272,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             metrics_save_path = f"{base_path}/{exp_name}/{metric_path}"
             os.makedirs(metrics_save_path, exist_ok=True)
             env = CrafterWrapper(env, save_metrics=True, save_metrics_path=metrics_save_path)
-
         elif "rescale_reward" in wrapper:
+            print("rescale_reward_wrapper")
             env = RescaleImageWrapper(env)
         else:
             if not eval:
