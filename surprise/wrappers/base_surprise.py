@@ -17,7 +17,9 @@ class BaseSurpriseWrapper(gym.Env):
                  buffer_type=None,
                  latent_obs_size=None,
                  obs_label=None,
-                 obs_out_label=None):
+                 obs_out_label=None,
+                 clip_surprise=True)
+                 :
         '''
         params
         ======
@@ -72,8 +74,10 @@ class BaseSurpriseWrapper(gym.Env):
         # Get wrapper outputs
         surprise = -self._buffer.logprob(self.encode_obs(obs))
         # For numerical stability, clip stds to not be 0
-        thresh = 10000
-        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        if self._clip_surprise:
+            print(f"clip surprise for numerical stability")
+            thresh = 300
+            surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         # Add observation to buffer
         if self.minimize:
             rew = -surprise

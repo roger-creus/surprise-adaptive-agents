@@ -21,7 +21,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         latent_obs_size=None,
         obs_label=None,
         obs_out_label=None,
-        clip_int_reward = True
+        clip_surprise = True
     ):
         """
         params
@@ -164,8 +164,10 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         surprise = -self._buffer.logprob(self.encode_obs(obs))
         # print(surprise)
         # For numerical stability, clip stds to not be 0
-        thresh = 300
-        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        if self._clip_surprise:
+            print(f"clip surprise for numerical stability")
+            thresh = 300
+            surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
 
         rew = ((-1) ** self.alpha_t) * surprise
 

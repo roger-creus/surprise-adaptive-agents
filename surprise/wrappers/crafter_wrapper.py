@@ -23,6 +23,7 @@ class CrafterWrapper(gym.Env):
         self.t = 0
         self.metrics_list = []
         self.crafter_score = 0
+        self.discount_rate = None
     
     def reset(self):
         self.t = 0
@@ -30,7 +31,8 @@ class CrafterWrapper(gym.Env):
     
     def step(self, action):
         obs, reward, done, info = self._env.step(action)
-        info["discount"] = self.discount_rate
+        if self.discount_rate:
+            info["discount"] = self.discount_rate
         self.t += 1
 
         # if done:
