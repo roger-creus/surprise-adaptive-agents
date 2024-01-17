@@ -8,6 +8,7 @@ class ReScaleRewardWrapper(gym.Env):
     
     @classu.hidden_member_initialize
     def __init__(self, env, **kwargs):
+        print("Init in Recale wrapper")
         self.observation_space = env.observation_space
         self.action_space = env.action_space
         # track achievements over all episodes

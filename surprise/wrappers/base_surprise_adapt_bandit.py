@@ -21,6 +21,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         latent_obs_size=None,
         obs_label=None,
         obs_out_label=None,
+        clip_int_reward = True
     ):
         """
         params
