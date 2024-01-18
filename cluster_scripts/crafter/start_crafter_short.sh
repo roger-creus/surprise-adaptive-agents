@@ -46,7 +46,7 @@ sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/craft
 
 
 # Use an MLP with smaller observation size without layer normalization 
-sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp.json --run_mode=local --exp_name=crafter_sa_mlp --training_processor_type=cpu --log_comet=true
+# sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp.json --run_mode=local --exp_name=crafter_sa_mlp --training_processor_type=cpu --log_comet=true
 sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_rescale_reward.json --run_mode=local --exp_name=crafter_sa_mlp_rescale_reward --training_processor_type=cpu --log_comet=true
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_rescale_reward_no_softreset.json --run_mode=local --exp_name=crafter_sa_mlp_rescale_reward_no_softreset --training_processor_type=cpu --log_comet=true
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_no_softreset.json --run_mode=local --exp_name=crafter_sa_mlp_no_softreset --training_processor_type=cpu --log_comet=true
