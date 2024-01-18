@@ -41,6 +41,7 @@ class CrafterWrapper(gym.Env):
             self.update_achievements(info["achievements"])
             success_rates = self.compute_success_rates()
             self.crafter_score = self.compute_crafter_score()            
+            print(f"Achievments:{self.achievements}")
 
         info["crafter_scores_moving_average "] = self.crafter_score
         info  = self._flat_info(info)
