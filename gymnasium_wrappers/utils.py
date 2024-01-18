@@ -88,9 +88,6 @@ def make_env(args):
             env = BaseSurpriseFixedTimeStepsWrapper(env, buffer, max_steps=max_steps)
             env = gym.wrappers.RecordEpisodeStatistics(env)
             env.action_space.seed(args.seed)
-            print("env")
-            print(env)
-            quit()
             return env
         else:
             print(f"Making {args.env_id}")
