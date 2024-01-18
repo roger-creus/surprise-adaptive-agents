@@ -80,7 +80,7 @@ def make_env(args):
             register_griddly_envs()
             env = gym.make("GDY-MazeEnv-v0")
         
-        elif "mountain_car" in args.env_id:
+        elif "MountainCar" in args.env_id:
             max_steps = 500
             env = gym.make("MountainCar-v0", render_mode="rgb_array")
             obs_size = env.observation_space.shape
