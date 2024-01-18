@@ -7,6 +7,7 @@ import minatar
 from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper, OneHotPartialObsWrapper
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
+from gymnasium_wrappers.base_surprise_fixed_timesteps import BaseSurpriseFixedTimeStepsWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
 
 from IPython import embed
@@ -79,13 +80,25 @@ def make_env(args):
             register_griddly_envs()
             env = gym.make("GDY-MazeEnv-v0")
         
+        elif "mountain_car" in args.env_id:
+            max_steps = 500
+            env = gym.make("MountainCar-v0", render_mode="rgb_array")
+            obs_size = env.observation_space.shape
+            buffer = GaussianBufferIncremental(obs_size)
+            env = BaseSurpriseFixedTimeStepsWrapper(env, buffer, max_steps=max_steps)
+            env = gym.wrappers.RecordEpisodeStatistics(env)
+            env.action_space.seed(args.seed)
+            print("env")
+            print(env)
+            quit()
+            return env
         else:
             print(f"Making {args.env_id}")
             env = gym.make(args.env_id, render_mode='rgb_array', max_episode_steps = 500)
             max_steps = 500
         
         ############ Create buffer ############
-        obs_size = env.observation_space.shape
+        
         if args.buffer_type == "gaussian":
             buffer = GaussianBufferIncremental(obs_size)
         elif args.buffer_type == "bernoulli":
@@ -220,3 +233,8 @@ def register_griddly_envs():
         )
     except:
         pass
+
+
+# This is taken from mountain car code
+def compute_mountain_car(x_positon):
+    return np.sin(3 * xs) * 0.45 + 0.55
