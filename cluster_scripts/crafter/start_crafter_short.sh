@@ -45,4 +45,4 @@ sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/craft
 
 
 # Use an MLP with smaller observation size
-sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp.json --run_mode=local --exp_name=crafter_sa_mlp --training_processor_type=gpu --log_comet=true
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp.json --run_mode=local --exp_name=crafter_sa_mlp --training_processor_type=cpu --log_comet=true
