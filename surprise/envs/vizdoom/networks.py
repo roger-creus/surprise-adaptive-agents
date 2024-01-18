@@ -43,7 +43,7 @@ class VizdoomQF(nn.Module):
 
         # use a normalization layer for the entropy related parameters
         if use_normalization_layer:
-            print("use normalization layer")
+            # print("use normalization layer")
             params_size = input_dim - cnn_output_size
             # This taken from URLB codebase
             self.norm_layer = nn.Sequential(nn.Linear(params_size, params_size),
@@ -80,7 +80,7 @@ class VizdoomQF(nn.Module):
 
         # Concat and return fc output
         if self.use_normalization_layer:
-            print("passing the entorpy params to the normalization layer")
+            # print("passing the entorpy params to the normalization layer")
             params_obs = self.norm_layer(params_obs)
         concat = torch.cat([img_feats, params_obs], dim=1)
         # print(f"params_obs.shape:{params_obs.shape}")
