@@ -101,7 +101,7 @@ class MountainCarAgent(nn.Module):
         super().__init__()
         self.use_theta = use_theta
         obs_dim = env.single_observation_space["obs"].shape[-1]
-        theta_dim = np.prod(env.single_action_space["theta"].shape)
+        theta_dim = np.prod(env.single_observation_space["theta"].shape)
         n_actions = env.single_action_space.n
 
         self.obs_encoder = nn.Sequential(
