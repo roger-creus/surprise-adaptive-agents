@@ -200,6 +200,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
     ep_surprise = []
     ep_entropy = []
+    heights = []
+    velocites = []
     ep_counter = 0
 
     # TRY NOT TO MODIFY: start the game
@@ -224,6 +226,14 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if "surprise" in infos:
             ep_surprise.append(infos["surprise"][0])
             ep_entropy.append(infos["theta_entropy"][0])
+
+        if "height" in infos:
+            print("Height in info")
+            heights.append(infos["height"][0])
+        if "velocity" in infos:
+            print("velocity in info")
+            velocites.append(infos["velocity"][0])
+
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         if "final_info" in infos:

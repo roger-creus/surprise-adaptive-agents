@@ -7,7 +7,7 @@ import minatar
 from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper, OneHotPartialObsWrapper
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
-from gymnasium_wrappers.base_surprise_fixed_timesteps import BaseSurpriseFixedTimeStepsWrapper
+from gymnasium_wrappers.base_surprise_fixed_timesteps import BaseSurpriseFixedTimeStepsWrapper, MountainCarSurpriseWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
 
 from IPython import embed
@@ -82,12 +82,11 @@ def make_env(args):
         
         elif "MountainCar" in args.env_id:
             max_steps = 500
-            # TODO: increase the bounds of the initial state
             # TODO: add functions to compute the height and velocity 
             env = gym.make("MountainCar-v0", render_mode="rgb_array")
             obs_size = env.observation_space.shape
             buffer = GaussianBufferIncremental(obs_size)
-            env = BaseSurpriseFixedTimeStepsWrapper(env, buffer, max_steps=max_steps)
+            env = MountainCarSurpriseWrapper(env, buffer, max_steps=max_steps)
             env = gym.wrappers.RecordEpisodeStatistics(env)
             env.action_space.seed(args.seed)
             return env
