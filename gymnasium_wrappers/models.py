@@ -117,7 +117,7 @@ class MountainCarAgent(nn.Module):
         )
 
         input_dim = 128 + (128 * use_theta)
-        self.model = n.Sequential(
+        self.model = nn.Sequential(
             nn.Linear(input_dim, 256), nn.ReLU(),
             nn.Linear(256, 256), nn.ReLU(),
             nn.Linear(256, n_actions)
