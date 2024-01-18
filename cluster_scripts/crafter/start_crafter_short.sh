@@ -19,3 +19,6 @@ sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/craft
 
 # Random agent
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/random_agent.json --run_mode=local --exp_name=random_agent  --training_processor_type=gpu --log_comet=true
+
+# With normalization layer
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_norm.json --run_mode=local --exp_name=testing_layer_norm --training_processor_type=gpu --log_comet=true

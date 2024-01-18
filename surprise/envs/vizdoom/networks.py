@@ -8,9 +8,11 @@ class VizdoomQF(nn.Module):
                  style=None, 
                  size=None,
                  type=None, 
-                 input_shape=[4,48,64]):
+                 input_shape=[4,48,64],
+                 use_normalization_layer=False):
         super().__init__()
         self._input_shape=input_shape
+        self.use_normalization_layer = use_normalization_layer
         self.conv = nn.Sequential(nn.Conv2d(4, 64, 5),
                                   nn.MaxPool2d(2, 2),
                                   nn.LeakyReLU(True),
@@ -21,6 +23,9 @@ class VizdoomQF(nn.Module):
 
                                   nn.Conv2d(32, 8, 3))
 
+
+        # get the size of the output of the conv layer
+        cnn_output_size = self._get_conv_output_size()
         # VAE - using encoded latents as buffer obs
         # RGB - 3 channels obs, still augmented state space
         # time - only adding time to state obs
@@ -35,6 +40,15 @@ class VizdoomQF(nn.Module):
             input_dim = size
         else:
             input_dim = 1029
+
+        # use a normalization layer for the entropy related parameters
+        if use_normalization_layer:
+            print("use normalization layer")
+            params_size = input_dim - cnn_output_size
+            # This taken from URLB codebase
+            self.norm_layer = nn.Sequential(nn.Linear(params_size, params_size),
+                                nn.LayerNorm(params_size), nn.Tanh())
+
 
         self.fc = nn.Sequential(nn.Linear(input_dim, 128),
                                 nn.ReLU(True),
@@ -65,10 +79,18 @@ class VizdoomQF(nn.Module):
         # print(f'params_obs:{params_obs.shape}')
 
         # Concat and return fc output
+        if self.use_normalization_layer:
+            print("passing the entorpy params to the normalization layer")
+            params_obs = self.norm_layer(params_obs)
         concat = torch.cat([img_feats, params_obs], dim=1)
         # print(f"params_obs.shape:{params_obs.shape}")
         # print(f"img_feats.shape:{img_feats.shape}")
         return self.fc(concat)
+
+    def _get_conv_output_size(self):
+        dummy_input = torch.randn(self.input_shape)[None]
+        output_shape = torch.prod(torch.tensor(self.conv(dummy_input).shape)).item()
+        return output_shape
 
 class VAE(nn.Module):
     def __init__(self):
