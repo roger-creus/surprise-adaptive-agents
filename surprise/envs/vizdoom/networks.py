@@ -88,7 +88,7 @@ class VizdoomQF(nn.Module):
         return self.fc(concat)
 
     def _get_conv_output_size(self):
-        dummy_input = torch.randn(self.input_shape)[None]
+        dummy_input = torch.randn(self._input_shape)[None]
         output_shape = torch.prod(torch.tensor(self.conv(dummy_input).shape)).item()
         return output_shape
 
