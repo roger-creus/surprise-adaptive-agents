@@ -164,6 +164,8 @@ class MountainCarSurpriseWrapper(gym.Env):
 
     def step(self, action):
         obs, env_rew, envdone, envtrunc, info = self._env.step(action)
+        info["height"] = self.height(obs[0])
+        info["velocity"] = obs[1]
         info['task_reward'] = env_rew
 
         if self.num_steps >= self.max_steps:
@@ -195,8 +197,7 @@ class MountainCarSurpriseWrapper(gym.Env):
             pass
 
         self.num_steps += 1
-        info["height"] = self.height(obs[0])
-        info["velocity"] = obs[1]
+        
         return self.get_obs(obs), rew, envdone, envtrunc, info
 
     def get_obs(self, obs):
@@ -218,6 +219,8 @@ class MountainCarSurpriseWrapper(gym.Env):
         "high": 0.3	
         }
         obs, info = self._env.reset(options = options)
+        info["height"] = self.height(obs[0])
+        info["velocity"] = obs[1]
         self.buffer.reset()
         self.num_steps = 0
         obs = self.get_obs(obs)
@@ -229,8 +232,7 @@ class MountainCarSurpriseWrapper(gym.Env):
         except:
             self.heatmap = None
 
-        info["height"] = self.height(obs[0])
-        info["velocity"] = obs[1]
+        
         return obs, info
 
     def render(self, **kwargs):
