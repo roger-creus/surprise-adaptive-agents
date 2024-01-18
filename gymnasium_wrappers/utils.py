@@ -82,6 +82,8 @@ def make_env(args):
         
         elif "MountainCar" in args.env_id:
             max_steps = 500
+            # TODO: increase the bounds of the initial state
+            # TODO: add functions to compute the height and velocity 
             env = gym.make("MountainCar-v0", render_mode="rgb_array")
             obs_size = env.observation_space.shape
             buffer = GaussianBufferIncremental(obs_size)
