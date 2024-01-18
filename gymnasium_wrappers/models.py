@@ -96,6 +96,45 @@ class MinigridQNetwork(nn.Module):
     
     
 
+class MountainCarAgent(nn.Module):
+    def __init__(self, env, use_theta=False):
+        super().__init__()
+        self.use_theta = use_theta
+        obs_dim = env.single_action_space["obs"].shape[-1]
+        theta_dim = np.prod(env.single_action_space["theta"].shape)
+        n_actions = env.single_action_space.n
+
+        self.obs_encoder = nn.Sequential(
+            nn.Linear(obs_dim, 256), nn.ReLU(),
+            nn.Linear(256, 256), nn.ReLU(),
+            nn.Linear(256, 128), nn.ReLU(),
+        )
+
+        self.theta_encoder = nn.Sequential(
+            nn.Linear(theta_dim, 256), nn.ReLU(),
+            nn.Linear(256, 256), nn.ReLU(),
+            nn.Linear(256, 128), nn.ReLU(),
+        )
+
+        input_dim = 128 + (128 * use_theta)
+        self.model = n.Sequential(
+            nn.Linear(input_dim, 256), nn.ReLU(),
+            nn.Linear(256, 256), nn.ReLU(),
+            nn.Linear(256, n_actions)
+        )
+
+    def forward(self, x):
+        obs = x["obs"]
+        theta = x["theta"]
+        obs = self.obs_encoder(obs)
+        if self.use_theta:
+            theta = self.theta_encoder(theta)
+            x = torch.cat([obs, theta], dim=-1)
+        else:
+            x = obs
+        return self.model(x)
+
+
 def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
     torch.nn.init.orthogonal_(layer.weight, std)
     torch.nn.init.constant_(layer.bias, bias_const)

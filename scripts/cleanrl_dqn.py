@@ -164,14 +164,15 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         net = MinigridQNetwork
     elif args.env_id == "tetris":
         net = TetrisQNetwork
-    else:
-        raise NotImplementedError
+    elif "MountainCar" in args.env_id:
+        net = MountainCarAgent
     
     q_network = net(envs, use_theta=use_theta).to(device)
     optimizer = optim.Adam(q_network.parameters(), lr=args.learning_rate)
     target_network = net(envs, use_theta=use_theta).to(device)
     target_network.load_state_dict(q_network.state_dict())
-
+    print("q network")
+    print(q_network)
     logger_ = make_csv_logger(f"runs/{run_name}/log.csv")
 
     print(q_network)
