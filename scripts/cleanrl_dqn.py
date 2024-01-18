@@ -228,10 +228,10 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             ep_entropy.append(infos["theta_entropy"][0])
 
         if "height" in infos:
-            print("Height in info")
+            # print("Height in info")
             heights.append(infos["height"][0])
         if "velocity" in infos:
-            print("velocity in info")
+            # print("velocity in info")
             velocites.append(infos["velocity"][0])
 
                 
@@ -248,6 +248,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise), global_step)
                 writer.add_scalar("charts/episodic_entropy", np.mean(ep_entropy), global_step)
                 writer.add_scalar("charts/epsilon", epsilon, global_step)
+                writer.add_scalar("charts/velocity", np.mean(velocites), global_step)
+                writer.add_scalar("charts/height", np.mean(heights), global_step)
                 logger_.logs_a([
                     global_step,
                     info["episode"]["r"][0],
@@ -261,6 +263,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 
                 ep_surprise.clear()
                 ep_entropy.clear()
+                heights.clear()
+                velocites.clear()
                 ep_counter += 1
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
