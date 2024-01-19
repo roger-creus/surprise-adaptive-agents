@@ -234,7 +234,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if "velocity" in infos:
             # print("velocity in info")
             velocites.append(infos["velocity"][0])
-        if "rendering" in info:
+        if "rendering" in infos:
             print("added frame to frames")
             renderings.append(infos["rendering"][0])
 
