@@ -197,7 +197,7 @@ class MountainCarSurpriseWrapper(gym.Env):
             pass
 
         self.num_steps += 1
-        
+        info["rendering"] = self._env.render()
         return self.get_obs(obs), rew, envdone, envtrunc, info
 
     def get_obs(self, obs):
@@ -221,6 +221,7 @@ class MountainCarSurpriseWrapper(gym.Env):
         obs, info = self._env.reset(options = options)
         info["height"] = self.height(obs[0])
         info["velocity"] = obs[1]
+        info["rendering"] = self._env.render()
         self.buffer.reset()
         self.num_steps = 0
         obs = self.get_obs(obs)

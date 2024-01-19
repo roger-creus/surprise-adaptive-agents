@@ -202,6 +202,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     ep_entropy = []
     heights = []
     velocites = []
+    renderings = []
     ep_counter = 0
 
     # TRY NOT TO MODIFY: start the game
@@ -233,6 +234,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if "velocity" in infos:
             # print("velocity in info")
             velocites.append(infos["velocity"][0])
+        if "rendering" in info:
+            renderings.append(infos["rendering"][0])
 
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
@@ -258,6 +261,12 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     np.mean(ep_entropy),
                 ])
                 
+                # TODO: add logging frequencey
+                if len(renderings) > 0:
+                    frames = np.transpose(np.array(renderings),(0,3,1,2))
+                    fps, skip = 3, 8
+                    wandb.log({'eval/Agent_video': wandb.Video(frames[::skip,:,::2,::2], fps=fps,format="gif")})
+
                 if ep_counter % 1000 == 0 and "Rooms" in args.env_id:
                     log_heatmap(envs.envs[0], infos["heatmap"][0], ep_counter, writer, f"runs/{run_name}")
                 
@@ -265,6 +274,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 ep_entropy.clear()
                 heights.clear()
                 velocites.clear()
+                renderings.clear()
                 ep_counter += 1
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
