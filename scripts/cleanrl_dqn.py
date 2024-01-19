@@ -38,6 +38,8 @@ def parse_args():
         help="the entity (team) of wandb's project")
     parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
         help="whether to capture videos of the agent performances (check out `videos` folder)")
+    parser.add_argument("--log-video-freq", type=int, default=100,
+        help="video logging frequency")
     parser.add_argument("--save-model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="whether to save model into the `runs/{run_name}` folder")
     parser.add_argument("--upload-model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
@@ -235,7 +237,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             # print("velocity in info")
             velocites.append(infos["velocity"][0])
         if "rendering" in infos:
-            print("added frame to frames")
+            # print("added frame to frames")
             renderings.append(infos["rendering"][0])
 
                 
@@ -263,8 +265,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 ])
                 
                 # TODO: add logging frequencey
-                if len(renderings) > 0:
-                    print("rendering video")
+                if len(renderings) > 0 and ep_counter % args.log_video_freq == 0:
+                    # print("rendering video")
                     frames = np.transpose(np.array(renderings),(0,3,1,2))
                     fps, skip = 3, 8
                     wandb.log({'eval/Agent_video': wandb.Video(frames[::skip,:,::2,::2], fps=fps,format="gif")})
