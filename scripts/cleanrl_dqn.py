@@ -235,6 +235,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             # print("velocity in info")
             velocites.append(infos["velocity"][0])
         if "rendering" in info:
+            print("added frame to frames")
             renderings.append(infos["rendering"][0])
 
                 
@@ -263,6 +264,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 
                 # TODO: add logging frequencey
                 if len(renderings) > 0:
+                    print("rendering video")
                     frames = np.transpose(np.array(renderings),(0,3,1,2))
                     fps, skip = 3, 8
                     wandb.log({'eval/Agent_video': wandb.Video(frames[::skip,:,::2,::2], fps=fps,format="gif")})
