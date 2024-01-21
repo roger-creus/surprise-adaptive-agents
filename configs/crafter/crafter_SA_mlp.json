@@ -21,7 +21,7 @@
 	"exploration_kwargs": {
         "prob_random_action": 1,
         "prob_end": 0.03,
-        "steps": 1000000
+        "steps": 3000000
     },
     "trainer_kwargs": {
         "discount":0.99,
