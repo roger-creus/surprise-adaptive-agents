@@ -131,7 +131,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
             random_entropy = self._buffer.entropy()
             entropies.append(random_entropy)
             super().reset()
-            self.buffer.reset()
+            self._buffer.reset()
         random_entropy = np.mean(entropies)
         return random_entropy
 
