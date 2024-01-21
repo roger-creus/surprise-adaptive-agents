@@ -48,12 +48,12 @@ def get_network(network_args, obs_dim, action_dim, unflattened_obs_dim=None, dev
         from rlkit.torch.networks import Mlp
 
         qf = Mlp(
-            hidden_sizes=[256, 128, 64],
+            hidden_sizes=[64, 32, 16],
             input_size=obs_dim[0],
             output_size=action_dim,
         )
         target_qf = Mlp(
-            hidden_sizes=[256, 128, 64],
+            hidden_sizes=[64, 32, 16],
             input_size=obs_dim[0],
             output_size=action_dim,
         )
