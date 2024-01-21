@@ -21,7 +21,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         latent_obs_size=None,
         obs_label=None,
         obs_out_label=None,
-        clip_surprise = True
+        clip_surprise = True,
+        random_entropy_num_eps = 1 # number of episodes used to estimate the entorpy of the random agent
     ):
         """
         params
@@ -37,6 +38,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         self._num_eps = 0
         self.alpha_rolling_average = 0
         self.alpha_count = 1
+        self.random_entropy_num_eps = random_entropy_num_eps
 
         # Gym spaces
         self.action_space = env.action_space
@@ -119,13 +121,18 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         self.alpha_one_mean = val
 
     def _get_random_entropy(self):
-        super().reset()
-        done = False
-        while not done:
-            obs, rew, done, info = super().step(self.action_space.sample())
-            self._buffer.add(self.encode_obs(obs))
-        random_entropy = self._buffer.entropy()
-        super().reset()
+        entropies = []
+        for eps in range(self.random_entropy_num_eps):
+            super().reset()
+            done = False
+            while not done:
+                obs, rew, done, info = super().step(self.action_space.sample())
+                self._buffer.add(self.encode_obs(obs))
+            random_entropy = self._buffer.entropy()
+            entropies.append(random_entropy)
+            super().reset()
+            self.buffer.reset()
+        random_entropy = np.mean(entropies)
         return random_entropy
 
     def _get_alpha(self):

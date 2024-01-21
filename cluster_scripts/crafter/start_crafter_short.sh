@@ -1,5 +1,8 @@
-# Random agent
+# Random agent w/ softreset
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/random_agent.json --run_mode=local --exp_name=random_agent  --training_processor_type=gpu --log_comet=true
+
+# Random agent w/o softreset
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/random_agent_no_softreset.json --run_mode=local --exp_name=random_agent_no_softreset  --training_processor_type=cpu --log_comet=true
 
 ############# Without normalization layer ################
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA.json --run_mode=local --exp_name=crafter_sa --training_processor_type=gpu --log_comet=true
@@ -23,7 +26,7 @@
 ############# Without normalization layer ################
 
 # more eps-greedy exploration steps
-sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_more_exp.json --run_mode=local --exp_name=crafter_sa_more_exp --training_processor_type=gpu --log_comet=true
+# sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_more_exp.json --run_mode=local --exp_name=crafter_sa_more_exp --training_processor_type=gpu --log_comet=true
 
 
 ############# With normalization layer ################
@@ -51,3 +54,6 @@ sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/craft
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_rescale_reward.json --run_mode=local --exp_name=crafter_sa_mlp_rescale_reward --training_processor_type=cpu --log_comet=true
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_rescale_reward_no_softreset.json --run_mode=local --exp_name=crafter_sa_mlp_rescale_reward_no_softreset --training_processor_type=cpu --log_comet=true
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_no_softreset.json --run_mode=local --exp_name=crafter_sa_mlp_no_softreset --training_processor_type=cpu --log_comet=true
+
+# sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_small_cnn.json --run_mode=local --exp_name=crafter_sa_small_cnn --training_processor_type=cpu --log_comet=true
+
