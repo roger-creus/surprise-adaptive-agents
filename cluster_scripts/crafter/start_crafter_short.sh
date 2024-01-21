@@ -2,7 +2,7 @@
 # sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/random_agent.json --run_mode=local --exp_name=random_agent  --training_processor_type=gpu --log_comet=true
 
 # Random agent w/o softreset
-# sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/random_agent_no_softreset.json --run_mode=local --exp_name=random_agent_no_softreset  --training_processor_type=cpu --log_comet=true
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/random_agent_no_softreset.json --run_mode=local --exp_name=random_agent_no_softreset  --training_processor_type=gpu --log_comet=true
 
 # DQN w/ softreset
 sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_DQN_softreset.json --run_mode=local --exp_name=DQN_softreset  --training_processor_type=gpu --log_comet=true
