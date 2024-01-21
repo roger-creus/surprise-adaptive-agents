@@ -420,7 +420,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
         
         path = self.eval_data_collector.collect_new_paths(
             self.max_path_length,
-            self.num_eval_steps_per_epoch,
+            self.max_path_length,
             discard_incomplete_paths=False
         )
 
