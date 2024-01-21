@@ -33,7 +33,7 @@ class CrafterWrapper(gym.Env):
     def step(self, action):
         obs, reward, done, info = self._env.step(action)
         self.episode_return += reward
-        info["crafter_episode_return"] = episode_return
+        info["crafter_episode_return"] = self.episode_return
 
         if self.discount_rate:
             info["discount"] = self.discount_rate
