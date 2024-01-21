@@ -17,7 +17,7 @@ class CrafterWrapper(gym.Env):
         # track achievements over all episodes
         self.achievements = "none"
         self.save_metrics_path = save_metrics_path
-        print(f"Crafter save metrics path: {self.save_metrics_path}")
+        # print(f"Crafter save metrics path: {self.save_metrics_path}")
         self.episode_count = 0
         self.eval_freq = 100
         self.t = 0

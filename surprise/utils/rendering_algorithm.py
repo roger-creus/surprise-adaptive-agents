@@ -13,19 +13,21 @@ from rlkit.core import logger
 from util.utils import current_mem_usage
 import matplotlib.pyplot as plt
 
-def display_gif(images, logdir, fps=10, max_outputs=1, counter=0):
+def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
     ### image format (episodes, img_width, img_height, colour_channels)
     import moviepy.editor as mpy
     import numpy as np
     print ("images shape: ", images.shape)
     images = images[:max_outputs]
-    if max_outputs>1:
-        images = np.concatenate(images, axis=-2)
-        clip = mpy.ImageSequenceClip(list(images), fps=fps)
-    else:
-        images = images[0]
-        # print(f"imgaes[0]:{images}")
-        clip = mpy.ImageSequenceClip(images, fps=fps)
+    # make all paths in video
+    images = np.concatenate(images, axis=0)
+    # if max_outputs>1:
+    # images = np.concatenate(images, axis=-2)
+    clip = mpy.ImageSequenceClip(list(images), fps=fps)
+    # else:
+    #     images = images[0]
+    #     # print(f"imgaes[0]:{images}")
+    #     clip = mpy.ImageSequenceClip(images, fps=fps)
 #     clip.write_gif(logdir+str(counter)+".gif", fps=fps)
 #     clip.write_videofile(logdir+str(counter)+".webm", fps=fps)
 #     clip.write_videofile(logdir+".mp4", fps=fps)
@@ -420,7 +422,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
         
         path = self.eval_data_collector.collect_new_paths(
             self.max_path_length,
-            self.max_path_length,
+            self.num_eval_steps_per_epoch,
             discard_incomplete_paths=False
         )
 
