@@ -13,7 +13,7 @@ from rlkit.core import logger
 from util.utils import current_mem_usage
 import matplotlib.pyplot as plt
 
-def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
+def display_gif(images, logdir, fps=10, max_outputs=1, counter=0):
     ### image format (episodes, img_width, img_height, colour_channels)
     import moviepy.editor as mpy
     import numpy as np

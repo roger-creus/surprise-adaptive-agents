@@ -23,6 +23,7 @@ class CrafterWrapper(gym.Env):
         self.t = 0
         self.metrics_list = []
         self.crafter_score = 0
+        self.episode_return = 0
         self.discount_rate = None
     
     def reset(self):
@@ -31,6 +32,9 @@ class CrafterWrapper(gym.Env):
     
     def step(self, action):
         obs, reward, done, info = self._env.step(action)
+        self.episode_return += reward
+        info["crafter_episode_return"] = episode_return
+
         if self.discount_rate:
             info["discount"] = self.discount_rate
         self.t += 1
@@ -40,8 +44,9 @@ class CrafterWrapper(gym.Env):
         if done:
             self.update_achievements(info["achievements"])
             success_rates = self.compute_success_rates()
-            self.crafter_score = self.compute_crafter_score()            
-
+            self.crafter_score = self.compute_crafter_score()   
+            self.episode_return = 0             
+        
         info["crafter_scores_moving_average "] = self.crafter_score
         info  = self._flat_info(info)
         # add crafter metrics to the info dict
@@ -49,11 +54,11 @@ class CrafterWrapper(gym.Env):
         
         return obs, reward, done, info
     
-    def update_crafter_score(self, new_score):
-        if np.isnan(self.crafter_scores_moving_average) or self.episode_count == 0:
-            self.crafter_scores_moving_average = 0
-        else:
-            self.crafter_scores_moving_average = self.crafter_scores_moving_average + (1/self.episode_count) * (new_score - self.crafter_scores_moving_average)
+    # def update_crafter_score(self, new_score):
+    #     if np.isnan(self.crafter_scores_moving_average) or self.episode_count == 0:
+    #         self.crafter_scores_moving_average = 0
+    #     else:
+    #         self.crafter_scores_moving_average = self.crafter_scores_moving_average + (1/self.episode_count) * (new_score - self.crafter_scores_moving_average)
             
     
     def render(self, mode=None):
