@@ -126,6 +126,7 @@ class BaseSurpriseDiffWrapper(gym.Wrapper):
 
     def _get_random_entropy(self):
         print("-------Calculating random policy entropy-----------")
+        entropies = []
         surprise = np.zeros((self.random_entropy_num_eps, self._time_horizon)) + 1e-8 # for numerical stability
         for eps in range(self.random_entropy_num_eps):
             super().reset()
