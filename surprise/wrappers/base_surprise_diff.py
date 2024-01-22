@@ -142,7 +142,7 @@ class BaseSurpriseDiffWrapper(gym.Wrapper):
             super().reset()
             self._buffer.reset()
         random_entropy = np.mean(entropies)
-        mean_s = self.random_surprise = np.mean(surprises, axis=0)
+        mean_s = self.random_surprise = np.mean(surprise, axis=0)
         print(f"mean surprises: {mean_s}")
         print(len(mean_s))
         quit()
