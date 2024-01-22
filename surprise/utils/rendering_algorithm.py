@@ -469,7 +469,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
             # copy the policy to not affect the eps-greedy steps
             policy_copy = deepcopy(self.policy)
             train_video_step_collector = MdpPathCollector(
-                self.evaluation_env, policy_copy, render_kwargs=variant["render_kwargs"]
+                self.evaluation_env, policy_copy
             )
             # delete to prevent memory leak
             del policy_copy
