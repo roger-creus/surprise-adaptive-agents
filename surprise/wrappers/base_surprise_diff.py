@@ -199,6 +199,9 @@ class BaseSurpriseDiffWrapper(gym.Wrapper):
         # print(s)
         info["surprise_difference"] = rew
         info["theta_entropy"] = self._buffer.entropy()
+        self._buffer.add(
+                self.encode_obs(obs)
+            )
 
         # augment next state
         obs = self.get_obs(obs)
