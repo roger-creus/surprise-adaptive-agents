@@ -67,8 +67,8 @@
 
 
 # Surprise defference
-sbatch cluster_scripts/crafter/train_cpu scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_sd.json --run_mode=local --exp_name=crafter_sd_mlp --training_processor_type=cpu --log_comet=true
-sbatch cluster_scripts/crafter/train_cpu scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_sd_no_softreset.json --run_mode=local --exp_name=crafter_sd_mlp_no_softreset --training_processor_type=cpu --log_comet=true
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_sd.json --run_mode=local --exp_name=crafter_sd_mlp --training_processor_type=cpu --log_comet=true
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_sd_no_softreset.json --run_mode=local --exp_name=crafter_sd_mlp_no_softreset --training_processor_type=cpu --log_comet=true
 
 
 
