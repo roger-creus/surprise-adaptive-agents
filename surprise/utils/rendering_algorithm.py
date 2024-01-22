@@ -462,6 +462,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
         import pdb
 
         if self.policy:
+            from rlkit.samplers.data_collector import MdpPathCollector
             # for rendering training policy 
             # copy the policy to not affect the eps-greedy steps
             policy_copy = deepcopy(self.policy)

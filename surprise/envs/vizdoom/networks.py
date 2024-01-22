@@ -9,9 +9,11 @@ class VizdoomQF(nn.Module):
                  size=None,
                  type=None, 
                  input_shape=[4,48,64],
-                 use_normalization_layer=False):
+                 use_normalization_layer=False, 
+                 use_theta=True):
         super().__init__()
         self._input_shape=input_shape
+        self.use_theta = use_theta
         self.use_normalization_layer = use_normalization_layer
         self.conv = nn.Sequential(nn.Conv2d(4, 64, 5),
                                   nn.MaxPool2d(2, 2),
@@ -40,6 +42,11 @@ class VizdoomQF(nn.Module):
             input_dim = size
         else:
             input_dim = 1029
+
+        if not self.use_theta:
+            print("You are not usign theta")
+            input_dim = cnn_output_size
+
 
         # use a normalization layer for the entropy related parameters
         if use_normalization_layer:
@@ -82,7 +89,11 @@ class VizdoomQF(nn.Module):
         if self.use_normalization_layer:
             # print("passing the entorpy params to the normalization layer")
             params_obs = self.norm_layer(params_obs)
-        concat = torch.cat([img_feats, params_obs], dim=1)
+        if self.use_theta:
+            concat = torch.cat([img_feats, params_obs], dim=1)
+        else:
+            print("You are not usign theta in the forwards pass")
+            concat = img_feats
         # print(f"params_obs.shape:{params_obs.shape}")
         # print(f"img_feats.shape:{img_feats.shape}")
         return self.fc(concat)
