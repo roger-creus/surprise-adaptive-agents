@@ -198,7 +198,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
         elif "surprise_diff_wrapper" in wrapper:
             env = add_surprise_diff(
                 env=env,
-                variant=wrapper["surprise_adapt_bandit_wrapper"],
+                variant=wrapper["surprise_diff_wrapper"],
                 ep_length=variant["env_kwargs"]["max_steps"],
                 device=device,
                 eval=eval,
