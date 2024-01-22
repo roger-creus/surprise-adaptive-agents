@@ -198,6 +198,7 @@ class BaseSurpriseDiffWrapper(gym.Wrapper):
             surprise - self.random_surprise[self._num_steps])  / np.abs(self.random_surprise[self._num_steps])
         # print(s)
         info["surprise_difference"] = rew
+        info["theta_entropy"] = self._buffer.entropy()
 
         # augment next state
         obs = self.get_obs(obs)
