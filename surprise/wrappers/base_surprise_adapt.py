@@ -23,7 +23,8 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
                  buffer_type=None,
                  latent_obs_size=None,
                  obs_label=None,
-                 obs_out_label=None):
+                 obs_out_label=None, 
+                 normalize_timestep=False):
         '''
         params
         ======
@@ -35,6 +36,8 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
 
         theta = self._buffer.get_params()
         self._num_steps = 0
+        self.normalize_timestep = normalize_timestep
+        self.time_horizon = time_horizon
 
         # Gym spaces
         self.action_space = env.action_space
@@ -174,6 +177,8 @@ class BaseSurpriseAdaptWrapper(gym.Wrapper):
         '''
         theta = self._buffer.get_params()
         num_samples = np.ones(1)*self._buffer.buffer_size
+        if self.normalize_timestep:
+            num_samples /= self.time_horizon
         alpha_t = np.ones(1)*self.alpha_t
 
         if (self._obs_out_label is None):
