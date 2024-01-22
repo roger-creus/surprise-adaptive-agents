@@ -60,7 +60,7 @@
     		"channel_dim": 2,
     		"obs_key": "observation"
     	}},
-    	{ "surprise_adapt_bandit_wrapper": {
+    	{ "surprise_diff_wrapper": {
 			"buffer_type": "Gaussian",
 			"obs_key": "observation",
 			"obs_label": "small_img",

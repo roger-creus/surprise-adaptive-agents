@@ -145,6 +145,7 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
     from surprise.wrappers.VAE_wrapper import VAEWrapper
     from surprise.wrappers.crafter_wrapper import CrafterWrapper
     from surprise.wrappers.rescale_reward_wrapper import ReScaleRewardWrapper
+    from surprise.wrappers.base_surprise_diff import BaseSurpriseDiffWrapper
     from gym_minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
     from gym_minigrid.minigrid import MiniGridEnv
 
@@ -188,6 +189,14 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
             )
         elif "surprise_adapt_bandit_wrapper" in wrapper:
             env = add_surprise_adapt_bandit(
+                env=env,
+                variant=wrapper["surprise_adapt_bandit_wrapper"],
+                ep_length=variant["env_kwargs"]["max_steps"],
+                device=device,
+                eval=eval,
+            )
+        elif "surprise_diff_wrapper" in wrapper:
+            env = add_surprise_diff(
                 env=env,
                 variant=wrapper["surprise_adapt_bandit_wrapper"],
                 ep_length=variant["env_kwargs"]["max_steps"],
@@ -292,6 +301,45 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
         obs_dim = env.observation_space.low.shape
     return env, network
 
+
+def add_surprise_diff(env, variant, ep_length=500, device=0, eval=False):
+    from surprise.buffers.buffers import BernoulliBuffer, MultinoulliBuffer, GaussianBufferIncremental
+    from surprise.wrappers.base_surprise_adapt_bandit import (
+        BaseSurpriseAdaptBanditWrapper,
+    )
+
+    if "latent_obs_size" in variant:
+        obs_size = variant["latent_obs_size"]
+    else:
+        if isinstance(env.observation_space, gym.spaces.Dict):
+            obs_space = env.observation_space['observation']
+        else:
+            obs_space = env.observation_space
+        obs_shape = obs_space.shape
+        obs_size = np.prod(obs_shape)
+        print(f"obs size:{obs_size}")
+
+    if variant["buffer_type"] == "Bernoulli":
+        buffer = BernoulliBuffer(obs_size)
+        env = BaseSurpriseDiffWrapper(
+            env, buffer, time_horizon=ep_length, eval=eval, **variant
+        )
+    elif variant["buffer_type"] == "Multinoulli":
+        num_cat = int(obs_space.high[0,0]+1) if len(obs_shape) == 2 else None
+        buffer = MultinoulliBuffer(obs_dim=obs_shape, num_cat=num_cat)
+        env = BaseSurpriseDiffWrapper(
+            env, buffer, time_horizon=ep_length, eval=eval, **variant
+        )
+    elif variant["buffer_type"] == "Gaussian":
+        buffer = GaussianBufferIncremental(obs_size)
+        env = BaseSurpriseDiffWrapper(
+            env, buffer, time_horizon=ep_length, eval=eval, **variant
+        )
+    else:
+        print("Non supported prob distribution type: ", variant["buffer_type"])
+        sys.exit()
+
+    return env
 
 def add_surprise_adapt(
     env, variant, ep_length=500, device=0, flip_alpha=False, flip_alpha_strategy="SA"
