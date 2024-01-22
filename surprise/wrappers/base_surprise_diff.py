@@ -191,42 +191,13 @@ class BaseSurpriseDiffWrapper(gym.Wrapper):
         # print(self.encode_obs(obs))
         obs_shape = obs["observation"].shape
         # print(f"obs shape:{obs_shape}")
-        if self._use_difference_reward:
-            rew = np.abs(
-                -self._buffer.logprob(self.encode_obs(obs)) - self.random_surprise[self._num_steps])  / np.abs(self.random_surprise[self._num_steps])
-            # print(s)
-            info["surprise_difference"] = rew
-        else:
-            # print(f"self.theta.shape: {self._buffer.get_params().shape}")
-            surprise = -self._buffer.logprob(self.encode_obs(obs))
-            # print(surprise)
-            # For numerical stability, clip stds to not be 0
-            if self._clip_surprise:
-                # print(f"clip surprise for numerical stability")
-                thresh = 300
-                surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
-
-            rew = ((-1) ** self.alpha_t) * surprise
-
-            # Add observation to buffer
-            self._buffer.add(
-                self.encode_obs(obs)
-            )  # this adds the raw observations to the buffer no? shouldnt we add the augmented obs?
-            if self._obs_out_label is None:
-                info["surprise_adapt_reward"] = rew
-                info["theta_entropy"] = self._buffer.entropy()
-            else:
-                info[self._obs_out_label + "surprise_adapt_reward"] = rew
-                info[self._obs_out_label + "theta_entropy"] = self._buffer.entropy()
-            if self._smirl_rew_scale is not None:
-                rew = rew * self._smirl_rew_scale
-            if self._add_true_rew == "only":
-                rew = env_rew
-            elif self._add_true_rew:
-                rew = (rew) + env_rew
-
-            info["surprise"] = surprise
-            info["alpha"] = self.alpha_t
+        surprise = -self._buffer.logprob(self.encode_obs(obs))
+        thresh = 300
+        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
+        rew = np.abs(
+            surprise - self.random_surprise[self._num_steps])  / np.abs(self.random_surprise[self._num_steps])
+        # print(s)
+        info["surprise_difference"] = rew
 
         # augment next state
         obs = self.get_obs(obs)
