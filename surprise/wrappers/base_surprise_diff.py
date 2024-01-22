@@ -7,7 +7,7 @@ from collections import deque
 
 
 class BaseSurpriseDiffWrapper(gym.Wrapper):
-        @classu.hidden_member_initialize
+    @classu.hidden_member_initialize
     def __init__(
         self,
         env,
