@@ -191,9 +191,8 @@ class BaseSurpriseDiffWrapper(gym.Wrapper):
         obs_shape = obs["observation"].shape
         # print(f"obs shape:{obs_shape}")
         if self._use_difference_reward:
-            reward = (
-                -self._buffer.logprob(self.encode_obs(obs)) - self.random_surprise[self._num_steps])
-                / self.random_surprise[self._num_steps]
+            reward = np.abs(
+                -self._buffer.logprob(self.encode_obs(obs)) - self.random_surprise[self._num_steps])  / np.abs(self.random_surprise[self._num_steps])
             # print(s)
         # print(f"self.theta.shape: {self._buffer.get_params().shape}")
         surprise = -self._buffer.logprob(self.encode_obs(obs))
