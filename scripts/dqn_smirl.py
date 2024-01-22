@@ -304,8 +304,8 @@ def add_wrappers(env, variant, device=0, eval=False, network=None, flip_alpha=Fa
 
 def add_surprise_diff(env, variant, ep_length=500, device=0, eval=False):
     from surprise.buffers.buffers import BernoulliBuffer, MultinoulliBuffer, GaussianBufferIncremental
-    from surprise.wrappers.base_surprise_adapt_bandit import (
-        BaseSurpriseAdaptBanditWrapper,
+    from surprise.wrappers.base_surprise_diff import (
+        BaseSurpriseDiffWrapper,
     )
 
     if "latent_obs_size" in variant:
