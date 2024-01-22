@@ -462,9 +462,13 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
 
         if self.policy:
             # for rendering training policy 
+            # copy the policy to not affect the eps-greedy steps
+            policy_copy = deepcopy(self.policy)
             train_video_step_collector = MdpPathCollector(
-                eval_env, deepcopy(self.policy), render_kwargs=variant["render_kwargs"]
+                eval_env, policy_copy, render_kwargs=variant["render_kwargs"]
             )
+            # delete to prevent memory leak
+            del policy_copy
         
             path = train_video_step_collector.collect_new_paths(
                 self.max_path_length,
@@ -473,7 +477,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
             )
         else:
             return
-                    
+
         video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
         print(f"Video: {video.shape}")
         display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
