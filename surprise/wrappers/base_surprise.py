@@ -18,7 +18,8 @@ class BaseSurpriseWrapper(gym.Env):
                  latent_obs_size=None,
                  obs_label=None,
                  obs_out_label=None,
-                 clip_surprise=True):
+                 clip_surprise=True, 
+                 normalize_timestep=False):
         '''
         params
         ======
@@ -29,6 +30,7 @@ class BaseSurpriseWrapper(gym.Env):
 
         theta = self._buffer.get_params()
         self._num_steps = 0
+        self.normalize_timestep = normalize_timestep
 
         # Add true reward to surprise
 
@@ -113,6 +115,8 @@ class BaseSurpriseWrapper(gym.Env):
         '''
         theta = self._buffer.get_params()
         num_samples = np.ones(1)*self._buffer.buffer_size
+        if self.normalize_timestep:
+            num_samples /= self._time_horizon
         if (self._obs_out_label is None):
             obs = np.concatenate([np.array(obs).flatten(), np.array(theta).flatten(), num_samples])
         else:
