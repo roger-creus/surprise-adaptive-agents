@@ -236,7 +236,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
                 num_trains_per_train_loop,
                 num_train_loops_per_epoch=1,
                 min_num_steps_before_training=0,
-                render_agent_pos=False, log_episode_alphas=False, max_steps = 200, render=True, set_eval_alpha=False):
+                render_agent_pos=False, log_episode_alphas=False, max_steps = 200, render=True, set_eval_alpha=False, policy=None):
         super().__init__(
             trainer,
             exploration_env,
@@ -259,6 +259,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
         self.log_episode_alphas = log_episode_alphas
         self.set_eval_alpha = set_eval_alpha
         self.episode_length = max_steps
+        self.policy = policy
         
     def _train(self):
         self.training_mode(False)
@@ -458,36 +459,21 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
     def render_traning_video(self, tag, counter):
         import numpy as np
         import pdb
+
+        if self.policy:
+            # for rendering training policy 
+            train_video_step_collector = MdpPathCollector(
+                eval_env, deepcopy(self.policy), render_kwargs=variant["render_kwargs"]
+            )
         
-        path = self.expl_data_collector.collect_new_paths(
-            self.max_path_length,
-            self.num_eval_steps_per_epoch,
-            discard_incomplete_paths=False
-        )
-
-        # plotting the eval alphas for the 2 episodes
-        if self.log_episode_alphas == True:
-            eval_alphas = np.array([y['alpha'] for x in path for y in x['env_infos']]).reshape(-1, self.episode_length)
-            x_axis = np.arange(self.episode_length)
-            
-            cl = logger.get_comet_logger()
-            logdir = logger.get_snapshot_dir()  + "eval_alphas_" + str(counter) + ".png"
-
-            plt.figure()
-            plt.plot(x_axis, eval_alphas[0])
-            plt.plot(x_axis, eval_alphas[1])
-            plt.savefig(logdir)
-
-            if (cl is not None):
-                cl.log_image(image_data=logdir, overwrite=True, image_format="png")
-
-            plt.close()
-        
-        # if ("vae_reconstruction" in path[0]['env_infos'][0]):
-        #     video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
-        #     display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
-
-        
+            path = train_video_step_collector.collect_new_paths(
+                self.max_path_length,
+                self.num_eval_steps_per_epoch,
+                discard_incomplete_paths=False
+            )
+        else:
+            return
+                    
         video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
         print(f"Video: {video.shape}")
         display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)

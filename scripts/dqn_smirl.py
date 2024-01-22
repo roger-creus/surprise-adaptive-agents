@@ -667,6 +667,7 @@ def experiment(doodad_config, variant):
             exploration_data_collector=expl_path_collector,
             evaluation_data_collector=eval_path_collector,
             replay_buffer=replay_buffer,
+            policy = expl_policy
             **{
                 **variant["algorithm_kwargs"],
                 **{"max_steps": variant["env_kwargs"]["max_steps"]},
