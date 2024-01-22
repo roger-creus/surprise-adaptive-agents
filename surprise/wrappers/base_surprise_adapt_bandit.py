@@ -231,8 +231,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         if self._normalize_timestep:
             num_samples /= self.time_horizon
         alpha_t = np.ones(1) * self.alpha_t
-        print(f"normalized time horizon: {num_samples}")
-        quit()
+        # print(f"normalized time horizon: {num_samples}")
+        # quit()
 
         if self._obs_out_label is None:
             obs = np.concatenate(

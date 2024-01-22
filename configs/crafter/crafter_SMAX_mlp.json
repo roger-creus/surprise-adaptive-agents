@@ -1,0 +1,85 @@
+{
+    "algorithm":"SAC",
+    "version":"normal",
+    "layer_size":256,
+	"online": true,
+    "network_args": 
+    {
+    	"type": "flat"
+    },
+    "replay_buffer_size": 1000000,
+    "algorithm_kwargs": {
+        "num_epochs":5000,
+        "num_eval_steps_per_epoch":1000,
+		"num_train_loops_per_epoch": 1000,
+        "num_trains_per_train_loop":1,
+		"num_expl_steps_per_train_loop":5,
+        "min_num_steps_before_training":5000,
+        "max_path_length":1000,
+        "batch_size":64
+    },
+	"exploration_kwargs": {
+        "prob_random_action": 1,
+        "prob_end": 0.03,
+        "steps": 3000000
+    },
+    "trainer_kwargs": {
+        "discount":0.99,
+        "learning_rate":3E-4
+    },
+    "render_kwargs":{
+        "render": true
+    },
+    "wrappers": [
+    	{"soft_reset_wrapper": {"max_time": 1000}},
+    	{"dict_obs_wrapper": {
+    		"obs_key": "observation"
+    		}
+    	},
+		{"resize_observation_wrapper": {
+	        "new_size": [9,9,1],
+	        "new_shape": [9,9,1],
+	        "grayscale": true,
+	        "obs_key": "observation",
+	        "out_key_name": "small_img"
+	        }},
+    	{"resize_observation_wrapper": {
+	        "new_size": [9,9,1],
+	        "new_shape": [9,9,1],
+	        "grayscale": true,
+	        "obs_key": "observation"
+	        }},
+    	{"rendering_observation": 
+			{
+				"resize": [256,256,1]
+			}},
+    	{"ObsHistoryWrapper": {
+    		"history_length": 3,
+    		"stack_channels": true,
+    		"channel_dim": 2,
+    		"obs_key": "observation"
+    	}},
+    	{"smirl_wrapper": {
+    		"buffer_type": "Gaussian",
+    		"obs_label": "small_img",
+    		"obs_out_label": "theta",
+    		"smirl_rew_scale": 1,
+    		"latent_obs_size": 81,
+    		"add_true_rew": false,
+			"minimize": false
+    	}},
+    	{"dict_to_obs_wrapper": {
+    		"obs_keys": ["observation", "theta"],
+			"obs_size": 407
+    	}},
+        {"crafter_wrapper": {
+    		"save_metrics": true,
+            "save_metrics_path": "metrics"
+    	}}
+    ],
+    "log_comet": true,
+    "env": "Crafter",
+    "env_kwargs": {
+        "max_steps": 1000
+    }
+}
