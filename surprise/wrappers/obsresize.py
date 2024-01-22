@@ -358,6 +358,7 @@ class SoftResetWrapper(gym.Wrapper):
         info['avg_task_returns']= (self.returns + self.total_task_returns)/(self.deaths + 1)
 
         info["life_length_avg"] = self._last_death
+        # TODO: for crafter, include all achievements during the episode.
         if (envdone):
             self.reset_alpha = False
             self.total_task_returns += self.returns

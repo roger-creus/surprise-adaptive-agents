@@ -111,6 +111,7 @@ class TorchBatchRLRenderAlgorithm(TorchBatchRLAlgorithm):
             if ((epoch % 25) == 0) and self.render:
                 print("Rendering video")
                 self.render_video("eval_video_", counter=epoch)
+                self.render_traning_video("train_video_", counter=epoch)
 
                 if self.render_agent_pos and len(eval_agent_pos_history) > 0 :
                     self.render_heatmap(eval_agent_pos_history, epoch, "eval_heatmap_")
@@ -327,6 +328,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
             if ((epoch % 2) == 0) and self.render:
                 print("Rendering video")
                 self.render_video("eval_video_", counter=epoch)
+                self.render_traning_video("train_video_", counter=epoch)
 
                 if self.render_agent_pos and len(eval_agent_pos_history) > 0 :
                     self.render_heatmap(eval_agent_pos_history, epoch, "eval_heatmap_")
@@ -421,6 +423,43 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
         import pdb
         
         path = self.eval_data_collector.collect_new_paths(
+            self.max_path_length,
+            self.num_eval_steps_per_epoch,
+            discard_incomplete_paths=False
+        )
+
+        # plotting the eval alphas for the 2 episodes
+        if self.log_episode_alphas == True:
+            eval_alphas = np.array([y['alpha'] for x in path for y in x['env_infos']]).reshape(-1, self.episode_length)
+            x_axis = np.arange(self.episode_length)
+            
+            cl = logger.get_comet_logger()
+            logdir = logger.get_snapshot_dir()  + "eval_alphas_" + str(counter) + ".png"
+
+            plt.figure()
+            plt.plot(x_axis, eval_alphas[0])
+            plt.plot(x_axis, eval_alphas[1])
+            plt.savefig(logdir)
+
+            if (cl is not None):
+                cl.log_image(image_data=logdir, overwrite=True, image_format="png")
+
+            plt.close()
+        
+        # if ("vae_reconstruction" in path[0]['env_infos'][0]):
+        #     video = np.array([ [y['vae_reconstruction'] for y in x['env_infos']] for x in  path])
+        #     display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag+"_reconstruction" , fps=15, counter=counter)
+
+        
+        video = np.array([ [y['rendering'] for y in x['env_infos']] for x in  path])
+        print(f"Video: {video.shape}")
+        display_gif(images=video, logdir=logger.get_snapshot_dir()+"/"+tag , fps=15, counter=counter)
+
+    def render_traning_video(self, tag, counter):
+        import numpy as np
+        import pdb
+        
+        path = self.expl_data_collector.collect_new_paths(
             self.max_path_length,
             self.num_eval_steps_per_epoch,
             discard_incomplete_paths=False
