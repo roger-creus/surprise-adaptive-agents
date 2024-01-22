@@ -19,7 +19,7 @@ class BaseSurpriseWrapper(gym.Env):
                  obs_label=None,
                  obs_out_label=None,
                  clip_surprise=True, 
-                 normalize_timestep=False):
+                 normalize_timestep=True):
         '''
         params
         ======

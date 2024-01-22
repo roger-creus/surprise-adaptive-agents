@@ -22,7 +22,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         obs_label=None,
         obs_out_label=None,
         clip_surprise = True,
-        normalize_timestep = False,
+        normalize_timestep = True,
         random_entropy_num_eps = 5, # number of episodes used to estimate the entorpy of the random agent
     ):
         """
