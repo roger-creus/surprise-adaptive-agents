@@ -12,6 +12,7 @@ from rlkit.samplers.data_collector import PathCollector
 from rlkit.core import logger
 from util.utils import current_mem_usage
 import matplotlib.pyplot as plt
+from copy import deepcopy
 
 def display_gif(images, logdir, fps=10, max_outputs=8, counter=0):
     ### image format (episodes, img_width, img_height, colour_channels)
