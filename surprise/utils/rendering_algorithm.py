@@ -246,6 +246,8 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
             evaluation_data_collector,
             replay_buffer,
         )
+        self.evaluation_env = evaluation_env
+        self.exploration_env  exploration_env
         self.batch_size = batch_size
         self.max_path_length = max_path_length
         self.num_epochs = num_epochs
@@ -467,7 +469,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
             # copy the policy to not affect the eps-greedy steps
             policy_copy = deepcopy(self.policy)
             train_video_step_collector = MdpPathCollector(
-                eval_env, policy_copy, render_kwargs=variant["render_kwargs"]
+                self.evaluation_env, policy_copy, render_kwargs=variant["render_kwargs"]
             )
             # delete to prevent memory leak
             del policy_copy

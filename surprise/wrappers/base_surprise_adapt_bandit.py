@@ -22,7 +22,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         obs_label=None,
         obs_out_label=None,
         clip_surprise = True,
-        random_entropy_num_eps = 5 # number of episodes used to estimate the entorpy of the random agent
+        normalize_timestep = False,
+        random_entropy_num_eps = 5, # number of episodes used to estimate the entorpy of the random agent
     ):
         """
         params
@@ -39,6 +40,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         self.alpha_rolling_average = 0
         self.alpha_count = 1
         self.random_entropy_num_eps = random_entropy_num_eps
+        self._normalize_timestep = normalize_timestep
 
         # Gym spaces
         self.action_space = env.action_space
@@ -112,6 +114,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         self.alpha_one_mean = np.nan
         self.alpha_one_cnt = 0
         self.random_entropy = self._get_random_entropy()
+        self.time_horizon = time_horizon
         self.reset()
 
     def set_alpha_zero_mean(self, val):
@@ -225,7 +228,11 @@ class BaseSurpriseAdaptBanditWrapper(gym.Wrapper):
         """
         theta = self._buffer.get_params()
         num_samples = np.ones(1) * self._buffer.buffer_size
+        if self._normalize_timestep:
+            num_samples /= self.time_horizon
         alpha_t = np.ones(1) * self.alpha_t
+        print(f"normalized time horizon: {num_samples}")
+        quit()
 
         if self._obs_out_label is None:
             obs = np.concatenate(
