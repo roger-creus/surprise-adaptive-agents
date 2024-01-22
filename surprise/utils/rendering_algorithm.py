@@ -247,7 +247,7 @@ class TorchOnlineRLRenderAlgorithm(BaseRLAlgorithm):
             replay_buffer,
         )
         self.evaluation_env = evaluation_env
-        self.exploration_env  exploration_env
+        self.exploration_env = exploration_env
         self.batch_size = batch_size
         self.max_path_length = max_path_length
         self.num_epochs = num_epochs
