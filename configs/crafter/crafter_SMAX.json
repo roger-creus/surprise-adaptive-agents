@@ -32,7 +32,7 @@
         "render": true
     },
     "wrappers": [
-    	{"soft_reset_wrapper": {"max_time": 1000}},
+    	{"soft_reset_wrapper": {"max_time": 500}},
     	{"dict_obs_wrapper": {
     		"obs_key": "observation"
     		}
@@ -81,6 +81,6 @@
     "log_comet": true,
     "env": "Crafter",
     "env_kwargs": {
-        "max_steps": 1000
+        "max_steps": 500
     }
 }
