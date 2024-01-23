@@ -66,7 +66,7 @@
 
 
 # mlp w/ rescaled reward
-sbatch cluster_scripts/crafter/train_cpu scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_rescale_reward_no_softreset.json --run_mode=local --exp_name=crafter_sa_mlp_no_softreset_rescaled_reward --training_processor_type=cpu --log_comet=true
+# sbatch cluster_scripts/crafter/train_cpu scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_rescale_reward_no_softreset.json --run_mode=local --exp_name=crafter_sa_mlp_no_softreset_rescaled_reward --training_processor_type=cpu --log_comet=true
 
 
 
@@ -93,3 +93,8 @@ sbatch cluster_scripts/crafter/train_cpu scripts/dqn_smirl.py --config=configs/c
 
 # random agetn small observation 
 # sbatch cluster_scripts/crafter/train_cpu scripts/dqn_smirl.py --config=configs/crafter/Random_agent_mlp_no_softreset.json --run_mode=local --exp_name=random_mlp_no_softreset --training_processor_type=cpu --log_comet=true
+
+
+sbatch cluster_scripts/crafter/train_cpu scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_mlp_rescale_reward_no_softreset_norm_time_more_grad_steps.json --run_mode=local --exp_name=crafter_sa_mlp_rescale_reward_no_softreset_norm_time_more_grad_steps --training_processor_type=cpu --log_comet=true
+
+sbatch cluster_scripts/crafter/train scripts/dqn_smirl.py --config=configs/crafter/crafter_SA_rescale_reward_no_softreset_norm_time_more_grad_steps.json --run_mode=local --exp_name=crafter_sa_rescale_reward_no_softreset_norm_time_more_grad_steps --training_processor_type=gpu --log_comet=true
