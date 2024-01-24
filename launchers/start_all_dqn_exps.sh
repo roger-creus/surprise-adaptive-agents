@@ -9,7 +9,7 @@
 
 sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track=True
 sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 8943 --track=True
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 810 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 820 --track=True
 
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt bernoulli 1
