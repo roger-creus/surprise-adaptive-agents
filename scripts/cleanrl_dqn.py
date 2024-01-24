@@ -199,6 +199,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
     ep_surprise = []
     ep_entropy = []
+    task_rewards = []
     ep_counter = 0
 
     # TRY NOT TO MODIFY: start the game
@@ -223,6 +224,9 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if "surprise" in infos:
             ep_surprise.append(infos["surprise"][0])
             ep_entropy.append(infos["theta_entropy"][0])
+        if "task_reward" infos:
+            task_rewards.append(infos["task_reward"][0])
+
 
         print(infos)
 
@@ -242,6 +246,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
                 writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise), global_step)
                 writer.add_scalar("charts/episodic_entropy", np.mean(ep_entropy), global_step)
+                writer.add_scalar("charts/task_reward", np.mean(task_rewards), global_step)
                 writer.add_scalar("charts/average_task_return", info["Average_task_return"], global_step)
                 writer.add_scalar("charts/average_episode_length", info["Average_episode_length"], global_step)
                 writer.add_scalar("charts/deaths", info["deaths"], global_step)
@@ -259,6 +264,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 
                 ep_surprise.clear()
                 ep_entropy.clear()
+                task_rewards.clear()
                 ep_counter += 1
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
