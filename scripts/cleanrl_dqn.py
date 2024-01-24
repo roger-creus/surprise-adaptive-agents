@@ -34,19 +34,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 """
         )
         
-    args = parse_args_dqn()
+    args, run_name = parse_args_dqn()
     
-    if "Adapt" in args.env_id:
-        env_name = f"{args.env_id}_NoisyRoom_{args.noisy_room}"
-    else:
-        env_name = args.env_id
-    
-    if args.add_true_rew:
-        env_name += "_withExtrinsic"
-    else:
-        env_name += "_noExtrinsic" 
-    
-    run_name = f"dqn_{env_name}_{args.model}_{args.buffer_type}_s{args.seed}"
     if args.track:
         import wandb
 

@@ -18,20 +18,7 @@ from gymnasium_wrappers.models import *
 from gymnasium_wrappers.args import parse_args_ppo
 
 if __name__ == "__main__":
-    args = parse_args_ppo()
-    if "Adapt" in args.env_id:
-        env_name = f"{args.env_id}_NoisyRoom_{args.noisy_room}"
-    elif "/" in args.env_id:
-        env_name = args.env_id.split("/")[1]
-    else:
-        env_name = args.env_id
-    
-    if args.add_true_rew:
-        env_name += "_withExtrinsic"
-    else:
-        env_name += "_noExtrinsic" 
-    
-    run_name = f"ppo_{env_name}_{args.model}_{args.buffer_type}_s{args.seed}"
+    args, run_name = parse_args_ppo()
     
     if args.track:
         import wandb
