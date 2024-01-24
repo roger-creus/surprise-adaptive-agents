@@ -1,15 +1,22 @@
 #!/bin/bash
-#SBATCH --partition=lab-real                               # Ask for unkillable job
+
+#SBATCH --partition=long
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --gres=gpu:1
+#SBATCH --mem=32G
+#SBATCH --time=24:00:00
 #SBATCH --cpus-per-task=8
-#SBATCH --gpus-per-node=1                                         # Ask for 1 GPU
-#SBATCH --mem=100G                                                # Ask for 10 GB of RAM
-#SBATCH --time=72:00:00                                          # Ask for 6 CPUs
-#SBATCH -o /network/scratch/r/roger.creus-castanyer/slurm-%j.out  # Write the log on scratch
+#SBATCH -o /network/scratch/f/faisal.mohamed/slurm-%j.out  # Write the log on scratch
 
 # 1. Load your environment
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia
 module load anaconda/3
-conda activate /home/mila/r/roger.creus-castanyer/anaconda3/envs/surprise_adapt
+conda activate /home/mila/f/faisal.mohamed/.conda/envs/sadapt
 
-source ../vulkan/1.3.224.1/setup-env.sh
+# copy the code to temp to save storage space
+cp -r /home/mila/f/faisal.mohamed/surprise-adaptive-agents $SLURM_TMPDIR
+cd $SLURM_TMPDIR/surprise-adaptive-agents
 
+# 4. Launch your job
 python3 $1 --env-id $2 --model $3 --buffer-type $4 --seed $5 $6 $7 $8 $9
