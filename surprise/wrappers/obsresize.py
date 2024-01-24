@@ -348,6 +348,7 @@ class SoftResetWrapper(gym.Wrapper):
         self.total_task_returns = 0
         self.returns = None
         self.discount_rate = 1
+        self.eps_time = 0
 
     def step(self, action):
         # Take Action
@@ -370,6 +371,7 @@ class SoftResetWrapper(gym.Wrapper):
             info["death"] = 1
             self._last_death = 0
             obs = np.random.rand(*obs_.shape)
+            info["average_path_length"] = self._time / self.deaths
         else:
             info["death"] = 0
         

@@ -37,6 +37,8 @@ class CrafterWrapper(gym.Env):
 
         if self.discount_rate:
             info["discount"] = self.discount_rate
+        if done and not ("average_path_length" in info):
+            info["average_path_length"] = self.t
         self.t += 1
 
         # if done:

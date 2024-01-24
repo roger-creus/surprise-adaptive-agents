@@ -10,7 +10,8 @@ class VizdoomQF(nn.Module):
                  type=None, 
                  input_shape=[4,48,64],
                  use_normalization_layer=False, 
-                 use_theta=True):
+                 use_theta=True,
+                 encode_theta=False):
         super().__init__()
         self._input_shape=input_shape
         self.use_theta = use_theta
@@ -48,13 +49,17 @@ class VizdoomQF(nn.Module):
             input_dim = cnn_output_size
 
 
+        self.encode_theta = encode_theta
         # use a normalization layer for the entropy related parameters
-        if use_normalization_layer:
+        if use_normalization_layer or encode_theta:
             # print("use normalization layer")
             params_size = input_dim - cnn_output_size
             # This taken from URLB codebase
             self.norm_layer = nn.Sequential(nn.Linear(params_size, params_size),
-                                nn.LayerNorm(params_size), nn.Tanh())
+                                nn.LayerNorm(params_size), nn.Tanh(),
+                                nn.Linear(params_size, params_size), nn.ReLU(),
+                                nn.Linear(params_size, params_size)
+                                )
 
 
         self.fc = nn.Sequential(nn.Linear(input_dim, 128),
