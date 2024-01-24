@@ -227,16 +227,10 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if "task_reward" infos:
             task_rewards.append(infos["task_reward"][0])
 
-
-        print(infos)
-
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         if "final_info" in infos:
             for info in infos["final_info"]:
-                print("final info")
-                print(info)
-                quit()
                 # Skip the envs that are not done
                 if "episode" not in info:
                     continue
