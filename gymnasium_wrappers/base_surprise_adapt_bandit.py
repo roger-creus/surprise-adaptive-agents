@@ -238,10 +238,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         # track the rolling average of alpha
         self.alpha_rolling_average = self.alpha_rolling_average + (1/self.alpha_count) * (self.alpha_t - self.alpha_rolling_average)
         self.alpha_count += 1
-        if ucb_alpha_zero:
-            info["ucb_alpha_zero"] = ucb_alpha_zero
-        if ucb_alpha_one:
-            info["ucb_alpha_one"] = ucb_alpha_one
 
         self.buffer.reset()
 
