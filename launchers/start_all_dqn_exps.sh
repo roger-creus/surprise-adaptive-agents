@@ -8,9 +8,9 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py FourRooms none multinoulli 1
 
 # Tetris S-min
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 8943 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 820 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 8943 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 820 --track=True
 
 # Tetris Extrinsic
 sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris none bernoulli 1 --track=True
