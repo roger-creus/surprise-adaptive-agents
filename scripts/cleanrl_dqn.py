@@ -224,7 +224,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if "surprise" in infos:
             ep_surprise.append(infos["surprise"][0])
             ep_entropy.append(infos["theta_entropy"][0])
-        if "task_reward" infos:
+        if "task_reward" in infos:
             task_rewards.append(infos["task_reward"][0])
 
                 
