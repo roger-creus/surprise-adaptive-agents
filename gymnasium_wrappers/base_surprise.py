@@ -70,8 +70,8 @@ class BaseSurpriseWrapper(gym.Env):
             self.task_return /= self.deaths
             self.num_steps /= self.deaths
             info["Average_task_return"] = self.task_return
-            print(f"Average_task_return: {self.task_return}")
             info["Average_episode_length"] = self.num_steps
+            info['deaths'] = self.deaths
         else:
             envdone = False
             envtrunc = False
