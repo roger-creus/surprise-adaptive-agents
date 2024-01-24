@@ -152,6 +152,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         info["surprise_adapt_reward"] = rew
         info["theta_entropy"] = self.buffer.entropy()
+        info['deaths'] = self.deaths
         
         if self.add_true_rew:
             rew = env_rew + (rew * self.int_rew_scale)
