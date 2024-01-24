@@ -75,12 +75,12 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.buffer.reset()
         for _ in range(self.max_steps):
             obs, rew, done, truncated, info = self._env.step(self.action_space.sample())
-            self.buffer.add(self.encode_obs(obs))
+            self.buffer.add(obs)
             # softreset
             if done or truncated:
                 obs, _ = self._env.reset()
                 obs = np.random.rand(*obs.shape)
-                self.buffer.add(self.encode_obs(obs))
+                self.buffer.add(obs)
         random_entropy = self.buffer.entropy()
         self._env.reset()
         return random_entropy
@@ -139,16 +139,16 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             envtrunc = False
 
         # Compute surprise as the negative log probability of the observation
-        surprise = -self.buffer.logprob(self.encode_obs(obs.astype(np.float32)))
+        surprise = -self.buffer.logprob(obs.astype(np.float32))
         # For numerical stability, clip stds to not be 0
         thresh = 300
-        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh)
+        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
 
         rew = ((-1) ** self.alpha_t) * surprise
 
         # Add observation to buffer
           # this adds the raw observations to the buffer no? shouldnt we add the augmented obs?
-        self.buffer.add(self.encode_obs(obs.astype(np.float32)))
+        self.buffer.add(obs.astype(np.float32))
 
         info["surprise_adapt_reward"] = rew
         info["theta_entropy"] = self.buffer.entropy()
@@ -184,7 +184,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         Augment observation, perhaps with generative model params, time-step, current surprise momentum.
         """
         theta = self.buffer.get_params()
-        num_samples = np.ones(1) * self.buffer.buffer_size/self.max_steps
+        num_samples = np.ones(1) * self.buffer.buffer_size
         alpha_t = np.ones(1) * self.alpha_t
         aug_obs = {
         "obs" : obs,
