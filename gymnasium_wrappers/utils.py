@@ -62,7 +62,7 @@ def make_env(args):
         elif "tetris" in args.env_id:
             from surprise.envs.tetris.tetris import TetrisEnv
             env = TetrisEnv()
-            max_steps = 100
+            max_steps = 500
             
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
