@@ -56,6 +56,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.alpha_one_mean = np.nan
         self.alpha_one_cnt = 0
         self.random_entropy = self._get_random_entropy()
+        self.ucb_alpha_zero = None
+        self.ucb_alpha_one = None
         self.alpha_t = np.nan
         try:
             self.heatmap = np.zeros((env.width, env.height))
@@ -134,6 +136,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 self.num_steps /= self.deaths
             info["Average_task_return"] = self.task_return
             info["Average_episode_length"] = self.num_steps
+            info["alpha_rolling_average"] = self.alpha_rolling_average
+            if self.ucb_alpha_one: info["ucb_alpha_one"] = self.ucb_alpha_one
+            if self.ucb_alpha_zero: info["ucb_alpha_zero"] = self.ucb_alpha_zero
         else:
             envdone = False
             envtrunc = False
@@ -229,11 +234,10 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                     self.alpha_one_mean /= self.alpha_one_cnt
 
         # select new alpha
-        self.alpha_t,  ucb_alpha_zero, ucb_alpha_one = self._get_alpha()
+        self.alpha_t,  self.ucb_alpha_zero, self.ucb_alpha_one = self._get_alpha()
         # track the rolling average of alpha
         self.alpha_rolling_average = self.alpha_rolling_average + (1/self.alpha_count) * (self.alpha_t - self.alpha_rolling_average)
         self.alpha_count += 1
-        info["alpha_rolling_average"] = self.alpha_rolling_average
         if ucb_alpha_zero:
             info["ucb_alpha_zero"] = ucb_alpha_zero
         if ucb_alpha_one:
