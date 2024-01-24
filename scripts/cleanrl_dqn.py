@@ -14,7 +14,6 @@ import torch.optim as optim
 from stable_baselines3.common.buffers import ReplayBuffer, DictReplayBuffer
 from torch.utils.tensorboard import SummaryWriter
 
-
 from IPython import embed
 from gymnasium_wrappers.utils import *
 from gymnasium_wrappers.models import *
@@ -111,7 +110,6 @@ if __name__ == "__main__":
 poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-license]==0.28.1"  "ale-py==0.8.1" 
 """
         )
-        
         
     args = parse_args()
     

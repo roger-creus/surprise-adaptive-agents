@@ -180,6 +180,7 @@ if __name__ == "__main__":
     
     ep_surprise = {i : [] for i in range(args.num_envs)}
     ep_entropy = {i : [] for i in range(args.num_envs)}
+    task_rewards = {i : [] for i in range(args.num_envs)}
     ep_counter = 0
     update_idx = 0
     
@@ -212,11 +213,12 @@ if __name__ == "__main__":
             next_obs, next_theta, next_done = torch.Tensor(o_["obs"]).to(device), torch.Tensor(o_["theta"]).to(device), torch.Tensor(done).to(device)
             
             for i in range(args.num_envs):
-                try:
+                if "surprise" in infos:
                     ep_surprise[i].append(infos['surprise'][i])
+                if "theta_entropy" in infos:
                     ep_entropy[i].append(infos['theta_entropy'][i])
-                except:
-                    pass
+                if "task_reward" in infos:
+                    task_rewards[i].append(infos['task_reward'][i])
                 
             # Only print when at least 1 env is done
             if "final_info" not in infos:
@@ -234,6 +236,10 @@ if __name__ == "__main__":
                 writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
                 writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise[c]), global_step)
                 writer.add_scalar("charts/episodic_entropy", np.mean(ep_entropy[c]), global_step)
+                writer.add_scalar("charts/task_reward", np.mean(task_rewards[c]), global_step)
+                writer.add_scalar("charts/average_task_return", info["Average_task_return"], global_step)
+                writer.add_scalar("charts/average_episode_length", info["Average_episode_length"], global_step)
+
                 logger_.logs_a([
                     global_step,
                     info["episode"]["r"][0],
