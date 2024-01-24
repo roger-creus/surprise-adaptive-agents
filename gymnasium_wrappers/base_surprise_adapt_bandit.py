@@ -111,6 +111,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
     def step(self, action):
         # Take Action
         obs, env_rew, envdone, envtrunc, info = self._env.step(action)
+        self.task_return += env_rew
         info["task_reward"] = env_rew
         info["alpha"] = self.alpha_t
         info["alpha_zero_mean"] = self.alpha_zero_mean
@@ -128,6 +129,11 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         if self.num_steps >= self.max_steps:
             envdone = True
             envtrunc = True
+            if self.deaths > 0:
+                self.task_return /= self.deaths
+                self.num_steps /= self.deaths
+            info["Average_task_return"] = self.task_return
+            info["Average_episode_length"] = self.num_steps
         else:
             envdone = False
             envtrunc = False
@@ -191,6 +197,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         """
 
         obs, info = self._env.reset()
+        self.task_return = 0
+        self.deaths = 0
 
         # Update the bandit action values
         if not np.isnan(self.alpha_t):
