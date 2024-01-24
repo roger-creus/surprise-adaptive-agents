@@ -71,7 +71,6 @@ class BaseSurpriseWrapper(gym.Env):
             self.num_steps /= self.deaths
             info["Average_task_return"] = self.task_return
             info["Average_episode_length"] = self.num_steps
-            
         else:
             envdone = False
             envtrunc = False
