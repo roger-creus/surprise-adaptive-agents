@@ -64,14 +64,14 @@ class BaseSurpriseWrapper(gym.Env):
             obs, _ = self._env.reset()
             obs = np.random.rand(*obs.shape)
             self.deaths += 1
+        if self.num_steps == self.max_steps:
+            envdone = True
+            envtrunc = True
             self.task_return /= self.deaths
             self.num_steps /= self.deaths
             info["Average_task_return"] = self.task_return
             info["Average_episode_length"] = self.num_steps
-        if self.num_steps == self.max_steps:
-            envdone = True
-            envtrunc = True
-
+            
         else:
             envdone = False
             envtrunc = False
