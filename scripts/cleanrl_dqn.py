@@ -224,7 +224,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             ep_surprise.append(infos["surprise"][0])
             ep_entropy.append(infos["theta_entropy"][0])
 
-        print(info)
+        print(infos)
 
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
