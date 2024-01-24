@@ -184,7 +184,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         Augment observation, perhaps with generative model params, time-step, current surprise momentum.
         """
         theta = self.buffer.get_params()
-        num_samples = np.ones(1) * self.buffer.buffer_size
+        num_samples = np.ones(1) * self.buffer.buffer_size/self.max_steps
         alpha_t = np.ones(1) * self.alpha_t
         aug_obs = {
         "obs" : obs,
