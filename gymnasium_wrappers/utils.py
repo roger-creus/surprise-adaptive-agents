@@ -7,6 +7,7 @@ import minatar
 from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper, OneHotPartialObsWrapper
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
+from gymnasium_wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
 
 from IPython import embed
@@ -138,7 +139,14 @@ def make_env(args):
                 int_rew_scale=1.0,
                 max_steps=max_steps
             )
-        
+        elif args.model == "sadapt-bandit":
+            env = BaseSurpriseAdaptBanditWrapper(
+                env, 
+                buffer,
+                add_true_rew=args.add_true_rew,
+                int_rew_scale=1.0,
+                max_steps = max_steps
+            )
         elif args.model == "none":
             env = BaseSurpriseWrapper(
                 env,

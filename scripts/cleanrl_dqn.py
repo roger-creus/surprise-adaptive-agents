@@ -81,7 +81,7 @@ def parse_args():
     
     # OBJECTIVE PARAMS
     parser.add_argument("--model", type=str, default="none",
-        help="can be none, smax, smin, sadapt, sadapt-inverse")
+        help="can be none, smax, smin, sadapt, sadapt-inverse, sadapt-bandit")
     parser.add_argument("--buffer-type", type=str, default="gaussian",
         help="can be gaussian, or multinoulli")
     parser.add_argument("--surprise_window_len", type=int, default=10)
@@ -158,7 +158,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     )
     assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
 
-    use_theta = args.model in ["smax", "smin", "sadapt", "sadapt-inverse"]
+    use_theta = args.model in ["smax", "smin", "sadapt", "sadapt-inverse", "sadapt-bandit"]
     
     if "Rooms" in args.env_id:
         net = MinigridQNetwork
