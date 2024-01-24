@@ -56,16 +56,22 @@ class BaseSurpriseWrapper(gym.Env):
     def step(self, action):
         obs, env_rew, envdone, envtrunc, info = self._env.step(action)
         info['task_reward'] = env_rew
+        self.task_return += env_rew
+
         
         # soft reset
         if envdone:
             obs, _ = self._env.reset()
             obs = np.random.rand(*obs.shape)
             self.deaths += 1
-
+            self.task_return /= self.deaths
+            self.num_steps /= self.deaths
+            info["Average_task_return"] = self.task_return
+            info["Average_episode_length"] = self.num_steps
         if self.num_steps == self.max_steps:
             envdone = True
             envtrunc = True
+
         else:
             envdone = False
             envtrunc = False
@@ -120,6 +126,7 @@ class BaseSurpriseWrapper(gym.Env):
         self.buffer.reset()
         self.num_steps = 0
         self.deaths = 0
+        self.task_return = 0
         obs = self.get_obs(obs)
         
         if self.heatmap is not None:

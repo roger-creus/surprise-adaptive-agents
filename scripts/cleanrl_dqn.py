@@ -223,6 +223,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if "surprise" in infos:
             ep_surprise.append(infos["surprise"][0])
             ep_entropy.append(infos["theta_entropy"][0])
+
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         if "final_info" in infos:
@@ -236,6 +237,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
                 writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise), global_step)
                 writer.add_scalar("charts/episodic_entropy", np.mean(ep_entropy), global_step)
+                writer.add_scalar("charts/average_task_return", infos["Average_task_return"], global_step)
                 writer.add_scalar("charts/epsilon", epsilon, global_step)
                 logger_.logs_a([
                     global_step,
