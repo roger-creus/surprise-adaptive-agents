@@ -224,10 +224,15 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             ep_surprise.append(infos["surprise"][0])
             ep_entropy.append(infos["theta_entropy"][0])
 
+        print(info)
+
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         if "final_info" in infos:
             for info in infos["final_info"]:
+                print("final info")
+                print(info)
+                quit()
                 # Skip the envs that are not done
                 if "episode" not in info:
                     continue
