@@ -184,7 +184,10 @@ def make_env(args):
                 minimize=False,
                 int_rew_scale=0.0,
                 ext_only=True,
-                max_steps=max_steps
+                max_steps=max_steps,
+                theta_size = theta_size,
+                grayscale = grayscale,
+                scale_by_std = args.scale_by_std
             )
             
         else:
