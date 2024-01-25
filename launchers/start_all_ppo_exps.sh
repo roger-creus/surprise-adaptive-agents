@@ -1,5 +1,11 @@
 ## env-id ## model ## buffer-type
 
+# Crafter testing
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter sadapt-bandit gaussian 1 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter smin gaussian 1 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter none gaussian 1 --track=True
+
+
 # REWARD FREE EXPERIMENTS
 # sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py FourRooms smin multinoulli 1
 # sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py FourRooms smax multinoulli 1
@@ -27,26 +33,26 @@
 
 # Minatar exps
 
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders smin bernoulli 1
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders smax bernoulli 1
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders sadapt bernoulli 1
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders sadapt-inverse bernoulli 1
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders none bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders smin bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders smax bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders sadapt bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders sadapt-inverse bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/SpaceInvaders none bernoulli 1
 
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway smin bernoulli 1
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway smax bernoulli 1
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway sadapt bernoulli 1
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway sadapt-inverse bernoulli 1
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway none bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway smin bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway smax bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway sadapt bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway sadapt-inverse bernoulli 1
+# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py MinAtar/Freeway none bernoulli 1
 
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout smin bernoulli 1
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout smax bernoulli 1
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout sadapt bernoulli 1
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout sadapt-inverse bernoulli 1
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout none bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout smin bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout smax bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout sadapt bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout sadapt-inverse bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Breakout none bernoulli 1
 
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest smin bernoulli 1
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest smax bernoulli 1
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest sadapt bernoulli 1
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest sadapt-inverse bernoulli 1
-sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest none bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest smin bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest smax bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest sadapt bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest sadapt-inverse bernoulli 1
+# sbatch launchers/train_cleanrl_long scripts/cleanrl_ppo.py MinAtar/Seaquest none bernoulli 1
