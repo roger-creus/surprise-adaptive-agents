@@ -1,4 +1,5 @@
 import gymnasium as gym
+import gym as old_gym
 import csv_logger
 import logging
 import matplotlib.pyplot as plt
@@ -67,7 +68,7 @@ def make_env(args):
             max_steps = 500
 
         elif "crafter" in args.env_id:
-            env = gym.make('CrafterReward-v1')
+            env = old_gym.make('CrafterReward-v1')
             # Crafter is based on old gym, we need to convert it to gymnasium api
             env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
             # testing
