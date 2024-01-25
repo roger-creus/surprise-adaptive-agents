@@ -157,9 +157,9 @@ class BaseSurpriseWrapper(gym.Env):
         if self._theta_size:
             # if the image is stack of images then take the first one
             if self._grayscale:
-                theta_obs = obs[:, :, 0]
+                theta_obs = obs[:, :, -1]
             else:
-                theta_obs = obs[:, :, :3]
+                theta_obs = obs[:, :, -3:]
             print(f"theta obs before resizing: {theta_obs.shape}")
             theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
             theta_obs = theta_obs.flatten().astype(np.float32)
