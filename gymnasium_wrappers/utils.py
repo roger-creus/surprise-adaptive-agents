@@ -11,6 +11,7 @@ from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
 from gymnasium_wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
 from gymnasium_wrappers.gym_to_gymnasium import GymToGymnasium
 from gymnasium_wrappers.obs_resize import ResizeObservationWrapper
+from gymnasium_wrappers.obs_history import ObsHistoryWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
 import crafter
 from IPython import embed
@@ -75,6 +76,8 @@ def make_env(args):
             env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
             # resize the observation
             env = ResizeObservationWrapper(env, grayscale=True)
+            # stack multiple frames
+            env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
             # testing
             obs = env.reset()
             for _ in range(100):

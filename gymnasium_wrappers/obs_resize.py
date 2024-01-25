@@ -35,9 +35,9 @@ class ResizeObservationWrapper(gym.Env):
     def step(self, action):
         # Take Action
         obs, env_rew, envdone, envtrunc, info = self._env.step(action)
-        print(f"original shape of obs is:{obs.shape}")
+        # print(f"original shape of obs is:{obs.shape}")
         obs_ = self.resize_obs(obs)
-        print(f"resize observations size is: {obs_.shape}")
+        # print(f"resize observations size is: {obs_.shape}")
         # TODO: move the channel axis to the top to be compatible with pytorch
         return obs_, env_rew, envdone, info
     
