@@ -73,6 +73,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         net = MinigridQNetwork
     elif args.env_id == "tetris":
         net = TetrisQNetwork
+    elif args.env_id == "crafter":
+        net = CrafterQNetwork
     else:
         raise NotImplementedError
     
@@ -126,6 +128,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 
             q_values = q_network(obs_)
             actions = torch.argmax(q_values, dim=1).cpu().numpy()
+            print("Sucess")
+            quit()
 
         # TRY NOT TO MODIFY: execute the game and log data.
         next_obs, rewards, terminated, truncated, infos = envs.step(actions)
