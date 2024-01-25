@@ -156,7 +156,7 @@ class BaseSurpriseWrapper(gym.Env):
         """
         if self._theta_size:
             # if the image is stack of images then take the first one
-            if self._grayscale
+            if self._grayscale:
                 theta_obs = obs[:, :, 0]
             else:
                 theta_obs = obs[:, :, :3]
