@@ -29,7 +29,12 @@ class ResizeObservationWrapper(gym.Env):
 
         # Gym spaces
         self.action_space = env.action_space
-        self.env_obs_space = env.observation_space
+        self.observation_space_old = env.observation_space
+        
+        self.observation_space = Box(
+                np.zeros(self._new_shape),
+                np.ones(self._new_shape)
+            )
 
 
     def step(self, action):
