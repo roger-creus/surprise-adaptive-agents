@@ -243,6 +243,6 @@ def parse_args_random():
     
     assert args.num_envs == 1, "vectorized envs are not supported at the moment"
 
-    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_seed:{args.seed}"
+    run_name = f"random_agent_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_seed:{args.seed}"
 
     return args, run_name
