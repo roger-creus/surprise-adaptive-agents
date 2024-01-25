@@ -95,8 +95,6 @@ class BaseSurpriseWrapper(gym.Env):
         if self._scale_by_std:
             self.rms.update(np.array([surprise]))
             surprise = (surprise / np.sqrt(self.rms.var)).item()
-            print(surprise)
-            print(type(surprise))
         else:
             thresh = 300
             surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
