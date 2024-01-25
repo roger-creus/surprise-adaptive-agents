@@ -4,6 +4,7 @@ from gymnasium.spaces import Box, Dict
 import pdb
 import util.class_util as classu
 from collections import deque
+from gym.wrappers.normalize import RunningMeanStd
 
 # This is taken from the bandit_final branch
 
@@ -17,7 +18,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         ext_only=False,
         max_steps = 500,
         theta_size = None,
-        grayscale = None
+        grayscale = None,
+        scale_by_std=False,
     ):
         """
         params
@@ -32,9 +34,12 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.add_true_rew = add_true_rew
         self.int_rew_scale = int_rew_scale
         self.ext_only = ext_only
-
+        self._scale_by_std = scale_by_std
         self._theta_size = theta_size
         self._grayscale = grayscale
+
+        if scale_by_std:
+            self.rms = RunningMeanStd()
 
         print(f"_theta_size:{self._theta_size}")
         print(f"_grayscale:{self._grayscale}")
@@ -155,9 +160,12 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         # Compute surprise as the negative log probability of the observation
         surprise = -self.buffer.logprob(self.encode_obs(obs))
-        # For numerical stability, clip stds to not be 0
-        thresh = 300
-        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        if self._scale_by_std:
+            self.rms.update(surprise)
+            surprise = surprise / np.sqrt(self.rms.var)
+        else:
+            thresh = 300
+            surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
 
         rew = ((-1) ** self.alpha_t) * surprise
 

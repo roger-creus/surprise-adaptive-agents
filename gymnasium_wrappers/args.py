@@ -70,6 +70,7 @@ def parse_args_dqn():
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
     parser.add_argument("--add-true-rew", type=bool, default=False)
+    parser.add_argument("--scale-by-std", type=int, default=0)
     
     args = parser.parse_args()
     
@@ -151,6 +152,7 @@ def parse_args_ppo():
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
     parser.add_argument("--add-true-rew", type=bool, default=False)
+    parser.add_argument("--scale-by-std", type=int, default=0)
     
     args = parser.parse_args()
     

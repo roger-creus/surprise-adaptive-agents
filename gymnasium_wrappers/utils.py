@@ -125,7 +125,8 @@ def make_env(args):
                 int_rew_scale=1.0,
                 max_steps=max_steps,
                 theta_size = theta_size,
-                grayscale = grayscale
+                grayscale = grayscale,
+                scale_by_std = args.scale_by_std
             )
         
         elif args.model == "smin":
@@ -137,7 +138,8 @@ def make_env(args):
                 int_rew_scale=1.0,
                 max_steps=max_steps,
                 theta_size = theta_size,
-                grayscale = grayscale
+                grayscale = grayscale,
+                scale_by_std = args.scale_by_std
             )
         
         elif args.model == "sadapt":
@@ -169,7 +171,10 @@ def make_env(args):
                 buffer,
                 add_true_rew=args.add_true_rew,
                 int_rew_scale=1.0,
-                max_steps = max_steps
+                max_steps = max_steps,
+                theta_size = theta_size,
+                grayscale = grayscale,
+                scale_by_std = args.scale_by_std
             )
         elif args.model == "none":
             env = BaseSurpriseWrapper(
@@ -187,7 +192,7 @@ def make_env(args):
                 
         env = gym.wrappers.RecordEpisodeStatistics(env)
         env.action_space.seed(args.seed)
-        
+
         return env
     return thunk
 
