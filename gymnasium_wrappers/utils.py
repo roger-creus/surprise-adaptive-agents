@@ -289,7 +289,7 @@ class CrafterLogger:
 
     def log(self, writer, global_step):
         success_rates = self.compute_success_rates()
-        for k,v in self.achievements.items():
+        for k,v in success_rates.items():
             key = f"crafter/{k}_success_rates"
             writer.add_scalar(key, v, global_step)
         score = self.compute_crafter_score()
