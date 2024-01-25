@@ -188,12 +188,6 @@ class CrafterPPOAgent(nn.Module):
         if use_theta:
             n_flatten += 84
 
-        self.linear = nn.Sequential(
-            nn.Linear(n_flatten, 512), 
-            nn.ReLU(),
-            nn.Linear(512, env.single_action_space.n), 
-        )
-
         self.actor = layer_init(nn.Linear(n_flatten, env.single_action_space.n), std=0.01)
         self.critic = layer_init(nn.Linear(n_flatten, 1), std=1)
 
