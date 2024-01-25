@@ -54,6 +54,7 @@ class RecordEpisodeStatistics(gym.Wrapper):
 def make_env(args):
     def thunk():
         theta_size = None
+        grayscale = None
         ############ Create environment ############
         if "Adapt" in args.env_id:
             gym_register(
@@ -81,15 +82,7 @@ def make_env(args):
             # stack multiple frames
             env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
             # set the size of theta
-            theta_size = (20, 26, 1) if grayscale else (20, 26, 3)
-            # testing
-            # obs = env.reset()
-            # for _ in range(100):
-            #     step = env.step(env.action_space.sample())
-            # print(f"observation shape is :{step[0].shape}")
-            # print(f"Success!")
-            # quit()
-            
+            theta_size = (20, 26, 1) if grayscale else (20, 26, 3)    
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = OneHotPartialObsWrapper(env)
@@ -112,8 +105,6 @@ def make_env(args):
         
         ############ Create buffer ############
         obs_size = theta_size if theta_size else env.observation_space.shape
-        print(obs_size)
-        quit()
         if args.buffer_type == "gaussian":
             buffer = GaussianBufferIncremental(obs_size)
         elif args.buffer_type == "bernoulli":
@@ -130,7 +121,9 @@ def make_env(args):
                 add_true_rew=args.add_true_rew,
                 minimize=False,
                 int_rew_scale=1.0,
-                max_steps=max_steps
+                max_steps=max_steps,
+                theta_size = theta_size,
+                grayscale = grayscale
             )
         
         elif args.model == "smin":
@@ -140,7 +133,9 @@ def make_env(args):
                 add_true_rew=args.add_true_rew,
                 minimize=True,
                 int_rew_scale=1.0,
-                max_steps=max_steps
+                max_steps=max_steps,
+                theta_size = theta_size,
+                grayscale = grayscale
             )
         
         elif args.model == "sadapt":
@@ -190,6 +185,12 @@ def make_env(args):
                 
         env = gym.wrappers.RecordEpisodeStatistics(env)
         env.action_space.seed(args.seed)
+        # testing
+        env.reset()
+        for _ in range(100):
+            env.step(env.action_space.sample())
+        print(f"Success")
+        quit()
         return env
     return thunk
 

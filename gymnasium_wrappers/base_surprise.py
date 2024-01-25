@@ -1,7 +1,7 @@
 import numpy as np
 import gymnasium as gym
 from gymnasium.spaces import Box, Dict
-
+import cv2
 from IPython import embed
 
 class BaseSurpriseWrapper(gym.Env):
@@ -12,7 +12,9 @@ class BaseSurpriseWrapper(gym.Env):
                  minimize=True,
                  int_rew_scale=1.0,
                  ext_only=False,
-                 max_steps = 500
+                 max_steps = 500,
+                 theta_size = None,
+                 grayscale = None
                 ):
         '''
         params
@@ -24,8 +26,14 @@ class BaseSurpriseWrapper(gym.Env):
 
         self._env = env
         self.buffer = buffer
+        self._theta_size = theta_size
+        self._grayscale = grayscale
+
+        print(f"_theta_size:{self._theta_size}")
+        print(f"_grayscale:{self._grayscale}")
 
         theta = self.buffer.get_params()
+        print(f"theta shape:{theta.shape}")
 
         # Add true reward to surprise
         self.add_true_rew = add_true_rew
@@ -81,7 +89,7 @@ class BaseSurpriseWrapper(gym.Env):
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         
-        self.buffer.add(obs.astype(np.float32))
+        self.buffer.add(encode_obs(obs))
         info['surprise'] = surprise
         info["theta_entropy"] = self.buffer.entropy()
         info['deaths'] = self.deaths
@@ -141,3 +149,21 @@ class BaseSurpriseWrapper(gym.Env):
 
     def render(self, **kwargs):
         return self._env.render(**kwargs)
+
+    def encode_obs(self, obs):
+        """
+        Used to encode the observation before putting on the buffer
+        """
+        if self._theta_size:
+            # if the image is stack of images then take the first one
+            if self._grayscale
+                theta_obs = obs[:, :, 0]
+            else:
+                theta_obs = obs[:, :, :3]
+            print(f"theta obs before resizing: {theta_obs.shape}")
+            theta_obs = cv2.resize(obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
+            theta_obs = theta_obs.flatten().astype(np.float32)
+            print(f"final theta obs shape: {theta_obs.shape}")
+            return theta_obs
+        else:
+            return obs.astype(np.float32)
