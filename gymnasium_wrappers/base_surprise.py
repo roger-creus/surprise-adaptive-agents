@@ -85,11 +85,11 @@ class BaseSurpriseWrapper(gym.Env):
             envdone = False
             envtrunc = False
 
-        surprise = -self.buffer.logprob(obs.astype(np.float32))
+        surprise = -self.buffer.logprob(self.encode_obs(obs))
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         
-        self.buffer.add(encode_obs(obs))
+        self.buffer.add(self.encode_obs(obs))
         info['surprise'] = surprise
         info["theta_entropy"] = self.buffer.entropy()
         info['deaths'] = self.deaths

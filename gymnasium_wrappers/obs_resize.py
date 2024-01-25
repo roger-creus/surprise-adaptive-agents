@@ -30,6 +30,13 @@ class ResizeObservationWrapper(gym.Env):
         # Gym spaces
         self.action_space = env.action_space
         self.observation_space_old = env.observation_space
+        if grayscale:
+            self._new_size = (new_size[0], new_size[1], 1)
+            self._new_shape = (new_shape[0], new_shape[1], 1)
+        else:
+            self._new_size = (new_size[0], new_size[1], 3)
+            self._new_shape = (new_shape[0], new_shape[1], 3)
+
 
         self.observation_space = Box(
                 np.zeros(self._new_shape),

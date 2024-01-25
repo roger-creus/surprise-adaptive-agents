@@ -75,6 +75,7 @@ def make_env(args):
         elif "crafter" in args.env_id:
             max_steps = 500
             grayscale = True
+            channel_dim = 1 if grayscale else 3
             env = old_gym.make('CrafterReward-v1')
             # Crafter is based on old gym, we need to convert it to gymnasium api
             env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
@@ -83,7 +84,7 @@ def make_env(args):
             # stack multiple frames
             env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
             # set the size of theta
-            theta_size = (20, 26, 1) if grayscale else (20, 26, 3)    
+            theta_size = (20, 26, channel_dim) if grayscale else (20, 26, channel_dim)    
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = OneHotPartialObsWrapper(env)
