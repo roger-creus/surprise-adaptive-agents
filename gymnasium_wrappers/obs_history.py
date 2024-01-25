@@ -1,6 +1,7 @@
 import gymnasium as gym
 import numpy as np
 import collections
+from gymnasium.spaces import Box, Dict
 
 class ObsHistoryWrapper(gym.Wrapper):
     def __init__(self, 
@@ -29,6 +30,8 @@ class ObsHistoryWrapper(gym.Wrapper):
             self.observation_space = Box(0, 1, shape=shape_ )    
         else:
             self.observation_space = Box(-1, 1, shape=(env.observation_space.low.shape[0]*self._history_length,) )
+
+        print(f"observation space in obs history wrapper:{self.observation_space}")
 
     def step(self, action):
         # Take Action
