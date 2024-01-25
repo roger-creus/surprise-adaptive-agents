@@ -1,12 +1,12 @@
 ## env-id ## model ## buffer-type
 
 # Crafter test
-# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter sadapt-bandit gaussian 1 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter smin gaussian 1 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter none gaussian 1 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter sadapt-bandit gaussian 1 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter smin gaussian 1 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter none gaussian 1 --track=True
 
 # random crafter agnet
-sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 1 --track=True --wandb-project-name="Crafter_PPO"
+# sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 1 --track=True --wandb-project-name="Crafter_PPO"
 
 # REWARD FREE EXPERIMENTS
 # sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py FourRooms smin multinoulli 1
