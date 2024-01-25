@@ -123,7 +123,6 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                         writer.add_scalar("charts/ucb_alpha_one", info["ucb_alpha_one"], global_step)
                         writer.add_scalar("charts/ucb_alpha_zero", info["ucb_alpha_zero"], global_step)
                 writer.add_scalar("charts/deaths", info["deaths"], global_step)
-                writer.add_scalar("charts/epsilon", epsilon, global_step)
                 logger_.logs_a([
                     global_step,
                     info["episode"]["r"][0],
