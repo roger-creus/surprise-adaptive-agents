@@ -154,6 +154,79 @@ def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
     torch.nn.init.constant_(layer.bias, bias_const)
     return layer
 
+
+class CrafterPPOAgent(nn.Module):
+    def __init__(self, env, use_theta=False):
+        super().__init__()
+        self.use_theta = use_theta
+        n_input_channels = env.single_observation_space["obs"].shape[-1]
+
+        self.conv = nn.Sequential(
+            nn.Conv2d(n_input_channels, 16 ,kernel_size=3, stride=2, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(16, 32 ,kernel_size=3, stride=2, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(32, 32 ,kernel_size=3, stride=2, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(32, 32 ,kernel_size=3, stride=2, padding=1),
+            nn.ReLU(),
+            nn.Flatten(),
+        )
+
+        if use_theta:
+            self.theta_fc = nn.Sequential(
+                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
+                nn.ReLU(),
+                nn.Linear(120, 84),
+                nn.ReLU(),
+            )
+            
+        with torch.no_grad():
+            s_ = env.single_observation_space["obs"].sample()[None]
+            n_flatten = self.conv(torch.as_tensor(s_).float().permute(0,3,1,2)).shape[1]
+
+        if use_theta:
+            n_flatten += 84
+
+        self.linear = nn.Sequential(
+            nn.Linear(n_flatten, 512), 
+            nn.ReLU(),
+            nn.Linear(512, env.single_action_space.n), 
+        )
+
+        self.actor = layer_init(nn.Linear(n_flatten, env.single_action_space.n), std=0.01)
+        self.critic = layer_init(nn.Linear(n_flatten, 1), std=1)
+
+    def get_value(self, x):
+        x_ = x["obs"]
+        y_ = x["theta"]
+        img_features = self.conv(x_.permute(0,3,1,2).float())
+        
+        if self.use_theta:
+            theta_features = self.theta_fc(y_.float())
+            x = torch.cat([img_features, theta_features], dim=1)
+        else:
+            x = img_features
+            
+        return self.critic(x)
+    
+    def get_action_and_value(self, x, action=None):
+        x_ = x["obs"]
+        y_ = x["theta"]
+        img_features = self.conv(x_.permute(0,3,1,2).float())
+        
+        if self.use_theta:
+            theta_features = self.theta_fc(y_.float())
+            x = torch.cat([img_features, theta_features], dim=1)
+        else:
+            x = img_features
+        
+        logits = self.actor(x)
+        probs = Categorical(logits=logits)
+        if action is None:
+            action = probs.sample()
+        return action, probs.log_prob(action), probs.entropy(), self.critic(x)
+
 class MinigridPPOAgent(nn.Module):
     def __init__(self, env, use_theta=False):
         super().__init__()

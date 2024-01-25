@@ -59,6 +59,9 @@ if __name__ == "__main__":
         net = TetrisPPOAgent
     elif "MinAtar" in args.env_id:
         net = MinAtarPPOAgent
+    elif args.env_id == "crafter":
+        net = CrafterPPOAgent
+        crafter_logger = CrafterLogger()
     else:
         raise NotImplementedError
 
@@ -135,6 +138,10 @@ if __name__ == "__main__":
 
             c = 0
             for info in infos["final_info"]:
+                # update crafter logs
+                if "crafter" in args.env_id:
+                    crafter_logger.update_achievements(info["achievements"])
+                    crafter_logger.log(writer, global_step)
                 # Skip the envs that are not done
                 if "episode" not in info:
                     c += 1
