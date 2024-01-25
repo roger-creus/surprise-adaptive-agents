@@ -104,7 +104,7 @@ def make_env(args):
             max_steps = 500
         
         ############ Create buffer ############
-        obs_size = theta_size if theta_size else env.observation_space.shape
+        obs_size = np.prod(theta_size) if theta_size else env.observation_space.shape
         if args.buffer_type == "gaussian":
             buffer = GaussianBufferIncremental(obs_size)
         elif args.buffer_type == "bernoulli":
