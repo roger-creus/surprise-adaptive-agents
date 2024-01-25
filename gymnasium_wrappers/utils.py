@@ -74,11 +74,11 @@ def make_env(args):
             # Crafter is based on old gym, we need to convert it to gymnasium api
             env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
             # resize the observation
-            env = ResizeObservationWrapper(env)
+            env = ResizeObservationWrapper(env, grayscale=True)
             # testing
             obs = env.reset()
             for _ in range(100):
-                step = env.step(env.action_space.sample(), grayscale=True)
+                step = env.step(env.action_space.sample())
             print(f"observation shape is :{step[0].shape}")
             print(f"Success!")
             quit()
