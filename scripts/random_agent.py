@@ -37,13 +37,11 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     
     if args.track:
         import wandb
-        confgis = vars(args)
-        confgis["model"] = "random"
         wandb.init(
             project=args.wandb_project_name,
             entity=args.wandb_entity,
             sync_tensorboard=True,
-            config=confgis,
+            config=vars(args),
             name=run_name,
             monitor_gym=True,
             save_code=True,
