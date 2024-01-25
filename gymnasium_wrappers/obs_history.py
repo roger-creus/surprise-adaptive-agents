@@ -39,6 +39,7 @@ class ObsHistoryWrapper(gym.Wrapper):
         self._time += 1
         self.obs_hist.appendleft(obs)
         self.obs_hist.pop()
+        # TODO: move the channel axis to the top to be compatible with pytorch
         return self.get_obs(obs), env_rew, envdone, envtrunc ,info 
     
     def reset(self, seed=None, options=None):

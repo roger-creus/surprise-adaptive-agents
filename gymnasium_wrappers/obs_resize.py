@@ -30,7 +30,7 @@ class ResizeObservationWrapper(gym.Env):
         # Gym spaces
         self.action_space = env.action_space
         self.observation_space_old = env.observation_space
-        
+
         self.observation_space = Box(
                 np.zeros(self._new_shape),
                 np.ones(self._new_shape)
@@ -43,8 +43,7 @@ class ResizeObservationWrapper(gym.Env):
         # print(f"original shape of obs is:{obs.shape}")
         obs_ = self.resize_obs(obs)
         # print(f"resize observations size is: {obs_.shape}")
-        # TODO: move the channel axis to the top to be compatible with pytorch
-        return obs_, env_rew, envdone, info
+        return obs_, env_rew, envdone, envtrunc, info
     
     def resize_obs(self, obs, key=None):
         obs = cv2.resize(obs, dsize=tuple(self._new_size[:2]), interpolation=cv2.INTER_AREA)
