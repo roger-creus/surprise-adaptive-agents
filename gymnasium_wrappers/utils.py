@@ -82,7 +82,7 @@ def make_env(args):
             # resize the observation
             env = ResizeObservationWrapper(env, grayscale=grayscale)
             # stack multiple frames
-            # env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
+            env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
             # set the size of theta
             theta_size = (20, 26, channel_dim) if grayscale else (20, 26, channel_dim)    
         elif "FourRooms" in args.env_id:
