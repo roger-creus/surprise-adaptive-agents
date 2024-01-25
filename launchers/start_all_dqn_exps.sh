@@ -24,7 +24,7 @@
 
 # Crafter testing
 sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 1 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 1 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 1 --track=True
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter none gaussian 1 --track=True
 
 # random crafter agnet
