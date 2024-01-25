@@ -161,7 +161,7 @@ class BaseSurpriseWrapper(gym.Env):
             else:
                 theta_obs = obs[:, :, :3]
             print(f"theta obs before resizing: {theta_obs.shape}")
-            theta_obs = cv2.resize(obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
+            theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
             theta_obs = theta_obs.flatten().astype(np.float32)
             print(f"final theta obs shape: {theta_obs.shape}")
             return theta_obs
