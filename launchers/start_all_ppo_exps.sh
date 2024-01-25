@@ -1,6 +1,6 @@
 ## env-id ## model ## buffer-type
 
-# Crafter testing
+# Crafter test
 sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter sadapt-bandit gaussian 1 --track=True
 sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter smin gaussian 1 --track=True
 sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter none gaussian 1 --track=True
