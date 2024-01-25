@@ -1,5 +1,5 @@
 import gymnasium as gym
-
+from gymnasium.spaces import Discrete
 
 
 # Some envs do not support gymnasium, this simple wrapper is to convert from gym to gymnasium api
@@ -9,7 +9,7 @@ class GymToGymnasium(gym.Env):
         self._env = env
         self._render_mode = render_mode
         self._max_steps = max_steps
-        self.action_space = env.action_space
+        self.action_space =  Discrete(env.action_space.n) 
         self.observation_space = env.observation_space
     
     def reset(self, seed=None, options=None):
