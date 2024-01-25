@@ -161,7 +161,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         # Compute surprise as the negative log probability of the observation
         surprise = -self.buffer.logprob(self.encode_obs(obs))
         if self._scale_by_std:
-            self.rms.update(surprise)
+            self.rms.update(np.array([surprise]))
             surprise = surprise / np.sqrt(self.rms.var)
         else:
             thresh = 300
