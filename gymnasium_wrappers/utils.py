@@ -4,7 +4,8 @@ import csv_logger
 import logging
 import matplotlib.pyplot as plt
 import minatar
-
+import crafter
+import numpy as np
 from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper, OneHotPartialObsWrapper
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
@@ -13,7 +14,7 @@ from gymnasium_wrappers.gym_to_gymnasium import GymToGymnasium
 from gymnasium_wrappers.obs_resize import ResizeObservationWrapper
 from gymnasium_wrappers.obs_history import ObsHistoryWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
-import crafter
+
 from IPython import embed
 from gymnasium.envs.registration import register as gym_register
 
