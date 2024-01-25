@@ -268,7 +268,7 @@ class CrafterLogger:
         # Initialize the achievements dict
         self.achievements = {}
 
-    def update_achievements(self, update_achievements):
+    def update_achievements(self, achievements):
         for k,v in achievements.items():
             if not k in self.achievements:
                 self.achievements[k] = []
