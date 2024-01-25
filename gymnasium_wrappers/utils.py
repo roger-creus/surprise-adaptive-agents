@@ -187,12 +187,7 @@ def make_env(args):
                 
         env = gym.wrappers.RecordEpisodeStatistics(env)
         env.action_space.seed(args.seed)
-        # testing
-        env.reset()
-        for _ in range(100):
-            env.step(env.action_space.sample())
-        print(f"Success")
-        quit()
+        
         return env
     return thunk
 
