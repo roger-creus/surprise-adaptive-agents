@@ -2,7 +2,6 @@
 import os
 import random
 import time
-from distutils.util import strtobool
 
 import gymnasium as gym
 import numpy as np
