@@ -90,6 +90,7 @@ class BaseSurpriseWrapper(gym.Env):
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         
         self.buffer.add(self.encode_obs(obs))
+        print(f"final theta obs: {self.encode_obs(obs)[:10]}")
         info['surprise'] = surprise
         info["theta_entropy"] = self.buffer.entropy()
         info['deaths'] = self.deaths
@@ -160,11 +161,8 @@ class BaseSurpriseWrapper(gym.Env):
                 theta_obs = obs[:, :, -1]
             else:
                 theta_obs = obs[:, :, -3:]
-            print(f"theta obs before resizing: {theta_obs.shape}")
             theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
             theta_obs = theta_obs.flatten().astype(np.float32)
-            print(f"final theta obs shape: {theta_obs.shape}")
-            print(theta_obs[:10])
             return theta_obs
         else:
             return obs.astype(np.float32)
