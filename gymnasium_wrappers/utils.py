@@ -266,7 +266,7 @@ class CrafterLogger:
     '''
     def __init__(self):
         # Initialize the achievements dict
-        self.update_achievements = {}
+        self.achievements = {}
 
     def update_achievements(self, update_achievements):
         for k,v in achievements.items():
