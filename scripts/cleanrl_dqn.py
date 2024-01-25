@@ -127,8 +127,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             else:
                 obs_ = torch.Tensor(obs).to(device)
                 
-            q_values = q_network(obs_)
-            actions = torch.argmax(q_values, dim=1).cpu().numpy()
+            actions = np.array([envs.single_action_space.sample() for _ in range(envs.num_envs)])
 
         # TRY NOT TO MODIFY: execute the game and log data.
         next_obs, rewards, terminated, truncated, infos = envs.step(actions)
