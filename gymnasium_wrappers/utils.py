@@ -53,6 +53,7 @@ class RecordEpisodeStatistics(gym.Wrapper):
 
 def make_env(args):
     def thunk():
+        theta_size = None
         ############ Create environment ############
         if "Adapt" in args.env_id:
             gym_register(
@@ -71,20 +72,23 @@ def make_env(args):
 
         elif "crafter" in args.env_id:
             max_steps = 500
+            grayscale = True
             env = old_gym.make('CrafterReward-v1')
             # Crafter is based on old gym, we need to convert it to gymnasium api
             env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
             # resize the observation
-            env = ResizeObservationWrapper(env, grayscale=False)
+            env = ResizeObservationWrapper(env, grayscale=grayscale)
             # stack multiple frames
             env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
+            # set the size of theta
+            theta_size = (20, 26, 1) if grayscale else (20, 26, 3)
             # testing
-            obs = env.reset()
-            for _ in range(100):
-                step = env.step(env.action_space.sample())
-            print(f"observation shape is :{step[0].shape}")
-            print(f"Success!")
-            quit()
+            # obs = env.reset()
+            # for _ in range(100):
+            #     step = env.step(env.action_space.sample())
+            # print(f"observation shape is :{step[0].shape}")
+            # print(f"Success!")
+            # quit()
             
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
@@ -107,7 +111,9 @@ def make_env(args):
             max_steps = 500
         
         ############ Create buffer ############
-        obs_size = env.observation_space.shape
+        obs_size = theta_size if theta_size else env.observation_space.shape
+        print(obs_size)
+        quit()
         if args.buffer_type == "gaussian":
             buffer = GaussianBufferIncremental(obs_size)
         elif args.buffer_type == "bernoulli":
