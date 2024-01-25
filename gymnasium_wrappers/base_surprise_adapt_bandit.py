@@ -162,7 +162,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         surprise = -self.buffer.logprob(self.encode_obs(obs))
         if self._scale_by_std:
             self.rms.update(np.array([surprise]))
-            surprise = surprise / np.sqrt(self.rms.var)
+            surprise = (surprise / np.sqrt(self.rms.var)).item()
         else:
             thresh = 300
             surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh

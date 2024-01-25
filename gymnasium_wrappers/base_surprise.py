@@ -94,7 +94,7 @@ class BaseSurpriseWrapper(gym.Env):
         surprise = -self.buffer.logprob(self.encode_obs(obs))
         if self._scale_by_std:
             self.rms.update(np.array([surprise]))
-            surprise = surprise / np.sqrt(self.rms.var)
+            surprise = (surprise / np.sqrt(self.rms.var)).item()
             print(surprise)
             print(type(surprise))
         else:
