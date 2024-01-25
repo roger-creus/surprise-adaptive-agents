@@ -8,8 +8,9 @@ from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper, OneHotPartialObsWr
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
 from gymnasium_wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
+from gymnasium_wrappers.gym_to_gymnasium import GymToGymnasium
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
-
+import crafter
 from IPython import embed
 from gymnasium.envs.registration import register as gym_register
 
@@ -64,6 +65,17 @@ def make_env(args):
             from surprise.envs.tetris.tetris import TetrisEnv
             env = TetrisEnv()
             max_steps = 500
+
+        elif "crafter" in args.env_id:
+            env = gym.make('CrafterReward-v1')
+            # Crafter is based on old gym, we need to convert it to gymnasium api
+            env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
+            # testing
+            obs = env.reset()
+            for _ in range(100):
+                step = env.step(env.action_space.sample())
+            print(f"Success!")
+            quit()
             
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
