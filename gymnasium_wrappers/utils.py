@@ -258,3 +258,39 @@ def register_griddly_envs():
         )
     except:
         pass
+
+
+class CrafterLogger:
+    '''
+    Helper class to keep track of crafter related metrics
+    '''
+    def __init__(self):
+        # Initialize the achievements dict
+        self.update_achievements = {}
+
+    def update_achievements(self, update_achievements):
+        for k,v in achievements.items():
+            if not k in self.achievements:
+                self.achievements[k] = []
+            self.achievements[k].append(v)
+
+    def compute_success_rates(self):
+        success_rate = {}
+        for k,v in self.achievements.items():
+            num_episodes = len(self.achievements[k])
+            success_rate[k] = 100 * (np.array(v)>=1).mean() 
+        return success_rate
+
+    def compute_crafter_score(self):
+        success_rates_values = np.array(list(self.compute_success_rates().values()))
+        assert (0 <= success_rates_values).all() and (success_rates_values <= 100).all()
+        scores = np.exp(np.nanmean(np.log(1 + success_rates_values), -1)) - 1
+        return scores
+
+    def log(self, writer, global_step):
+        success_rates = self.compute_success_rates()
+        for k,v in self.achievements.items():
+            key = f"crafter/{k}_success_rates"
+            writer.add_scalar(key, v, global_step)
+        score = self.compute_crafter_score()
+        writer.add_scalar("crafter/score", score, global_step)

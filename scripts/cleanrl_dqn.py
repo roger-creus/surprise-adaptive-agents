@@ -75,6 +75,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         net = TetrisQNetwork
     elif args.env_id == "crafter":
         net = CrafterQNetwork
+        crafter_logger = CrafterLogger()
     else:
         raise NotImplementedError
     
@@ -128,8 +129,6 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 
             q_values = q_network(obs_)
             actions = torch.argmax(q_values, dim=1).cpu().numpy()
-            print("Sucess")
-            quit()
 
         # TRY NOT TO MODIFY: execute the game and log data.
         next_obs, rewards, terminated, truncated, infos = envs.step(actions)
@@ -144,6 +143,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         if "final_info" in infos:
             for info in infos["final_info"]:
+                print(infos["achievements"][0])
+                quit()
                 # Skip the envs that are not done
                 if "episode" not in info:
                     continue
