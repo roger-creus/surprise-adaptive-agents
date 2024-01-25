@@ -123,7 +123,7 @@ class CrafterQNetwork(nn.Module):
             
         with torch.no_grad():
             s_ = env.single_observation_space["obs"].sample()[None]
-            n_flatten = self.network(torch.as_tensor(s_).float().permute(0,3,1,2)).shape[1]
+            n_flatten = self.conv(torch.as_tensor(s_).float().permute(0,3,1,2)).shape[1]
 
         if use_theta:
             n_flatten += 84
