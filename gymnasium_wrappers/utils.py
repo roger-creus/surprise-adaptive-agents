@@ -78,7 +78,7 @@ def make_env(args):
             # testing
             obs = env.reset()
             for _ in range(100):
-                step = env.step(env.action_space.sample())
+                step = env.step(env.action_space.sample(), grayscale=True)
             print(f"observation shape is :{step[0].shape}")
             print(f"Success!")
             quit()
