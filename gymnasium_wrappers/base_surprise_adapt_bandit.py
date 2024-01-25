@@ -16,6 +16,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         int_rew_scale=1.0,
         ext_only=False,
         max_steps = 500,
+        theta_size = None,
+        grayscale = None
     ):
         """
         params
@@ -31,7 +33,15 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.int_rew_scale = int_rew_scale
         self.ext_only = ext_only
 
+        self._theta_size = theta_size
+        self._grayscale = grayscale
+
+        print(f"_theta_size:{self._theta_size}")
+        print(f"_grayscale:{self._grayscale}")
+
         theta = self.buffer.get_params()
+
+        print(f"theta shape:{theta.shape}")
         
         self.num_steps = 0
         self.num_eps = 0
@@ -77,12 +87,12 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.buffer.reset()
         for _ in range(self.max_steps):
             obs, rew, done, truncated, info = self._env.step(self.action_space.sample())
-            self.buffer.add(obs)
+            self.buffer.add(self.encode_obs(obs))
             # softreset
             if done or truncated:
                 obs, _ = self._env.reset()
                 obs = np.random.rand(*obs.shape)
-                self.buffer.add(obs)
+                self.buffer.add(self.encode_obs(obs))
         random_entropy = self.buffer.entropy()
         self._env.reset()
         return random_entropy
@@ -144,7 +154,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             envtrunc = False
 
         # Compute surprise as the negative log probability of the observation
-        surprise = -self.buffer.logprob(obs.astype(np.float32))
+        surprise = -self.buffer.logprob(self.encode_obs(obs))
         # For numerical stability, clip stds to not be 0
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
@@ -153,7 +163,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         # Add observation to buffer
           # this adds the raw observations to the buffer no? shouldnt we add the augmented obs?
-        self.buffer.add(obs.astype(np.float32))
+        self.buffer.add(self.encode_obs(obs))
 
         info["surprise_adapt_reward"] = rew
         info["theta_entropy"] = self.buffer.entropy()
@@ -261,5 +271,15 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         """
         Used to encode the observation before putting on the buffer
         """
-        return np.array(obs).flatten().copy()
+        if self._theta_size:
+            # if the image is stack of images then take the first one
+            if self._grayscale:
+                theta_obs = obs[:, :, -1]
+            else:
+                theta_obs = obs[:, :, -3:]
+            theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
+            theta_obs = theta_obs.flatten().astype(np.float32)
+            return theta_obs
+        else:
+            return obs.astype(np.float32)
         

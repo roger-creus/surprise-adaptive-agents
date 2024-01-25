@@ -90,7 +90,6 @@ class BaseSurpriseWrapper(gym.Env):
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         
         self.buffer.add(self.encode_obs(obs))
-        print(f"final theta obs: {self.encode_obs(obs)}")
         info['surprise'] = surprise
         info["theta_entropy"] = self.buffer.entropy()
         info['deaths'] = self.deaths
