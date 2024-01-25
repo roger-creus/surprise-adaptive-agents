@@ -155,6 +155,12 @@ if __name__ == "__main__":
                 writer.add_scalar("charts/task_reward", np.mean(task_rewards[c]), global_step)
                 writer.add_scalar("charts/average_task_return", info["Average_task_return"], global_step)
                 writer.add_scalar("charts/average_episode_length", info["Average_episode_length"], global_step)
+                # log bandit metrics
+                if args.model == "sadapt-bandit":
+                    writer.add_scalar("charts/alpha_rolling_average", info["alpha_rolling_average"], global_step)
+                    if "ucb_alpha_one" in info:
+                        writer.add_scalar("charts/ucb_alpha_one", info["ucb_alpha_one"], global_step)
+                        writer.add_scalar("charts/ucb_alpha_zero", info["ucb_alpha_zero"], global_step)
 
                 logger_.logs_a([
                     global_step,
