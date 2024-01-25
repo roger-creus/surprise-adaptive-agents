@@ -147,7 +147,6 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 if "crafter" in args.env_id:
                     crafter_logger.update_achievements(info["achievements"])
                     crafter_logger.log(writer, global_step)
-                    print("loggin is working")
                     
                 # Skip the envs that are not done
                 if "episode" not in info:
