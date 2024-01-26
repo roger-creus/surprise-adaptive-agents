@@ -50,6 +50,9 @@ if __name__ == "__main__":
     envs = gym.vector.SyncVectorEnv(
         [make_env(args) for i in range(args.num_envs)]
     )
+    eval_envs = gym.vector.SyncVectorEnv(
+        [make_env(args) for i in range(1)]
+    )
     assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
 
     use_theta = args.model in ["smax", "smin", "sadapt", "sadapt-inverse"]
@@ -279,6 +282,9 @@ if __name__ == "__main__":
         print("SPS:", int(global_step / (time.time() - start_time)))
         writer.add_scalar("charts/SPS", int(global_step / (time.time() - start_time)), global_step)
         
+        if update_idx % args.video_log_freq == 0:
+            eval_episode_ppo(agent, eval_envs, device, f"runs/{run_name}", global_step)
+
         update_idx += 1
 
     envs.close()
