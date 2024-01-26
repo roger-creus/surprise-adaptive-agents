@@ -135,11 +135,13 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             print(f"Sampling action time :{ time.time() - now}")
 
         # TRY NOT TO MODIFY: execute the game and log data.
-        now = time.time()
-        next_obs, rewards, terminated, truncated, infos = envs.step(actions)
-        t = time.time() - now
-        mean_step_time.append(t)
-        print(f"Step in the env time :{np.mean(mean_step_time)}")
+        for _ in range(10000):
+            now = time.time()
+            next_obs, rewards, terminated, truncated, infos = envs.step(actions)
+            t = time.time() - now
+            mean_step_time.append(t)
+            print(f"Step in the env time :{np.mean(mean_step_time)}")
+            quit()
 
         if "surprise" in infos:
             ep_surprise.append(infos["surprise"][0])
