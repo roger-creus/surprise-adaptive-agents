@@ -1,6 +1,5 @@
 import gymnasium as gym
 import numpy as np
-import collections
 from gymnasium.spaces import Box, Dict
 import time
 from gymnasium.wrappers.frame_stack import FrameStack
@@ -36,7 +35,6 @@ class ObsHistoryWrapper(gym.Wrapper):
         obs, env_rew, envdone, envtrunc ,info = self._env.step(action)
         obs = (np.array(obs).transpose(1,2,0,3)).reshape(obs.shape[1],  obs.shape[2], -1)
         self._time += 1
-        print(f"step in observation history: {time.time() - now}")
         return obs, env_rew, envdone, envtrunc ,info 
     
     def reset(self, seed=None, options=None):
