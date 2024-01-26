@@ -1,5 +1,6 @@
 import gymnasium as gym
-from gymnasium.spaces import Discrete
+from gymnasium.spaces import Discrete, Box
+
 
 
 # Some envs do not support gymnasium, this simple wrapper is to convert from gym to gymnasium api
@@ -10,7 +11,7 @@ class GymToGymnasium(gym.Env):
         self._render_mode = render_mode
         self._max_steps = max_steps
         self.action_space =  Discrete(env.action_space.n)
-        self.observation_space = env.observation_space
+        self.observation_space = Box(low=env.observation_space.low, high=env.observation_space.high, dtype=env.observation_space.dtype, shape=env.observation_space.shape)
     
     def reset(self, seed=None, options=None):
         self.t = 0

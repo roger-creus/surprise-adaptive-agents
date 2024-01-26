@@ -31,19 +31,19 @@ def parse_args_dqn():
     # Algorithm specific arguments
     parser.add_argument("--env-id", type=str, default="SurpriseAdaptRooms-v0",
         help="the id of the environment")
-    parser.add_argument("--total-timesteps", type=int, default=20000000,
+    parser.add_argument("--total-timesteps", type=int, default=10_000_000,
         help="total timesteps of the experiments")
     parser.add_argument("--learning-rate", type=float, default=1e-4,
         help="the learning rate of the optimizer")
     parser.add_argument("--num-envs", type=int, default=1,
         help="the number of parallel game environments")
-    parser.add_argument("--buffer-size", type=int, default=1000000,
+    parser.add_argument("--buffer-size", type=int, default=1_000_000,
         help="the replay memory buffer size")
     parser.add_argument("--gamma", type=float, default=0.99,
         help="the discount factor gamma")
     parser.add_argument("--tau", type=float, default=1.,
         help="the target network update rate")
-    parser.add_argument("--target-network-frequency", type=int, default=1000,
+    parser.add_argument("--target-network-frequency", type=int, default=1_000,
         help="the timesteps it takes to update the target network")
     parser.add_argument("--batch-size", type=int, default=32,
         help="the batch size of sample from the reply memory")
@@ -51,7 +51,7 @@ def parse_args_dqn():
         help="the starting epsilon for exploration")
     parser.add_argument("--end-e", type=float, default=0.01,
         help="the ending epsilon for exploration")
-    parser.add_argument("--exploration-fraction", type=float, default=0.35,
+    parser.add_argument("--exploration-fraction", type=float, default=0.10,
         help="the fraction of `total-timesteps` it takes from start-e to go end-e")
     parser.add_argument("--learning-starts", type=int, default=80000,
         help="timestep to start learning")
