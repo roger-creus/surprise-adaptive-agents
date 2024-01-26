@@ -3,6 +3,7 @@ import numpy as np
 import collections
 from gymnasium.spaces import Box, Dict
 import time
+from gymnasium.wrappers.frame_stack import FrameStack
 
 class ObsHistoryWrapper(gym.Wrapper):
     def __init__(self, 
@@ -18,12 +19,9 @@ class ObsHistoryWrapper(gym.Wrapper):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
-        self._env = env
-        self._history_length = history_length
-        self._stack_channels = stack_channels
-        self._channel_dim = channel_dim
+        self._env = FrameStack(env, history_length)
         # Gym spaces
-        self.action_space = env.action_space
+        self.action_space = self._env.action_space
         self.observation_space_old = env.observation_space
         if self._stack_channels:
             shape_ = list(env.observation_space.low.shape)
@@ -38,9 +36,9 @@ class ObsHistoryWrapper(gym.Wrapper):
         # Take Action
         now = time.time()
         obs, env_rew, envdone, envtrunc ,info = self._env.step(action)
+        obs = (np.array(obs).transpose(1,2,0,3)).reshape(obs.shape[1],  obs.shape[2], -1)
+        print(obs.shape)
         self._time += 1
-        self.obs_hist.appendleft(obs)
-        self.obs_hist.pop()
         print(f"step in observation history: {time.time() - now}")
         return self.get_obs(obs), env_rew, envdone, envtrunc ,info 
     
@@ -66,3 +64,6 @@ class ObsHistoryWrapper(gym.Wrapper):
         
     def render(self, mode=None):
         return self._env.render(mode=mode)
+    
+
+env = gym
