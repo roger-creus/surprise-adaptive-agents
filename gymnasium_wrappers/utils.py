@@ -139,7 +139,8 @@ def make_env(args):
                 max_steps=max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                scale_by_std = args.scale_by_std
+                scale_by_std = args.scale_by_std,
+                soft_reset=args.soft_reset
             )
         
         elif args.model == "smin":
@@ -152,7 +153,8 @@ def make_env(args):
                 max_steps=max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                scale_by_std = args.scale_by_std
+                scale_by_std = args.scale_by_std,
+                soft_reset=args.soft_reset
             )
         
         elif args.model == "sadapt":
@@ -187,7 +189,8 @@ def make_env(args):
                 max_steps = max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                scale_by_std = args.scale_by_std
+                scale_by_std = args.scale_by_std,
+                soft_reset=args.soft_reset
             )
         elif args.model == "none":
             env = BaseSurpriseWrapper(
@@ -200,7 +203,8 @@ def make_env(args):
                 max_steps=max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                scale_by_std = args.scale_by_std
+                scale_by_std = args.scale_by_std,
+                soft_reset=args.soft_reset
             )
             
         else:

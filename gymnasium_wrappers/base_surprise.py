@@ -17,6 +17,7 @@ class BaseSurpriseWrapper(gym.Env):
                  theta_size = None,
                  grayscale = None,
                  scale_by_std=False,
+                 soft_reset=True
                 ):
         '''
         params
@@ -31,6 +32,7 @@ class BaseSurpriseWrapper(gym.Env):
         self._theta_size = theta_size
         self._grayscale = grayscale
         self._scale_by_std = scale_by_std
+        self._soft_reset = soft_reset
 
         if scale_by_std:
             print("Scaling surprise by std")
@@ -75,22 +77,29 @@ class BaseSurpriseWrapper(gym.Env):
 
         
         # soft reset
-        if envdone:
-            obs, _ = self._env.reset()
-            obs = np.random.rand(*obs.shape)
-            self.deaths += 1
-        if self.num_steps == self.max_steps:
-            envdone = True
-            envtrunc = True
-            if self.deaths > 0:
-                self.task_return /= self.deaths
-                self.num_steps /= self.deaths
-            info["Average_task_return"] = self.task_return
-            info["Average_episode_length"] = self.num_steps
-            info['deaths'] = self.deaths
+        if self._soft_reset:
+            if envdone:
+                obs, _ = self._env.reset()
+                obs = np.random.rand(*obs.shape)
+                self.deaths += 1
+            if self.num_steps == self.max_steps:
+                envdone = True
+                envtrunc = True
+                if self.deaths > 0:
+                    self.task_return /= self.deaths
+                    self.num_steps /= self.deaths
+                info["Average_task_return"] = self.task_return
+                info["Average_episode_length"] = self.num_steps
+                info['deaths'] = self.deaths
+            else:
+                envdone = False
+                envtrunc = False
         else:
-            envdone = False
-            envtrunc = False
+            if envdone:
+                info["Average_task_return"] = self.task_return
+                info["Average_episode_length"] = self.num_steps
+                info['deaths'] = self.deaths
+
 
         surprise = -self.buffer.logprob(self.encode_obs(obs))
         if self._scale_by_std:
