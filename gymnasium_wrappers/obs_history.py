@@ -23,13 +23,9 @@ class ObsHistoryWrapper(gym.Wrapper):
         # Gym spaces
         self.action_space = self._env.action_space
         self.observation_space_old = env.observation_space
-        if self._stack_channels:
-            shape_ = list(env.observation_space.low.shape)
-            shape_[self._channel_dim] = shape_[self._channel_dim] * self._history_length 
-            self.observation_space = Box(0, 1, shape=shape_ )    
-        else:
-            self.observation_space = Box(-1, 1, shape=(env.observation_space.low.shape[0]*self._history_length,) )
-
+        shape_ = list(env.observation_space.low.shape)
+        shape_[self._channel_dim] = shape_[self._channel_dim] * self._history_length 
+        self.observation_space = Box(0, 1, shape=shape_ )    
         print(f"observation space in obs history wrapper:{self.observation_space}")
 
     def step(self, action):
