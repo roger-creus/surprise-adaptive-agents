@@ -14,6 +14,8 @@ from gymnasium_wrappers.gym_to_gymnasium import GymToGymnasium
 from gymnasium_wrappers.obs_resize import ResizeObservationWrapper
 from gymnasium_wrappers.obs_history import ObsHistoryWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
+from griddly import GymWrapperFactory, gd
+import os
 
 from IPython import embed
 from gymnasium.envs.registration import register as gym_register
@@ -84,12 +86,11 @@ def make_env(args):
             # stack multiple frames
             env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
             # set the size of theta
-            theta_size = (20, 26, channel_dim) if grayscale else (20, 26, channel_dim)    
+            theta_size = (20, 26, channel_dim) if grayscale else (20, 26, channel_dim)
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = OneHotPartialObsWrapper(env)
             env = ImgObsWrapper(env)
-
             max_steps = 500
             
         elif "MinAtar" in args.env_id:
@@ -97,8 +98,20 @@ def make_env(args):
             max_steps = 1000
 
         elif "griddly" in args.env_id:
+            # for instance griddly-MazeEnv
             register_griddly_envs()
-            env = gym.make("GDY-MazeEnv-v0")
+            griddly_env_name = args.env_id.split('-')[-1]
+            max_steps = 500
+            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
+            
+            if griddly_env_name == "MazeEnv":
+                from surprise.envs.maze.maze_env import MazeEnv
+                env = MazeEnv(env)
+                env = old_gym.wrappers.FlattenObservation(env)
+            else:
+                raise ValueError(f"Unknown griddly env {griddly_env_name}")
+            
+            env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
         
         else:
             print(f"Making {args.env_id}")
@@ -192,7 +205,7 @@ def make_env(args):
             
         else:
             raise ValueError(f"Unknown model {args.model}")
-                
+
         env = gym.wrappers.RecordEpisodeStatistics(env)
         env.action_space.seed(args.seed)
 
@@ -239,29 +252,8 @@ def log_heatmap(env, heatmap, ep_counter, writer, save_path):
     plt.clf()
     
 def register_griddly_envs():
-    from griddly import GymWrapperFactory, gd
-    import os
-    
-    try:
-        wrapper = GymWrapperFactory()
-        wrapper.build_gym_from_yaml('_ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
-        gym_register(
-            id='GDY-ButterfliesEnv-v0',
-            entry_point='surprise.envs.maze.butterflies:ButterfliesEnv'
-        )
-    except:
-        pass
-    
-    try:
-        wrapper = GymWrapperFactory()
-        wrapper.build_gym_from_yaml('_MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env_fully_observed.yaml")
-        gym_register(
-            id='GDY-MazeEnv-v0',
-            entry_point='surprise.envs.maze.maze_env:MazeEnvFullyObserved'
-        )
-    except:
-        pass
-
+    wrapper = GymWrapperFactory()
+    wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env_fully_observed.yaml")
 
 class CrafterLogger:
     '''

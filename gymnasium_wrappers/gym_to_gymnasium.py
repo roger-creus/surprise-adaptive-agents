@@ -9,7 +9,7 @@ class GymToGymnasium(gym.Env):
         self._env = env
         self._render_mode = render_mode
         self._max_steps = max_steps
-        self.action_space =  Discrete(env.action_space.n) 
+        self.action_space =  Discrete(env.action_space.n)
         self.observation_space = env.observation_space
     
     def reset(self, seed=None, options=None):
@@ -27,5 +27,8 @@ class GymToGymnasium(gym.Env):
         return obs, reward, done, truncated, info
 
     def render(self, **kwargs):
-        return self._env.render(render_mode=self._render_mode)
+        try:
+            return self._env.render(render_mode=self._render_mode)
+        except:
+            return self._env.render(**kwargs)
     
