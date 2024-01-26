@@ -16,6 +16,7 @@ from IPython import embed
 from gymnasium_wrappers.utils import *
 from gymnasium_wrappers.models import *
 from gymnasium_wrappers.args import parse_args_dqn
+import time 
 
 
 def linear_schedule(start_e: float, end_e: float, duration: int, t: int):
@@ -126,12 +127,16 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 obs_ = {k: torch.as_tensor(v).to(device) for k, v in obs.items()}
             else:
                 obs_ = torch.Tensor(obs).to(device)
-                
+            
+            now = time.time()
             q_values = q_network(obs_)
             actions = torch.argmax(q_values, dim=1).cpu().numpy()
+            print(f"Sampling action time :{ time.time() - now}")
 
         # TRY NOT TO MODIFY: execute the game and log data.
+        now = time.time()
         next_obs, rewards, terminated, truncated, infos = envs.step(actions)
+        print(f"Step in the env time :{ time.time() - now}")
 
         if "surprise" in infos:
             ep_surprise.append(infos["surprise"][0])
@@ -144,9 +149,11 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if "final_info" in infos:
             for info in infos["final_info"]:
                 # update crafter logs
+                now = time.time()
                 if "crafter" in args.env_id:
                     crafter_logger.update_achievements(info["achievements"])
                     crafter_logger.log(writer, global_step)
+                print(f"crafter logger time :{ time.time() - now}")
                     
                 # Skip the envs that are not done
                 if "episode" not in info:
@@ -197,6 +204,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         # ALGO LOGIC: training.
         if global_step > args.learning_starts:
             if global_step % args.train_frequency == 0:
+                now = time.time()
                 data = rb.sample(args.batch_size)
                 with torch.no_grad():
                     target_max, _ = target_network(data.next_observations).max(dim=1)
@@ -214,6 +222,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
+                print(f"Q-network update time :{ time.time() - now}")
 
             # update target network
             if global_step % args.target_network_frequency == 0:
