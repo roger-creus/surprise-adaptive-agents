@@ -179,15 +179,6 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     np.mean(ep_entropy),
                 ])
 
-                # check if frames are availeble 
-                if "frames" in info and args.track:
-                    frames = info["frames"]
-                    frames = np.transpose(np.array(frames),(0,3,1,2))
-                    fps, skip = 6, 8
-                    wandb.log({'eval/video': wandb.Video(frames[::skip,:,::2,::2], fps=fps,format="gif")})
-                    print("video was logged")
-                    quit()
-
                 if ep_counter % 1000 == 0 and "Rooms" in args.env_id:
                     log_heatmap(envs.envs[0], infos["heatmap"][0], ep_counter, writer, f"runs/{run_name}")
                 
