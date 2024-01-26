@@ -308,7 +308,6 @@ def eval_episode_ppo(ppo_agent, env, device, save_path, global_step):
     ep_images = []
 
     while True:
-        
         try:
             ep_images.append(env.envs[0].env.render(mode="rgb_array"))
         except:
@@ -333,3 +332,38 @@ def eval_episode_ppo(ppo_agent, env, device, save_path, global_step):
     ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)
 
 
+def eval_episode_dqn(q_net, env, device, save_path, global_step):
+    '''
+    Evaluate a DQN agent in an environment and record and save a video
+    '''
+    # Reset the environment
+    obs, _ = env.reset()
+    ep_images = []
+
+    while True:
+        try:
+            ep_images.append(env.envs[0].env.render(mode="rgb_array"))
+        except:
+            # for crafter
+            ep_images.append(env.envs[0].render())
+
+        if isinstance(env.single_observation_space, gym.spaces.Dict):
+            obs_ = {k: torch.as_tensor(v).to(device) for k, v in obs.items()}
+        else:
+            obs_ = torch.Tensor(obs).to(device)
+
+        with torch.no_grad():
+            q_values = q_net(obs_)
+            actions = torch.argmax(q_values, dim=1).cpu().numpy()
+
+        next_obs, rewards, terminated, truncated, infos = env.step(actions)
+        obs = next_obs
+        done = terminated or truncated
+        
+        if done:
+            break
+
+    # save gif with all imags
+    from PIL import Image
+    ep_images = [Image.fromarray(img) for img in ep_images]
+    ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)

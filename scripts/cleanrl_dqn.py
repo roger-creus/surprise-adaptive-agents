@@ -65,6 +65,9 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     envs = gym.vector.SyncVectorEnv(
         [make_env(args) for i in range(args.num_envs)]
     )
+    eval_envs = gym.vector.SyncVectorEnv(
+        [make_env(args) for i in range(1)]
+    )
     assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
 
     use_theta = args.model in ["smax", "smin", "sadapt", "sadapt-inverse", "sadapt-bandit"]
@@ -230,6 +233,9 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     target_network_param.data.copy_(
                         args.tau * q_network_param.data + (1.0 - args.tau) * target_network_param.data
                     )
+
+            if global_step % args.video_log_freq == 0:
+                eval_episode_dqn(q_network, eval_envs, device, f"runs/{run_name}", global_step)
 
     if args.save_model:
         model_path = f"runs/{run_name}/{args.exp_name}.cleanrl_model"
