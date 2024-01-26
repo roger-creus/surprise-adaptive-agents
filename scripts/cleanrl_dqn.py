@@ -71,7 +71,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     
     if "Rooms" in args.env_id:
         net = MinigridQNetwork
-    elif args.env_id == "tetris":
+    elif args.env_id == "tetris" or "griddly" in args.env_id:
         net = TetrisQNetwork
     elif args.env_id == "crafter":
         net = CrafterQNetwork
@@ -152,7 +152,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 if "episode" not in info:
                     continue
                 
-                print(f"global_step={global_step}, episodic_return={info['episode']['r']}, episodic_surprise={np.mean(ep_surprise)}, episodic_entropy={np.mean(ep_entropy)}")
+                print(f"global_step={global_step}, average_task_return={info['Average_task_return']}, episodic_return={info['episode']['r']}, episodic_surprise={np.mean(ep_surprise)}, episodic_entropy={np.mean(ep_entropy)}")
                 writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
                 writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
                 writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise), global_step)

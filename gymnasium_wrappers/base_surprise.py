@@ -35,6 +35,7 @@ class BaseSurpriseWrapper(gym.Env):
         self._soft_reset = soft_reset
 
         if scale_by_std:
+            print("Scaling surprise by std")
             self.rms = RunningMeanStd()
 
         print(f"_theta_size:{self._theta_size}")

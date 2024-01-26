@@ -12,9 +12,9 @@ class MazeEnv(gym.ObservationWrapper):
         self.action_space = self.env.action_space
         
     def observation(self, obs):
-        # original obs is (3, 16, 14) of binary values. I want to convert it to (1, 16, 14) of integer where 0 is wall, 1 is empty, 2 is agent, 3 is goal
+        # original obs is (3, 16, 14) of binary values. convert it to (1, 16, 14) of integer where 0 is wall, 1 is player, 2 is goal, 3 is goal
         new_obs = np.zeros((1, obs.shape[1], obs.shape[2]))
         new_obs[0, obs[0,:,:]==1] = 1
         new_obs[0, obs[1,:,:]==1] = 2
         new_obs[0, obs[2,:,:]==1] = 3
-        return new_obs / 3.0
+        return new_obs

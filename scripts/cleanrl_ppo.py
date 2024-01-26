@@ -147,7 +147,7 @@ if __name__ == "__main__":
                     c += 1
                     continue       
                  
-                print(f"global_step={global_step}, task_reward={np.mean(task_rewards[c])}, episodic_return={info['episode']['r'][0]}, episodic_length={info['episode']['l'][0]}")
+                print(f"global_step={global_step}, average_task_return={info['Average_task_return']}, episodic_return={info['episode']['r'][0]}, episodic_length={info['episode']['l'][0]}")
                 writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
                 writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
                 writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise[c]), global_step)
@@ -172,6 +172,7 @@ if __name__ == "__main__":
                 
                 ep_surprise[c].clear()
                 ep_entropy[c].clear()
+                task_rewards[c].clear()
                 ep_counter += 1
                 c += 1
                 

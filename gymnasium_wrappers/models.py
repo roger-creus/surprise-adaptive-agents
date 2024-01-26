@@ -287,7 +287,7 @@ class MinigridPPOAgent(nn.Module):
     
 
 class TetrisPPOAgent(nn.Module):
-    def __init__(self, env, use_theta = False):
+    def __init__(self, env, use_theta = False, hidden_size=64):
         super().__init__()
         n_inputs = env.single_observation_space["obs"].shape[-1]
         self.use_theta = use_theta
@@ -296,19 +296,19 @@ class TetrisPPOAgent(nn.Module):
             n_inputs += np.prod(env.single_observation_space["theta"].shape)
         
         self.critic = nn.Sequential(
-            layer_init(nn.Linear(n_inputs, 64)),
+            layer_init(nn.Linear(n_inputs, hidden_size)),
             nn.Tanh(),
-            layer_init(nn.Linear(64, 64)),
+            layer_init(nn.Linear(hidden_size, hidden_size)),
             nn.Tanh(),
-            layer_init(nn.Linear(64, 1), std=1.0),
+            layer_init(nn.Linear(hidden_size, 1), std=1.0),
         )
         
         self.actor = nn.Sequential(
-            layer_init(nn.Linear(n_inputs, 64)),
+            layer_init(nn.Linear(n_inputs, hidden_size)),
             nn.Tanh(),
-            layer_init(nn.Linear(64, 64)),
+            layer_init(nn.Linear(hidden_size, hidden_size)),
             nn.Tanh(),
-            layer_init(nn.Linear(64, env.single_action_space.n), std=0.01),
+            layer_init(nn.Linear(hidden_size, env.single_action_space.n), std=0.01),
         )
 
     def get_value(self, x):
