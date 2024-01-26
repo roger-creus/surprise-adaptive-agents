@@ -76,7 +76,7 @@ def make_env(args):
 
         elif "crafter" in args.env_id:
             max_steps = 500
-            grayscale = False
+            grayscale = True
             channel_dim = 1 if grayscale else 3
             env = old_gym.make('CrafterReward-v1')
             # Crafter is based on old gym, we need to convert it to gymnasium api
