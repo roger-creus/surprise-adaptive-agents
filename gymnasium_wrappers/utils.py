@@ -14,6 +14,7 @@ from gymnasium_wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBandi
 from gymnasium_wrappers.gym_to_gymnasium import GymToGymnasium
 from gymnasium_wrappers.obs_resize import ResizeObservationWrapper
 from gymnasium_wrappers.obs_history import ObsHistoryWrapper
+from gymnasium_wrappers.rendering_wrapper import RenderObservationWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
 from griddly import GymWrapperFactory, gd
 import os
@@ -86,6 +87,7 @@ def make_env(args):
             env = ResizeObservationWrapper(env, grayscale=grayscale)
             # stack multiple frames
             env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
+            env = RenderObservationWrapper(env, rendering_freq=args.video_freq)
             # set the size of theta
             theta_size = (20, 26, channel_dim) if grayscale else (20, 26, channel_dim)
         elif "FourRooms" in args.env_id:
