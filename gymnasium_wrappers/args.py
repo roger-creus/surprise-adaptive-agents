@@ -27,6 +27,8 @@ def parse_args_dqn():
         help="whether to upload the saved model to huggingface")
     parser.add_argument("--hf-entity", type=str, default="",
         help="the user or org name of the model repository from the Hugging Face Hub")
+    parser.add_argument("--video-log-freq", type=int, default=10_000,
+        help="the frequency of logging videos for ppo iterations")
 
     # Algorithm specific arguments
     parser.add_argument("--env-id", type=str, default="SurpriseAdaptRooms-v0",
@@ -104,6 +106,8 @@ def parse_args_ppo():
         help="the entity (team) of wandb's project")
     parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="whether to capture videos of the agent performances (check out `videos` folder)")
+    parser.add_argument("--video-log-freq", type=int, default=1,
+        help="the frequency of logging videos for ppo iterations")
 
     # Algorithm specific arguments
     parser.add_argument("--env-id", type=str, default="MinAtar/SpaceInvaders",

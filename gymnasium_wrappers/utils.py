@@ -4,6 +4,7 @@ import csv_logger
 import logging
 import matplotlib.pyplot as plt
 import minatar
+import torch
 import crafter
 import numpy as np
 from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper, OneHotPartialObsWrapper
@@ -293,3 +294,40 @@ class CrafterLogger:
             writer.add_scalar(key, v, global_step)
         score = self.compute_crafter_score()
         writer.add_scalar("crafter/score", score, global_step)
+
+def eval_episode_ppo(ppo_agent, env, device, save_path, global_step):
+    '''
+    Evaluate a PPO agent in an environment and record and save a video
+    '''
+    # Reset the environment
+    o_, _ = env.reset()
+    next_obs = torch.Tensor(o_["obs"]).to(device)
+    next_theta = torch.Tensor(o_["theta"]).to(device)
+    ep_images = []
+
+    while True:
+        
+        try:
+            ep_images.append(env.envs[0].env.render(mode="rgb_array"))
+        except:
+            # for crafter
+            ep_images.append(env.envs[0].render())
+
+        with torch.no_grad():
+            action, logprob, _, value = ppo_agent.get_action_and_value({
+                "obs" : next_obs,
+                "theta" : next_theta
+            })
+
+        o_, reward, done, trunc, infos = env.step(action.cpu().numpy())
+        next_obs, next_theta = torch.Tensor(o_["obs"]).to(device), torch.Tensor(o_["theta"]).to(device)
+
+        if done:
+            break
+
+    # save gif with all imags
+    from PIL import Image
+    ep_images = [Image.fromarray(img) for img in ep_images]
+    ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)
+
+
