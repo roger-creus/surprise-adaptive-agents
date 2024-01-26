@@ -1,6 +1,6 @@
 import gymnasium as gym
 from gymnasium.spaces import Discrete
-
+import time
 
 # Some envs do not support gymnasium, this simple wrapper is to convert from gym to gymnasium api
 class GymToGymnasium(gym.Env):
@@ -19,11 +19,13 @@ class GymToGymnasium(gym.Env):
         return obs, info
 
     def step(self, action):
+        now = time.time()
         obs, reward, done, info = self._env.step(action)
         truncated = done
         self.t += 1
         if self.t == self._max_steps:
             done = truncated = True
+        print(f"step in gym_to_gymnasium: {time.time() - now}")
         return obs, reward, done, truncated, info
 
     def render(self, **kwargs):

@@ -3,6 +3,7 @@ import gymnasium as gym
 from gymnasium.spaces import Box, Dict
 import cv2
 from IPython import embed
+import time
 
 
 class ResizeObservationWrapper(gym.Env):
@@ -46,10 +47,12 @@ class ResizeObservationWrapper(gym.Env):
 
     def step(self, action):
         # Take Action
+        now = time.time()
         obs, env_rew, envdone, envtrunc, info = self._env.step(action)
         # print(f"original shape of obs is:{obs.shape}")
         obs_ = self.resize_obs(obs)
         # print(f"resize observations size is: {obs_.shape}")
+        print(f"step in resize wrapper: {time.time() - now}")
         return obs_, env_rew, envdone, envtrunc, info
     
     def resize_obs(self, obs, key=None):
