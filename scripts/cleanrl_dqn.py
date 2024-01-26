@@ -121,21 +121,21 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
         epsilon = linear_schedule(args.start_e, args.end_e, args.exploration_fraction * args.total_timesteps, global_step)
-        if random.random() < epsilon:
-            actions = np.array([envs.single_action_space.sample() for _ in range(envs.num_envs)])
-        else:
-            if isinstance(envs.single_observation_space, gym.spaces.Dict):
-                obs_ = {k: torch.as_tensor(v).to(device) for k, v in obs.items()}
+        for _ in range(10000):
+            if random.random() < epsilon:
+                actions = np.array([envs.single_action_space.sample() for _ in range(envs.num_envs)])
             else:
-                obs_ = torch.Tensor(obs).to(device)
-            
-            now = time.time()
-            q_values = q_network(obs_)
-            actions = torch.argmax(q_values, dim=1).cpu().numpy()
-            print(f"Sampling action time :{ time.time() - now}")
+                if isinstance(envs.single_observation_space, gym.spaces.Dict):
+                    obs_ = {k: torch.as_tensor(v).to(device) for k, v in obs.items()}
+                else:
+                    obs_ = torch.Tensor(obs).to(device)
+                
+                now = time.time()
+                q_values = q_network(obs_)
+                actions = torch.argmax(q_values, dim=1).cpu().numpy()
+                print(f"Sampling action time :{ time.time() - now}")
 
         # TRY NOT TO MODIFY: execute the game and log data.
-        for _ in range(10000):
             now = time.time()
             next_obs, rewards, terminated, truncated, infos = envs.step(actions)
             t = time.time() - now
