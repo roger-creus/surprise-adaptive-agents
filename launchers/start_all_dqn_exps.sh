@@ -34,6 +34,11 @@ sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 1 -
 sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 8943 --track=True --wandb-project-name="Crafter_DQN"
 sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 820 --track=True --wandb-project-name="Crafter_DQN"
 
+# random crafter agnet
+sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 1 --track=True --wandb-project-name="Crafter_DQN" --soft_reset=0
+sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 8943 --track=True --wandb-project-name="Crafter_DQN" --soft_reset=0
+sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 820 --track=True --wandb-project-name="Crafter_DQN" --soft_reset=0
+
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt bernoulli 1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-inverse bernoulli 1
