@@ -19,6 +19,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         theta_size = None,
         grayscale = None,
         scale_by_std=False,
+        soft_reset=True
     ):
         """
         params
@@ -36,6 +37,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self._scale_by_std = scale_by_std
         self._theta_size = theta_size
         self._grayscale = grayscale
+        self._soft_reset = soft_reset
 
         if scale_by_std:
             self.rms = RunningMeanStd()
@@ -94,9 +96,12 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             self.buffer.add(self.encode_obs(obs))
             # softreset
             if done or truncated:
-                obs, _ = self._env.reset()
-                obs = np.random.rand(*obs.shape)
-                self.buffer.add(self.encode_obs(obs))
+                if self._soft_reset:
+                    obs, _ = self._env.reset()
+                    obs = np.random.rand(*obs.shape)
+                    self.buffer.add(self.encode_obs(obs))
+                else:
+                    break
         random_entropy = self.buffer.entropy()
         self._env.reset()
         return random_entropy
@@ -137,25 +142,33 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         info["random_entropy"] = self.random_entropy
 
         # soft reset
-        if envdone:
-            obs, _ = self._env.reset()
-            obs = np.random.rand(*obs.shape)
-            self.deaths += 1
+        if self._soft_reset:
+            if envdone:
+                obs, _ = self._env.reset()
+                obs = np.random.rand(*obs.shape)
+                self.deaths += 1
 
-        if self.num_steps >= self.max_steps:
-            envdone = True
-            envtrunc = True
-            if self.deaths > 0:
-                self.task_return /= self.deaths
-                self.num_steps /= self.deaths
-            info["Average_task_return"] = self.task_return
-            info["Average_episode_length"] = self.num_steps
-            info["alpha_rolling_average"] = self.alpha_rolling_average
-            if self.ucb_alpha_one: info["ucb_alpha_one"] = self.ucb_alpha_one
-            if self.ucb_alpha_zero: info["ucb_alpha_zero"] = self.ucb_alpha_zero
+            if self.num_steps >= self.max_steps:
+                envdone = True
+                envtrunc = True
+                if self.deaths > 0:
+                    self.task_return /= self.deaths
+                    self.num_steps /= self.deaths
+                info["Average_task_return"] = self.task_return
+                info["Average_episode_length"] = self.num_steps
+                info["alpha_rolling_average"] = self.alpha_rolling_average
+                if self.ucb_alpha_one: info["ucb_alpha_one"] = self.ucb_alpha_one
+                if self.ucb_alpha_zero: info["ucb_alpha_zero"] = self.ucb_alpha_zero
+            else:
+                envdone = False
+                envtrunc = False
         else:
-            envdone = False
-            envtrunc = False
+            if envdone:
+                info["Average_task_return"] = self.task_return
+                info["Average_episode_length"] = self.num_steps
+                info["alpha_rolling_average"] = self.alpha_rolling_average
+                if self.ucb_alpha_one: info["ucb_alpha_one"] = self.ucb_alpha_one
+                if self.ucb_alpha_zero: info["ucb_alpha_zero"] = self.ucb_alpha_zero
 
         # Compute surprise as the negative log probability of the observation
         surprise = -self.buffer.logprob(self.encode_obs(obs))
@@ -169,7 +182,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         rew = ((-1) ** self.alpha_t) * surprise
 
         # Add observation to buffer
-          # this adds the raw observations to the buffer no? shouldnt we add the augmented obs?
         self.buffer.add(self.encode_obs(obs))
 
         info["surprise_adapt_reward"] = rew
