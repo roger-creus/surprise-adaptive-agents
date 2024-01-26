@@ -15,8 +15,7 @@ class RenderObservationWrapper(gym.Env):
     
     def reset(self, seed=None, options=None):
         self.t = 0
-        info = {}
-        obs = self._env.reset()
+        obs, info = self._env.reset()
         self.episode_count += 1
         if self._rendering_freq > 0 and self.episode_count % self._rendering_freq == 0:
             img = self._env.render()
