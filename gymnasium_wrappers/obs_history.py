@@ -20,6 +20,7 @@ class ObsHistoryWrapper(gym.Wrapper):
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
         self._channel_dim = channel_dim
+        self._history_length = history_length
         self._env = FrameStack(env, history_length)
         # Gym spaces
         self.action_space = self._env.action_space
