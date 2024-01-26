@@ -35,7 +35,6 @@ class ObsHistoryWrapper(gym.Wrapper):
         now = time.time()
         obs, env_rew, envdone, envtrunc ,info = self._env.step(action)
         obs = (np.array(obs).transpose(1,2,0,3)).reshape(obs.shape[1],  obs.shape[2], -1)
-        print(obs.shape)
         self._time += 1
         print(f"step in observation history: {time.time() - now}")
         return obs, env_rew, envdone, envtrunc ,info 
