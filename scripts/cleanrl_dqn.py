@@ -114,6 +114,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     ep_entropy = []
     task_rewards = []
     ep_counter = 0
+    mean_step_time = []
 
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
@@ -136,7 +137,9 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         # TRY NOT TO MODIFY: execute the game and log data.
         now = time.time()
         next_obs, rewards, terminated, truncated, infos = envs.step(actions)
-        print(f"Step in the env time :{ time.time() - now}")
+        t = time.time() - now
+        mean_step_time.append(t)
+        print(f"Step in the env time :{np.mean(mean_step_time)}")
 
         if "surprise" in infos:
             ep_surprise.append(infos["surprise"][0])
