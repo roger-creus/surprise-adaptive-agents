@@ -38,7 +38,7 @@ class ObsHistoryWrapper(gym.Wrapper):
         print(obs.shape)
         self._time += 1
         print(f"step in observation history: {time.time() - now}")
-        return self.get_obs(obs), env_rew, envdone, envtrunc ,info 
+        return obs, env_rew, envdone, envtrunc ,info 
     
     def reset(self, seed=None, options=None):
         '''
@@ -46,10 +46,8 @@ class ObsHistoryWrapper(gym.Wrapper):
         '''
         self._time = 0
         obs, info = self._env.reset()
-        self.obs_hist = collections.deque([np.zeros(shape=self.observation_space_old.low.shape) for _ in range(self._history_length)])
-        self.obs_hist.appendleft(obs)
-        self.obs_hist.pop()
-        return self.get_obs(obs), info
+        obs = (np.array(obs).transpose(1,2,0,3)).reshape(obs.shape[1],  obs.shape[2], -1)
+        return obs, info
     
     def get_obs(self, obs):
         
