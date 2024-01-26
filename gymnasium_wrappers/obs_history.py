@@ -1,7 +1,8 @@
 import gymnasium as gym
 import numpy as np
-import collections
 from gymnasium.spaces import Box, Dict
+import time
+from gymnasium.wrappers.frame_stack import FrameStack
 
 class ObsHistoryWrapper(gym.Wrapper):
     def __init__(self, 
@@ -17,30 +18,24 @@ class ObsHistoryWrapper(gym.Wrapper):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
-        self._env = env
-        self._history_length = history_length
-        self._stack_channels = stack_channels
         self._channel_dim = channel_dim
+        self._history_length = history_length
+        self._env = FrameStack(env, history_length)
         # Gym spaces
-        self.action_space = env.action_space
+        self.action_space = self._env.action_space
         self.observation_space_old = env.observation_space
-        if self._stack_channels:
-            shape_ = list(env.observation_space.low.shape)
-            shape_[self._channel_dim] = shape_[self._channel_dim] * self._history_length 
-            self.observation_space = Box(0, 1, shape=shape_ )    
-        else:
-            self.observation_space = Box(-1, 1, shape=(env.observation_space.low.shape[0]*self._history_length,) )
-
+        shape_ = list(env.observation_space.low.shape)
+        shape_[self._channel_dim] = shape_[self._channel_dim] * self._history_length 
+        self.observation_space = Box(0, 1, shape=shape_ )    
         print(f"observation space in obs history wrapper:{self.observation_space}")
 
     def step(self, action):
         # Take Action
+        now = time.time()
         obs, env_rew, envdone, envtrunc ,info = self._env.step(action)
+        obs = (np.array(obs).transpose(1,2,0,3)).reshape(obs.shape[1],  obs.shape[2], -1)
         self._time += 1
-        self.obs_hist.appendleft(obs)
-        self.obs_hist.pop()
-        # TODO: move the channel axis to the top to be compatible with pytorch
-        return self.get_obs(obs), env_rew, envdone, envtrunc ,info 
+        return obs, env_rew, envdone, envtrunc ,info 
     
     def reset(self, seed=None, options=None):
         '''
@@ -48,10 +43,8 @@ class ObsHistoryWrapper(gym.Wrapper):
         '''
         self._time = 0
         obs, info = self._env.reset()
-        self.obs_hist = collections.deque([np.zeros(shape=self.observation_space_old.low.shape) for _ in range(self._history_length)])
-        self.obs_hist.appendleft(obs)
-        self.obs_hist.pop()
-        return self.get_obs(obs), info
+        obs = (np.array(obs).transpose(1,2,0,3)).reshape(obs.shape[1],  obs.shape[2], -1)
+        return obs, info
     
     def get_obs(self, obs):
         
@@ -64,3 +57,6 @@ class ObsHistoryWrapper(gym.Wrapper):
         
     def render(self, mode=None):
         return self._env.render(mode=mode)
+    
+
+env = gym
