@@ -54,9 +54,8 @@ class ObsHistoryWrapper(gym.Wrapper):
             obs_ =  np.array(self.obs_hist).flatten()            
         return obs_
         
-        
-    def render(self, mode=None):
-        return self._env.render(mode=mode)
+    def render(self,**kwargs ):
+        return self._env.render(**kwargs)
     
 
 env = gym
