@@ -8,3 +8,4 @@ wandb/*
 /wandb/*
 
 runs/*
+./cleanrl_surprise.tar
