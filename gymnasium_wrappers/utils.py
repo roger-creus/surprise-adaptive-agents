@@ -361,6 +361,7 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step):
         
         if done:
             break
+        print(len(ep_images))
 
     # save gif with all imags
     from PIL import Image
