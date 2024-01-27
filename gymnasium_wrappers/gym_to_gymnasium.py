@@ -31,5 +31,5 @@ class GymToGymnasium(gym.Env):
         try:
             return self._env.render(render_mode=self._render_mode)
         except:
-            return self._env.render(**kwargs)
+            return self._env.render()
     
