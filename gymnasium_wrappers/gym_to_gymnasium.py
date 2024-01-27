@@ -29,7 +29,7 @@ class GymToGymnasium(gym.Env):
 
     def render(self, **kwargs):
         try:
-            return self._env.render(render_mode=self._render_mode)
+            return self._env.render(mode=self._render_mode)
         except:
             return self._env.render()
     
