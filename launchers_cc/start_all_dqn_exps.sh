@@ -1,61 +1,13 @@
-## env-id ## model ## buffer-type
+# Runs to repeat
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=sadapt-bandit --buffer-type=gaussian --seed=820 --track=True --soft_reset=1
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=sadapt-bandit --buffer-type=gaussian --seed=1 --track=True --soft_reset=0
 
-# REWARD FREE EXPERIMENTS
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py FourRooms smin multinoulli 1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py FourRooms smax multinoulli 1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py FourRooms sadapt multinoulli 1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py FourRooms sadapt-inverse multinoulli 1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py FourRooms none multinoulli 1
+# # Crafter on extrinsic reward w/ soft-reset
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=none --buffer-type=gaussian --seed=1 --track=True --soft_reset=1
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=none --buffer-type=gaussian --seed=8943 --track=True --soft_reset=1
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=none --buffer-type=gaussian --seed=820 --track=True --soft_reset=1
 
-# # Tetris S-min
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 8943 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 820 --track=True
-
-# # Tetris Extrinsic
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris none bernoulli 1 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris none bernoulli 8943 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris none bernoulli 820 --track=True
-
-# Tetris Bandit
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 8943 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 820 --track=True
-
-# Crafter 
-sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=sadapt-bandit --buffer-type=gaussian --seed=1 --track=True --soft_reset=1 --video-log-freq=2 --learning-starts=5000
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 8943 --track=True --soft_reset=1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 820 --track=True --soft_reset=1
-
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 1 --track=True --soft_reset=0
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 8943 --track=True --soft_reset=0
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 820 --track=True --soft_reset=0
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 1 --track=True
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter none gaussian 1 --track=True
-
-# random crafter agnet
-# sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 1 --track=True --wandb-project-name="Crafter_DQN" 
-# sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 8943 --track=True --wandb-project-name="Crafter_DQN"
-# sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 820 --track=True --wandb-project-name="Crafter_DQN"
-
-# random crafter agnet
-# sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 1 --track=True --wandb-project-name="Crafter_DQN" --soft_reset=0
-# sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 8943 --track=True --wandb-project-name="Crafter_DQN" --soft_reset=0
-# sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 820 --track=True --wandb-project-name="Crafter_DQN" --soft_reset=0
-
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt bernoulli 1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-inverse bernoulli 1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris none bernoulli 1
-
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 smin multinoulli 1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 smax multinoulli 1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 sadapt multinoulli 1
-# sbatch launchers/train_cleanrl_long scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 sadapt-inverse multinoulli 1
-# sbatch launchers/train_cleanrl_long scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 none multinoulli 1
-
-# sbatch launchers/train_cleanrl_long scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 smin multinoulli 1 --noisy-room=1
-# sbatch launchers/train_cleanrl_long scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 smax multinoulli 1 --noisy-room=1
-# sbatch launchers/train_cleanrl_long scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 sadapt multinoulli 1 --noisy-room=1
-# sbatch launchers/train_cleanrl_long scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 sadapt-inverse multinoulli 1 --noisy-room=1
-# sbatch launchers/train_cleanrl_long scripts/cleanrl_dqn.py SurpriseAdaptRooms-v0 none multinoulli 1 --noisy-room=1
+# Crafter on extrinsic reward w/o soft-reset
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=none --buffer-type=gaussian --seed=1 --track=True --soft_reset=0
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=none --buffer-type=gaussian --seed=8943 --track=True --soft_reset=0
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=none --buffer-type=gaussian --seed=820 --track=True --soft_reset=0
