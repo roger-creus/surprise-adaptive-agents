@@ -23,7 +23,7 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 820 --track=True
 
 # Crafter 
-sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=sadapt-bandit --buffer-type=gaussian --seed=1 --track=True --soft_reset=1
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=sadapt-bandit --buffer-type=gaussian --seed=1 --track=True --soft_reset=1 --video-log-freq=2 --learning-starts=5000
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 8943 --track=True --soft_reset=1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 820 --track=True --soft_reset=1
 
