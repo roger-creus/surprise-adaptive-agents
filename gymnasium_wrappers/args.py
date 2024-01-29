@@ -252,6 +252,7 @@ def parse_args_random():
     parser.add_argument("--soft_reset", type=int, default=1)
     parser.add_argument("--video_freq", type=int, default=-1) 
     parser.add_argument("--agent", type=str, default="Random") 
+    parser.add_argument("--theta_size", type=str, default="(20, 26)")
     
     args = parser.parse_args()
     
