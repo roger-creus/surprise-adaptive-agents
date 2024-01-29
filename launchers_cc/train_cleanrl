@@ -2,9 +2,8 @@
 
 #SBATCH --account=def-gberseth
 #SBATCH --nodes=1
-#SBATCH --gres=gpu:1
 #SBATCH --ntasks=1
-#SBATCH --mem=90G
+#SBATCH --mem=32G
 #SBATCH --time=100:00:00
 #SBATCH --cpus-per-task=8
 #SBATCH -o /scratch/fmohamed/slurm-%j.out  # Write the log on scratch
