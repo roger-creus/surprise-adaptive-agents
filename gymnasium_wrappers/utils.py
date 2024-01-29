@@ -18,6 +18,7 @@ from gymnasium_wrappers.rendering_wrapper import RenderObservationWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
 from griddly import GymWrapperFactory, gd
 import os
+import ast
 
 from IPython import embed
 from gymnasium.envs.registration import register as gym_register
@@ -88,7 +89,8 @@ def make_env(args):
             # stack multiple frames
             env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
             # set the size of theta
-            theta_size = (20, 26, channel_dim) if grayscale else (20, 26, channel_dim)
+            theta_size =  ast.literal_eval(args.theta_size)
+            theta_size = (theta_size[0], theta_size[1], channel_dim) if grayscale else (theta_size[0], theta_size[1], channel_dim)
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = OneHotPartialObsWrapper(env)
