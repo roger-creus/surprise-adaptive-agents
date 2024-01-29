@@ -15,7 +15,7 @@ def parse_args_dqn():
         help="if toggled, cuda will be enabled by default")
     parser.add_argument("--track", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="if toggled, this experiment will be tracked with Weights and Biases")
-    parser.add_argument("--wandb-project-name", type=str, default="Crafter_DQN",
+    parser.add_argument("--wandb-project-name", type=str, default="Test_compute_canada",
         help="the wandb's project name")
     parser.add_argument("--wandb-entity", type=str, default=None,
         help="the entity (team) of wandb's project")
@@ -29,6 +29,8 @@ def parse_args_dqn():
         help="the user or org name of the model repository from the Hugging Face Hub")
     parser.add_argument("--video-log-freq", type=int, default=100_000,
         help="the frequency of logging videos for ppo iterations")
+    parser.add_argument("--wandb_key", type=str, default="796ed523ea0564ade7ae4b6c62a5eded015700fe", nargs="?", const=True,
+        help="Your Wandb API key")
 
     # Algorithm specific arguments
     parser.add_argument("--env-id", type=str, default="SurpriseAdaptRooms-v0",

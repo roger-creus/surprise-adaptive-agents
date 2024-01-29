@@ -37,7 +37,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     
     if args.track:
         import wandb
-
+        wandb.login(key=args.wandb_key)
         wandb.init(
             project=args.wandb_project_name,
             entity=args.wandb_entity,
