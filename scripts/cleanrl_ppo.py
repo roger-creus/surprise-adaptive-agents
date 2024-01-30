@@ -11,6 +11,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
+from gym.wrappers.normalize import RunningMeanStd
 
 from IPython import embed
 from gymnasium_wrappers.utils import *
@@ -99,6 +100,10 @@ if __name__ == "__main__":
     ep_counter = 0
     update_idx = 0
     
+    # reward norm
+    if args.scale_by_std:
+        reward_rms = RunningMeanStd()
+
     for update in range(1, num_updates + 1):
         # Annealing the rate if instructed to do so.
         if args.anneal_lr:
@@ -178,6 +183,13 @@ if __name__ == "__main__":
                 task_rewards[c].clear()
                 ep_counter += 1
                 c += 1
+
+        # reward normalization
+        if args.scale_by_std:
+            curiosity_reward_per_env = rewards.cpu().data.numpy()
+            reward_rms.update(curiosity_reward_per_env.flatten())
+            rewards -= reward_rms.mean
+            rewards /= np.sqrt(reward_rms.var)
                 
         # bootstrap value if not done
         with torch.no_grad():

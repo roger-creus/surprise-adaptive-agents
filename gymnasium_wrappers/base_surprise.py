@@ -16,7 +16,6 @@ class BaseSurpriseWrapper(gym.Env):
                  max_steps = 500,
                  theta_size = None,
                  grayscale = None,
-                 scale_by_std=False,
                  soft_reset=True
                 ):
         '''
@@ -31,12 +30,7 @@ class BaseSurpriseWrapper(gym.Env):
         self.buffer = buffer
         self._theta_size = theta_size
         self._grayscale = grayscale
-        self._scale_by_std = scale_by_std
         self._soft_reset = soft_reset
-
-        if scale_by_std:
-            print("Scaling surprise by std")
-            self.rms = RunningMeanStd()
 
         print(f"_theta_size:{self._theta_size}")
         print(f"_grayscale:{self._grayscale}")
@@ -102,12 +96,8 @@ class BaseSurpriseWrapper(gym.Env):
 
 
         surprise = -self.buffer.logprob(self.encode_obs(obs))
-        if self._scale_by_std:
-            self.rms.update(np.array([surprise]))
-            surprise = (surprise / np.sqrt(self.rms.var)).item()
-        else:
-            thresh = 300
-            surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        thresh = 300
+        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         
         self.buffer.add(self.encode_obs(obs))
         info['surprise'] = surprise
