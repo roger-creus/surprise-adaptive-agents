@@ -297,17 +297,17 @@ class TetrisPPOAgent(nn.Module):
         
         self.critic = nn.Sequential(
             layer_init(nn.Linear(n_inputs, hidden_size)),
-            nn.Tanh(),
+            nn.ReLU(),
             layer_init(nn.Linear(hidden_size, hidden_size)),
-            nn.Tanh(),
+            nn.ReLU(),
             layer_init(nn.Linear(hidden_size, 1), std=1.0),
         )
         
         self.actor = nn.Sequential(
             layer_init(nn.Linear(n_inputs, hidden_size)),
-            nn.Tanh(),
+            nn.ReLU(),
             layer_init(nn.Linear(hidden_size, hidden_size)),
-            nn.Tanh(),
+            nn.ReLU(),
             layer_init(nn.Linear(hidden_size, env.single_action_space.n), std=0.01),
         )
 

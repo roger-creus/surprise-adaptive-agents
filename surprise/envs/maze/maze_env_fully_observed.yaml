@@ -19,7 +19,7 @@ Environment:
           - 0
       - eq:
           - _steps
-          - 500
+          - 250
   Levels:
     - |
       w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   
