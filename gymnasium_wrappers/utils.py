@@ -81,11 +81,12 @@ def make_env(args):
             max_steps = 500
             grayscale = True
             channel_dim = 1 if grayscale else 3
+            obs_resize = ast.literal_eval(args.obs_size)
             env = old_gym.make('CrafterReward-v1')
             # Crafter is based on old gym, we need to convert it to gymnasium api
             env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
             # resize the observation
-            env = ResizeObservationWrapper(env, grayscale=grayscale)
+            env = ResizeObservationWrapper(env, grayscale=grayscale, new_shape=(*obs_resize, channel_dim), new_size=(obs_resize[1], obs_resize[0], channel_dim))
             # stack multiple frames
             env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
             # set the size of theta
