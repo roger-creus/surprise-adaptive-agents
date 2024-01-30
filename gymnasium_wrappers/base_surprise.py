@@ -80,7 +80,7 @@ class BaseSurpriseWrapper(gym.Env):
         if self._soft_reset:
             if envdone:
                 obs, _ = self._env.reset()
-                obs = np.random.rand(*obs.shape)
+                # obs = np.random.rand(*obs.shape)
                 self.deaths += 1
             if self.num_steps == self.max_steps:
                 envdone = True
