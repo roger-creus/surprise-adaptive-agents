@@ -19,4 +19,4 @@ conda activate /home/mila/f/faisal.mohamed/.conda/envs/sadapt
 # cd $SLURM_TMPDIR/surprise-adaptive-agents
 
 # 4. Launch your job
-python3 $1 --env-id $2 --model $3 --buffer-type $4 --seed $5 $6 $7 $8 $9
+python3 $1 --env-id $2 --model $3 --buffer-type $4 --seed $5 $6 $7 $8 $9 ${10}
