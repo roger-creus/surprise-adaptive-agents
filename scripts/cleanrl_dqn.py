@@ -211,12 +211,9 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     rms.update(rewards.cpu().numpy())
                     rewards -= (rms.mean)
                     rewards /= np.sqrt(rms.var)
-                    print(rewards.mean())
-                    print(rewards.std())
-                    quit()
                 with torch.no_grad():
                     target_max, _ = target_network(data.next_observations).max(dim=1)
-                    td_target = data.rewards.flatten() + args.gamma * target_max * (1 - data.dones.flatten())
+                    td_target = rewards + args.gamma * target_max * (1 - data.dones.flatten())
                 old_val = q_network(data.observations).gather(1, data.actions).squeeze()
                 loss = F.mse_loss(td_target, old_val)
 
