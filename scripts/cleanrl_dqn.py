@@ -206,10 +206,10 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if global_step > args.learning_starts:
             if global_step % args.train_frequency == 0:
                 data = rb.sample(args.batch_size)
+                rewards = data.rewards.flatten()
                 # reward normalization
                 if args.scale_by_std:
                     # update the rms using rewards from all envs
-                    rewards = data.rewards.flatten()
                     rms.update(rewards.cpu().numpy())
                     rewards -= (rms.mean)
                     rewards /= np.sqrt(rms.var)
