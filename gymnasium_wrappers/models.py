@@ -160,12 +160,12 @@ class MinAtarQNetwork(nn.Module):
         )
         
         with torch.no_grad():
-            s_ = env.single_observation_space["obs"].sample()[None]
+            s_ = envs.single_observation_space["obs"].sample()[None]
             n_flatten = self.network(torch.as_tensor(s_).float().permute(0,3,1,2)).shape[1]
 
         if self.use_theta:
             self.theta_fc = nn.Sequential(
-                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
+                nn.Linear(np.prod(envs.single_observation_space["theta"].shape), 120),
                 nn.ReLU(),
                 nn.Linear(120, 84),
                 nn.ReLU(),
@@ -175,7 +175,7 @@ class MinAtarQNetwork(nn.Module):
         self.linear = nn.Sequential(
             nn.Linear(n_flatten, 512), 
             nn.ReLU(),
-            nn.Linear(512, env.single_action_space.n), 
+            nn.Linear(512, envs.single_action_space.n), 
         )
 
     def forward(self, x):
