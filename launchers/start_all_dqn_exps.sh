@@ -23,13 +23,16 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 820 --track=True
 
 # Crafter 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 1 --track=True --soft_reset=1
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 8943 --track=True --soft_reset=1
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 820 --track=True --soft_reset=1
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 1 --track=True --soft_reset=1
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 8943 --track=True --soft_reset=1
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 820 --track=True --soft_reset=1
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 1 --track=True --soft_reset=0
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 8943 --track=True --soft_reset=0
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 820 --track=True --soft_reset=0
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 1 --track=True --soft_reset=0
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 8943 --track=True --soft_reset=0
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 820 --track=True --soft_reset=0
+
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 820 --track=True --soft_reset=1 --obs_size="(128, 128)
+
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 1 --track=True
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter none gaussian 1 --track=True
 

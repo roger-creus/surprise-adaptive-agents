@@ -68,3 +68,19 @@ class ResizeObservationWrapper(gym.Env):
     
     def render(self, **kwargs):
         return self._env.render(**kwargs)
+    
+
+
+
+# import crafter
+# import gym as old_gym
+# from gymnasium_wrappers.gym_to_gymnasium import GymToGymnasium
+
+# env = old_gym.make('CrafterReward-v1')
+# env = GymToGymnasium(env, render_mode="rgb_array", max_steps=500)
+# env = ResizeObservationWrapper(env, grayscale=False, new_shape=(64, 64, 3), new_size=(64, 64, 3))
+# obs, _ = env.reset()
+# import matplotlib.pyplot as plt
+# plt.imshow(obs)
+# plt.show()
+# quit()
