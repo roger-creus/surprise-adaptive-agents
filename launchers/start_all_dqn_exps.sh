@@ -8,11 +8,11 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py FourRooms none multinoulli 1
 
 # # Tetris S-min
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track=True --wandb-project-name="Tetris_DQN" --caputre-video
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track=True --wandb-project-name="Tetris_DQN" --capture-video
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 8943 --track=True --wandb-project-name="Tetris_DQN" --caputre-video
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 820 --track=True --wandb-project-name="Tetris_DQN" --caputre-video
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track=True --wandb-project-name="Tetris_DQN" --caputre-video --soft_reset=0
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track=True --wandb-project-name="Tetris_DQN" --capture-video --soft_reset=0
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 8943 --track=True --wandb-project-name="Tetris_DQN" --caputre-video
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 820 --track=True --wandb-project-name="Tetris_DQN" --caputre-video
 
