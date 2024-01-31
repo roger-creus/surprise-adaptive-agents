@@ -16,6 +16,7 @@ from IPython import embed
 from gymnasium_wrappers.utils import *
 from gymnasium_wrappers.models import *
 from gymnasium_wrappers.args import parse_args_dqn
+from gym.wrappers.normalize import RunningMeanStd
 
 
 def linear_schedule(start_e: float, end_e: float, duration: int, t: int):
@@ -119,6 +120,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
+    if args.scale_by_std:
+        rms = RunningMeanStd()
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
         epsilon = linear_schedule(args.start_e, args.end_e, args.exploration_fraction * args.total_timesteps, global_step)
@@ -201,6 +204,16 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if global_step > args.learning_starts:
             if global_step % args.train_frequency == 0:
                 data = rb.sample(args.batch_size)
+                # reward normalization
+                if args.scale_by_std:
+                    # update the rms using rewards from all envs
+                    rewards = data.rewards.flatten()
+                    rms.update(rewards.cpu().numpy())
+                    rewards -= (rms.mean)
+                    rewards /= np.sqrt(rms.var)
+                    print(rewards.mean())
+                    print(rewards.std())
+                    quit()
                 with torch.no_grad():
                     target_max, _ = target_network(data.next_observations).max(dim=1)
                     td_target = data.rewards.flatten() + args.gamma * target_max * (1 - data.dones.flatten())
