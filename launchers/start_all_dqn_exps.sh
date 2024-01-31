@@ -68,14 +68,14 @@
 
 # MinAtar
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 1 --scale-by-std=0 --soft_reset=1 --track ----wandb-project-name="MinAtar_DQN"
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 820 --scale-by-std=0 --soft_reset=1 --track ----wandb-project-name="MinAtar_DQN"
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 8943 --scale-by-std=0 --soft_reset=1 --track ----wandb-project-name="MinAtar_DQN"
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 1 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN"
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 820 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN"
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 8943 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN"
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 1 --scale-by-std=0 --soft_reset=1 --track ----wandb-project-name="MinAtar_DQN"
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 820 --scale-by-std=0 --soft_reset=1 --track ----wandb-project-name="MinAtar_DQN"
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 8943 --scale-by-std=0 --soft_reset=1 --track ----wandb-project-name="MinAtar_DQN"
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 1 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN"
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 820 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN"
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 8943 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN"
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 1 --scale-by-std=0 --soft_reset=1 --track ----wandb-project-name="MinAtar_DQN"
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 820 --scale-by-std=0 --soft_reset=1 --track ----wandb-project-name="MinAtar_DQN"
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 8943 --scale-by-std=0 --soft_reset=1 --track ----wandb-project-name="MinAtar_DQN"
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 1 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN"
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 820 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN"
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 8943 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN"
