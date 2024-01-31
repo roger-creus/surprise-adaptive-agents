@@ -360,7 +360,7 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step):
 
     # save gif with all imags
     from PIL import Image
-    if "MinAtar" in env.envs[0].env.spec.id:
+    if "MinAtar" in env.envs[0].spec.id:
         ep_images = [Image.fromarray((img * 255).astype(np.uint8)) for img in ep_images]
     else:
         ep_images = [Image.fromarray(img) for img in ep_images]
