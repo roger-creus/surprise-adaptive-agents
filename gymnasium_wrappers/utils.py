@@ -96,8 +96,8 @@ def make_env(args):
             max_steps = 500
             
         elif "MinAtar" in args.env_id:
-            env = gym.make(args.env_id+"-v1", render_mode='rgb_array', max_episode_steps=1000)
-            max_steps = 1000
+            env = gym.make(args.env_id+"-v1", render_mode='rgb_array', max_episode_steps=500)
+            max_steps = 500
 
         elif "griddly" in args.env_id:
             # for instance griddly-MazeEnv
