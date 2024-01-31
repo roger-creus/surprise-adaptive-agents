@@ -81,6 +81,7 @@ def parse_args_dqn():
     parser.add_argument("--agent", type=str, default="DQN") 
     parser.add_argument("--theta_size", type=str, default="(20, 26)")
     parser.add_argument("--obs_size", type=str, default="(64, 48)")
+    parser.add_argument("--gray_scale", type=int, default=1)
     
     args = parser.parse_args()
     

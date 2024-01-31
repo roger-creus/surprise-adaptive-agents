@@ -79,7 +79,7 @@ def make_env(args):
 
         elif "crafter" in args.env_id:
             max_steps = 500
-            grayscale = True
+            grayscale = args.gray_scale
             channel_dim = 1 if grayscale else 3
             obs_resize = ast.literal_eval(args.obs_size)
             env = old_gym.make('CrafterReward-v1')

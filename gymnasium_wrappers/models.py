@@ -135,7 +135,7 @@ class CrafterQNetwork(nn.Module):
         )
 
     def forward(self, x):
-        x_ = x["obs"]
+        x_ = x["obs"]/255.0
         y_ = x["theta"]
         img_features = self.conv(x_.permute(0,3,1,2).float())
         
