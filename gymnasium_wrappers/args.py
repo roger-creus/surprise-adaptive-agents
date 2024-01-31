@@ -85,7 +85,7 @@ def parse_args_dqn():
     
     assert args.num_envs == 1, "vectorized envs are not supported at the moment"
 
-    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_seed:{args.seed}"
+    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_seed:{args.seed}"
 
     return args, run_name
 
@@ -173,7 +173,7 @@ def parse_args_ppo():
     args.batch_size = int(args.num_envs * args.num_steps)
     args.minibatch_size = int(args.batch_size // args.num_minibatches)
     # fmt: on
-    run_name = f"ppo_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_seed:{args.seed}"
+    run_name = f"ppo_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_seed:{args.seed}"
     return args, run_name
 
 
@@ -257,6 +257,6 @@ def parse_args_random():
     
     assert args.num_envs == 1, "vectorized envs are not supported at the moment"
 
-    run_name = f"random_agent_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_seed:{args.seed}"
+    run_name = f"random_agent_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_seed:{args.seed}"
 
     return args, run_name
