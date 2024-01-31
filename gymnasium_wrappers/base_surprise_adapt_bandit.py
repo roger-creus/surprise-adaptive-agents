@@ -86,19 +86,25 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
     def _get_random_entropy(self):
         self._env.reset()
         self.buffer.reset()
-        for _ in range(self.max_steps):
-            obs, rew, done, truncated, info = self._env.step(self.action_space.sample())
-            self.buffer.add(self.encode_obs(obs))
-            # softreset
-            if done or truncated:
-                if self._soft_reset:
-                    obs, _ = self._env.reset()
-                    obs = np.random.rand(*obs.shape)
-                    self.buffer.add(self.encode_obs(obs))
-                else:
-                    break
-        random_entropy = self.buffer.entropy()
-        self._env.reset()
+        # number of episodes to evaluate the random entorpy
+        num_eps = 5 if not self._soft_reset else 1
+        random_entropies = []
+        for _ in range(num_eps):
+            for _ in range(self.max_steps):
+                obs, rew, done, truncated, info = self._env.step(self.action_space.sample())
+                self.buffer.add(self.encode_obs(obs))
+                # softreset
+                if done or truncated:
+                    if self._soft_reset:
+                        obs, _ = self._env.reset()
+                        obs = np.random.rand(*obs.shape)
+                        self.buffer.add(self.encode_obs(obs))
+                    else:
+                        break
+            random_entropy = self.buffer.entropy()
+            random_entropies.append(random_entropy)
+            self._env.reset()
+        random_entropy = np.mean(random_entropies)
         return random_entropy
 
     def _get_alpha(self):
