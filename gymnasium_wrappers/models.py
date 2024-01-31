@@ -146,6 +146,50 @@ class CrafterQNetwork(nn.Module):
             x = img_features
 
         return self.linear(x)
+    
+class MinAtarQNetwork(nn.Module):
+    def __init__(self, envs, use_theta = False):
+        super().__init__()
+        in_channels = envs.single_observation_space["obs"].shape[-1]
+        self.use_theta = use_theta
+        
+        self.network = nn.Sequential(
+            nn.Conv2d(in_channels, 16, kernel_size=3, stride=1),
+            nn.ReLU(),
+            nn.Flatten(),
+        )
+        
+        with torch.no_grad():
+            s_ = env.single_observation_space["obs"].sample()[None]
+            n_flatten = self.network(torch.as_tensor(s_).float().permute(0,3,1,2)).shape[1]
+
+        if self.use_theta:
+            self.theta_fc = nn.Sequential(
+                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
+                nn.ReLU(),
+                nn.Linear(120, 84),
+                nn.ReLU(),
+            )
+            n_flatten += 84
+        
+        self.linear = nn.Sequential(
+            nn.Linear(n_flatten, 512), 
+            nn.ReLU(),
+            nn.Linear(512, env.single_action_space.n), 
+        )
+
+    def forward(self, x):
+        x_ = x["obs"]
+        y_ = x["theta"]
+        img_features = self.network(x_.permute(0,3,1,2).float())
+        
+        if self.use_theta:
+            theta_features = self.theta_fc(y_.float())
+            x = torch.cat([img_features, theta_features], dim=1)
+        else:
+            x = img_features
+
+        return self.linear(x)
 
     
 
