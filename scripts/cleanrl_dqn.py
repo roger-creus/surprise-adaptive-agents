@@ -80,6 +80,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     elif args.env_id == "crafter":
         net = CrafterQNetwork
         crafter_logger = CrafterLogger()
+    elif "MinAtar" in args.env_id:
+        net = MinAtarQNetwork
     else:
         raise NotImplementedError
     
