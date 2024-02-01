@@ -144,7 +144,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         # soft reset
         if self._soft_reset:
-            if envdone:
+            if envdone or envtrunc:
                 obs, _ = self._env.reset()
                 obs = np.random.rand(*obs.shape)
                 self.deaths += 1
@@ -164,7 +164,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 envdone = False
                 envtrunc = False
         else:
-            if envdone:
+            if envdone or envtrunc:
                 info["Average_task_return"] = self.task_return
                 info["Average_episode_length"] = self.num_steps
                 info["alpha_rolling_average"] = self.alpha_rolling_average
