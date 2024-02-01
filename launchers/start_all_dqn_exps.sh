@@ -76,9 +76,15 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Freeway smax bernoulli 820 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Freeway smax bernoulli 8943 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Freeway sadapt-bandit bernoulli 1 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 820 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 8943 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Freeway sadapt-bandit bernoulli 1 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 820 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 8943 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
+
+# Maze
+# w/o soft-reset
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-MazeEnv smax gaussian 1 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="test_maze" --video-log-freq=500000
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-MazeEnv smax gaussian 820 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="test_maze" --video-log-freq=500000
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-MazeEnv smax gaussian 8943 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="test_maze" --video-log-freq=500000
 
 # w/ soft-reset
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 1 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
