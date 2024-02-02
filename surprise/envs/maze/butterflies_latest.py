@@ -19,18 +19,6 @@ class ButterfliesEnv(gym.ObservationWrapper):
         return obs, rew, done, {}
 
     def observation(self, obs):
-        # put agent channel first
-        obs = np.stack([obs[1], obs[0], obs[2], obs[3]])
-        
-        # get agent position
-        x, y = np.unravel_index(np.argmax(obs[0], axis=None), obs[0].shape)
-        
-        # tranform to one channel only with indexes
-        obs = np.argmax(obs, axis=0)
-
-        # manually set goal position
-        max_num = np.max(obs)
-        obs[x, y] = max_num + 1
         return obs
 
 
