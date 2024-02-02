@@ -105,9 +105,6 @@ def make_env(args):
             griddly_env_name = args.env_id.split('-')[-1]
             max_steps = 250
             env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
-            print(griddly_env_name)
-            print("Env is created")
-            quit()
             
             if griddly_env_name == "MazeEnv":
                 from surprise.envs.maze.maze_env import MazeEnv
@@ -115,7 +112,7 @@ def make_env(args):
                 env = old_gym.wrappers.FlattenObservation(env)
             elif griddly_env_name == "ButterfliesEnv":
                 from surprise.envs.maze.butterflies_latest import ButterfliesEnv
-                env = ButterfliesEnv()
+                env = old_gym.wrappers.FlattenObservation(env)
             else:
                 raise ValueError(f"Unknown griddly env {griddly_env_name}")
             
