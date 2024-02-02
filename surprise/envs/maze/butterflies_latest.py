@@ -19,7 +19,7 @@ class ButterfliesEnv(gym.ObservationWrapper):
         return obs, rew, done, {}
 
     def observation(self, obs):
-        new_obs = np.zeros(1, obs.shape[1], obs.shape[2])
+        new_obs = np.zeros((1, obs.shape[1], obs.shape[2]))
         new_obs[0, obs[0,:,:]==1] = 1
         new_obs[0, obs[1,:,:]==1] = 2
         new_obs[0, obs[2,:,:]==1] = 3
