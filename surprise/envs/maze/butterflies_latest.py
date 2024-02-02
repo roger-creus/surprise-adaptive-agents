@@ -7,18 +7,17 @@ from IPython import embed
 
 class ButterfliesEnv(ObservationWrapper):
 
-    def __init__(self, **kwargs):
-        env = gym.make("GDY-ButterfliesEnv-v0",
-                       level=0,
-                       player_observer_type=gd.ObserverType.VECTOR,
-                       global_observer_type=gd.ObserverType.VECTOR,
-                       **kwargs)
+    def __init__(self, env , **kwargs):
+        self.env = env
         super(ButterfliesEnv, self).__init__(env)
 
         self.observation_space = Box(0, 4, shape=(28, 11))
         
     def step(self, action):
         obs, rew, done, info = super().step(action)
+        print(f"butterflies obs shape")
+        print(obs.shape)
+        quit()
         return obs, rew, done, {}
 
     def observation(self, obs):
