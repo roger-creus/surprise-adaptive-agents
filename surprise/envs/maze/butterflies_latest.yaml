@@ -1,6 +1,6 @@
 Version: "0.1"
 Environment:
-  Name: Butterflies and Spiders
+  Name: Butterflies
   Description: |
     You want to catch all of the butterflies while also avoiding the spiders. Butterflies spawn slowly from cocoons.
     The butterflies are also eaten by the spiders so you need to be fast to collect them.
