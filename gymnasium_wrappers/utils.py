@@ -110,6 +110,9 @@ def make_env(args):
                 from surprise.envs.maze.maze_env import MazeEnv
                 env = MazeEnv(env)
                 env = old_gym.wrappers.FlattenObservation(env)
+            elif griddly_env_name == "ButterfliesEnv":
+                from surprise.envs.maze.butterflies_latest import ButterfliesEnv
+                env = ButterfliesEnv(env)
             else:
                 raise ValueError(f"Unknown griddly env {griddly_env_name}")
             
@@ -256,6 +259,7 @@ def log_heatmap(env, heatmap, ep_counter, writer, save_path):
 def register_griddly_envs():
     wrapper = GymWrapperFactory()
     wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env_fully_observed.yaml")
+    wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies_latest.yaml")
 
 class CrafterLogger:
     '''
