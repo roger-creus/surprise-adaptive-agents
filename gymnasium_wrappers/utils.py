@@ -112,7 +112,7 @@ def make_env(args):
                 env = old_gym.wrappers.FlattenObservation(env)
             elif griddly_env_name == "ButterfliesEnv":
                 from surprise.envs.maze.butterflies_latest import ButterfliesEnv
-                env = ButterfliesEnv(env)
+                env = ButterfliesEnv()
             else:
                 raise ValueError(f"Unknown griddly env {griddly_env_name}")
             
