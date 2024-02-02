@@ -24,8 +24,5 @@ class ButterfliesEnv(gym.ObservationWrapper):
         new_obs[0, obs[1,:,:]==1] = 2
         new_obs[0, obs[2,:,:]==1] = 3
         new_obs[0, obs[3,:,:]==1] = 4
-        print("shape of new observation")
-        print(new_obs.shape)
-        quit()
         return new_obs
 
