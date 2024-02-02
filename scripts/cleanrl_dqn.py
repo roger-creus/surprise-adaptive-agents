@@ -149,7 +149,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
-        if "final_info" in infos:
+        if "final_info" in infos and global_step % 1000 == 0:
             for info in infos["final_info"]:
                 # update crafter logs
                 if "crafter" in args.env_id:
