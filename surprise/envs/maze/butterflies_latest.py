@@ -10,14 +10,10 @@ class ButterfliesEnv(ObservationWrapper):
     def __init__(self, env , **kwargs):
         self.env = env
         super(ButterfliesEnv, self).__init__(env)
-        print(f"butterflies obs shape")
-        print(env.observation_space.shape)
-        quit()
         self.observation_space = Box(0, 4, shape=(28, 11))
         
     def step(self, action):
         obs, rew, done, info = super().step(action)
-        
         return obs, rew, done, {}
 
     def observation(self, obs):
