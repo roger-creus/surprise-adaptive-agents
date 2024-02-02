@@ -149,7 +149,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
-        if "final_info" in infos and global_step % 1000 == 0:
+        if "final_info" in infos:
             for info in infos["final_info"]:
                 # update crafter logs
                 if "crafter" in args.env_id:
@@ -159,6 +159,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 # Skip the envs that are not done
                 if "episode" not in info:
                     continue
+                
                 
                 print(f"global_step={global_step}, average_task_return={info['Average_task_return']}, episodic_return={info['episode']['r']}, episodic_surprise={np.mean(ep_surprise)}, episodic_entropy={np.mean(ep_entropy)}")
                 writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
