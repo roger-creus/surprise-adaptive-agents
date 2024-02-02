@@ -8,7 +8,7 @@ from IPython import embed
 class ButterfliesEnv(ObservationWrapper):
 
     def __init__(self, **kwargs):
-        env = gym.make("GDY-_ButterfliesEnv-v0",
+        env = gym.make("GDY-ButterfliesEnv-v0",
                        level=0,
                        player_observer_type=gd.ObserverType.VECTOR,
                        global_observer_type=gd.ObserverType.VECTOR,
