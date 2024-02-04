@@ -104,7 +104,7 @@ def make_env(args):
             register_griddly_envs()
             griddly_env_name = args.env_id.split('-')[-1]
             max_steps = 250
-            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
+            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.SPRITE_2D)
             
             if griddly_env_name == "MazeEnv":
                 from surprise.envs.maze.maze_env import MazeEnv
