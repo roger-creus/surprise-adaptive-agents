@@ -127,3 +127,5 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 1 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1 
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 820 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
+
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=crafter --model=smin --buffer-type=gaussian --seed=8943 --track=True --soft_reset=1 --theta_size="(9,9)" --wandb-project-name="Crafter_DQN_test" --scale-by-std=0 --obs_size="(64,64)"
