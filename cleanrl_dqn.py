@@ -16,6 +16,7 @@ from IPython import embed
 from gymnasium_wrappers.utils import *
 from gymnasium_wrappers.models import *
 from gymnasium_wrappers.args import parse_args_dqn
+from gym.wrappers.normalize import RunningMeanStd
 
 
 def linear_schedule(start_e: float, end_e: float, duration: int, t: int):
@@ -37,7 +38,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     
     if args.track:
         import wandb
-        wandb.login(key=args.wandb_key)
+
         wandb.init(
             project=args.wandb_project_name,
             entity=args.wandb_entity,
@@ -79,6 +80,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     elif args.env_id == "crafter":
         net = CrafterQNetwork
         crafter_logger = CrafterLogger()
+    elif "MinAtar" in args.env_id:
+        net = MinAtarQNetwork
     else:
         raise NotImplementedError
     
@@ -119,6 +122,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
+    if args.scale_by_std:
+        rms = RunningMeanStd()
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
         epsilon = linear_schedule(args.start_e, args.end_e, args.exploration_fraction * args.total_timesteps, global_step)
@@ -154,6 +159,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 # Skip the envs that are not done
                 if "episode" not in info:
                     continue
+                
                 
                 print(f"global_step={global_step}, average_task_return={info['Average_task_return']}, episodic_return={info['episode']['r']}, episodic_surprise={np.mean(ep_surprise)}, episodic_entropy={np.mean(ep_entropy)}")
                 writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
@@ -201,16 +207,23 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if global_step > args.learning_starts:
             if global_step % args.train_frequency == 0:
                 data = rb.sample(args.batch_size)
+                rewards = data.rewards.flatten()
+                # reward normalization
+                if args.scale_by_std:
+                    # update the rms using rewards from all envs
+                    rms.update(rewards.cpu().numpy())
+                    rewards -= (rms.mean)
+                    rewards /= np.sqrt(rms.var)
                 with torch.no_grad():
                     target_max, _ = target_network(data.next_observations).max(dim=1)
-                    td_target = data.rewards.flatten() + args.gamma * target_max * (1 - data.dones.flatten())
+                    td_target = rewards + args.gamma * target_max * (1 - data.dones.flatten())
                 old_val = q_network(data.observations).gather(1, data.actions).squeeze()
                 loss = F.mse_loss(td_target, old_val)
 
-                if global_step % 100 == 0:
+                if global_step % 1000 == 0:
                     writer.add_scalar("losses/td_loss", loss, global_step)
                     writer.add_scalar("losses/q_values", old_val.mean().item(), global_step)
-                    print("SPS:", int(global_step / (time.time() - start_time)))
+                    # print("SPS:", int(global_step / (time.time() - start_time)))
                     writer.add_scalar("charts/SPS", int(global_step / (time.time() - start_time)), global_step)
 
                 # optimize the model
@@ -226,7 +239,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     )
 
             if global_step % args.video_log_freq == 0:
-                eval_episode_dqn(q_network, eval_envs, device, f"runs/{run_name}", global_step)
+                eval_episode_dqn(q_network, eval_envs, device, f"runs/{run_name}", global_step, args.env_id)
 
     if args.save_model:
         model_path = f"runs/{run_name}/{args.exp_name}.cleanrl_model"
