@@ -16,6 +16,8 @@ class ButterfliesEnv(gym.ObservationWrapper):
         
     def step(self, action):
         obs, rew, done, info = super().step(action)
+        print(obs)
+        quit()
         return obs, rew, done, {}
 
     def observation(self, obs):
