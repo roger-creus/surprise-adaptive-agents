@@ -146,14 +146,17 @@ if __name__ == "__main__":
 
             c = 0
             for info in infos["final_info"]:
-                # update crafter logs
-                if "crafter" in args.env_id:
-                    crafter_logger.update_achievements(info["achievements"])
-                    crafter_logger.log(writer, global_step)
                 # Skip the envs that are not done
                 if "episode" not in info:
                     c += 1
                     continue       
+
+                # update crafter logs
+                print(info)
+                print(infos)
+                if "crafter" in args.env_id:
+                    crafter_logger.update_achievements(info["achievements"])
+                    crafter_logger.log(writer, global_step)
                  
                 print(f"global_step={global_step}, average_task_return={info['Average_task_return']}, episodic_return={info['episode']['r'][0]}, episodic_length={info['episode']['l'][0]}")
                 writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
