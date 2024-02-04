@@ -146,14 +146,14 @@ if __name__ == "__main__":
 
             c = 0
             for info in infos["final_info"]:
+                print(info)
+                print(infos)
                 # Skip the envs that are not done
                 if "episode" not in info:
                     c += 1
                     continue       
 
                 # update crafter logs
-                print(info)
-                print(infos)
                 if "crafter" in args.env_id:
                     crafter_logger.update_achievements(info["achievements"])
                     crafter_logger.log(writer, global_step)
