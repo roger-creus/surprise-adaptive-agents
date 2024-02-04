@@ -342,7 +342,7 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
 
     while True:
         try:
-            ep_images.append(env.envs[0].env.render(mode="rgb_array"))
+            ep_images.append(env.envs[0].env.render(mode="rgb_array", observer='global'))
         except:
             # for crafter
             ep_images.append(env.envs[0].render())
