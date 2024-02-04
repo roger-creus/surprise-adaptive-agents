@@ -12,6 +12,8 @@ class ButterfliesEnv(gym.ObservationWrapper):
     def __init__(self, env , **kwargs):
         super(ButterfliesEnv, self).__init__(env)
         self.env = env
+        print(env.reset())
+        quit()
         self.observation_space = Box(low=0, high=4, shape=(28, 11))
         
     def step(self, action):

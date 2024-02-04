@@ -92,9 +92,94 @@ Actions:
         Dst:
           Object: [ wall, catcher, butterfly, cocoon ]
 
+  # Define spider movement
+  - Name: spider_random_movement
+    InputMapping:
+      Inputs:
+        1:
+          Description: Rotate left
+          OrientationVector: [-1, 0]
+        2:
+          Description: Move forwards
+          OrientationVector: [0, -1]
+          VectorToDest: [0, -1]
+        3:
+          Description: Rotate right
+          OrientationVector: [1, 0]
+      Relative: true
+      Internal: true
+    Behaviours:
+      # Spider rotates on the spot
+      - Src:
+          Object: spider
+          Commands:
+            - rot: _dir
+            - exec:
+                Action: spider_random_movement
+                Delay: 3
+                Randomize: true
+        Dst:
+          Object: spider
+
+      # The catcher and the spider can move into empty space
+      - Src:
+          Object: spider
+          Commands:
+            - mov: _dest
+            - exec:
+                Action: spider_random_movement
+                Delay: 3
+                Randomize: true
+        Dst:
+          Object: _empty
+
+      # The spider will not move into the wall or the gem, but it needs to keep moving
+      - Src:
+          Object: spider
+          Commands:
+            - exec:
+                Action: spider_random_movement
+                Delay: 3
+                Randomize: true
+        Dst:
+          Object: wall
+
+      # If the spider moves into a butterfly it dies
+      - Src:
+          Object: spider
+          Commands:
+            - mov: _dest
+            - exec:
+                Action: spider_random_movement
+                Delay: 3
+                Randomize: true
+        Dst:
+          Object: butterfly
+          Commands:
+            - remove: true
+            - reward: -1
+      # if the spider moves into the catcher it dies
+      - Src:
+          Object: spider
+        Dst:
+          Object: catcher
+          Commands:
+            - remove: true
+            - reward: -10
+
   # Define the move action
   - Name: move
     Behaviours:
+
+      # If the catcher moves into a spider
+      - Src:
+          Object: catcher
+          Commands:
+            - remove: true
+            - reward: -1
+        Dst:
+          Object: spider
+
       # The catcher move into an empty space
       - Src:
           Object: catcher
@@ -168,6 +253,20 @@ Objects:
       Block2D:
         - Shape: triangle
           Color: [0.0, 1.0, 0.0]
+          Scale: 0.5
+
+  - Name: spider
+    InitialActions:
+      - Action: spider_random_movement
+        Delay: 3
+        Randomize: true
+    MapCharacter: 'S'
+    Observers:
+      Sprite2D:
+        - Image: oryx/oryx_fantasy/avatars/spider1.png
+      Block2D:
+        - Shape: triangle
+          Color: [1.0, 0.0, 0.0]
           Scale: 0.5
 
   - Name: catcher
