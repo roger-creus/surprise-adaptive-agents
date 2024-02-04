@@ -128,8 +128,8 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 820 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 8943 --track --soft_reset=0 --theta_size="(9,9)" --wandb-project-name="Crafter_DQN_2" --scale-by-std=1 --obs_size="(64,64)"
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 8943 --track --soft_reset=0 --theta_size="(9,9)" --wandb-project-name="Crafter_DQN_2" --scale-by-std=1 --obs_size="(64,64)" --gray_scale=0
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 8943 --track --soft_reset=0 --theta_size="(9,9)" --wandb-project-name="Crafter_DQN_2" --scale-by-std=1 --obs_size="(64,64)"
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 8943 --track --soft_reset=0 --theta_size="(9,9)" --wandb-project-name="Crafter_DQN_2" --scale-by-std=1 --obs_size="(64,64)" --gray_scale=0
 
 sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smax gaussian 8943 --track --soft_reset=0 --theta_size="(9,9)" --wandb-project-name="Crafter_DQN_2" --scale-by-std=1 --obs_size="(64,64)" 
 sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smax gaussian 8943 --track --soft_reset=0 --theta_size="(9,9)" --wandb-project-name="Crafter_DQN_2" --scale-by-std=1 --obs_size="(64,64)" --gray_scale=0
