@@ -12,7 +12,12 @@ class ButterfliesEnv(gym.ObservationWrapper):
     def __init__(self, env , **kwargs):
         super(ButterfliesEnv, self).__init__(env)
         self.env = env
-        print(env.reset())
+        obs = env.reset()
+        print(np.any(obs[0,:,:] == 1))
+        print(np.any(obs[1,:,:] == 1))
+        print(np.any(obs[2,:,:] == 1))
+        print(np.any(obs[3,:,:] == 1))
+        print(np.any(obs[4,:,:] == 1))
         quit()
         self.observation_space = Box(low=0, high=4, shape=(28, 11))
         
