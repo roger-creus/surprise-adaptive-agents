@@ -79,9 +79,11 @@ def make_env(args):
 
         elif "crafter" in args.env_id:
             max_steps = 500
+            max_steps = 500
             grayscale = args.gray_scale
             channel_dim = 1 if grayscale else 3
             obs_resize = ast.literal_eval(args.obs_size)
+            channel_dim = 1 if grayscale else 3
             env = old_gym.make('CrafterReward-v1')
             # Crafter is based on old gym, we need to convert it to gymnasium api
             env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
@@ -99,15 +101,15 @@ def make_env(args):
             max_steps = 500
             
         elif "MinAtar" in args.env_id:
-            env = gym.make(args.env_id+"-v1", render_mode='rgb_array', max_episode_steps=1000)
-            max_steps = 1000
+            env = gym.make(args.env_id+"-v1", render_mode='rgb_array', max_episode_steps=500)
+            max_steps = 500
 
         elif "griddly" in args.env_id:
             # for instance griddly-MazeEnv
             register_griddly_envs()
             griddly_env_name = args.env_id.split('-')[-1]
-            max_steps = 500
-            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
+            max_steps = 250
+            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.SPRITE_2D)
             
             if griddly_env_name == "MazeEnv":
                 from surprise.envs.maze.maze_env import MazeEnv
@@ -144,7 +146,6 @@ def make_env(args):
                 max_steps=max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                scale_by_std = args.scale_by_std,
                 soft_reset=args.soft_reset
             )
         
@@ -158,7 +159,6 @@ def make_env(args):
                 max_steps=max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                scale_by_std = args.scale_by_std,
                 soft_reset=args.soft_reset
             )
         
@@ -194,7 +194,6 @@ def make_env(args):
                 max_steps = max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                scale_by_std = args.scale_by_std,
                 soft_reset=args.soft_reset
             )
         elif args.model == "none":
@@ -208,7 +207,6 @@ def make_env(args):
                 max_steps=max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                scale_by_std = args.scale_by_std,
                 soft_reset=args.soft_reset
             )
             
@@ -263,6 +261,7 @@ def log_heatmap(env, heatmap, ep_counter, writer, save_path):
 def register_griddly_envs():
     wrapper = GymWrapperFactory()
     wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env_fully_observed.yaml")
+    wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies_latest.yaml")
 
 class CrafterLogger:
     '''
@@ -334,7 +333,7 @@ def eval_episode_ppo(ppo_agent, env, device, save_path, global_step):
     ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)
 
 
-def eval_episode_dqn(q_net, env, device, save_path, global_step):
+def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
     '''
     Evaluate a DQN agent in an environment and record and save a video
     '''
@@ -344,7 +343,7 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step):
 
     while True:
         try:
-            ep_images.append(env.envs[0].env.render(mode="rgb_array"))
+            ep_images.append(env.envs[0].env.render(mode="rgb_array", observer='global'))
         except:
             # for crafter
             ep_images.append(env.envs[0].render())
@@ -367,5 +366,8 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step):
 
     # save gif with all imags
     from PIL import Image
-    ep_images = [Image.fromarray(img) for img in ep_images]
+    if "MinAtar" in env_id:
+        ep_images = [Image.fromarray((img * 255).astype(np.uint8)) for img in ep_images]
+    else:
+        ep_images = [Image.fromarray(img) for img in ep_images]
     ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)
