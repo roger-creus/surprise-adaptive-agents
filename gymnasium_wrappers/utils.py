@@ -345,7 +345,6 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
             ep_images.append(env.envs[0].env.render(mode="rgb_array", observer='global'))
         except:
             # for crafter
-            print("here")
             ep_images.append(env.envs[0].render())
 
         if isinstance(env.single_observation_space, gym.spaces.Dict):
