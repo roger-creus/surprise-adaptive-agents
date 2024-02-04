@@ -1,12 +1,17 @@
 ## env-id ## model ## buffer-type
 
 # Crafter test
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter sadapt-bandit gaussian 1 --track=True
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter smin gaussian 1 --track=True
-sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter none gaussian 1 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter smax gaussian 1  --track --wandb-project-name="Crafter_PPO" --scale-by-std=1 --soft_reset=0 
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter smin gaussian 1  --track --wandb-project-name="Crafter_PPO" --scale-by-std=1 --soft_reset=0
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter none gaussian 1  --track --wandb-project-name="Crafter_PPO" --scale-by-std=0 --soft_reset=0
+
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter smax gaussian 1  --track --wandb-project-name="Crafter_PPO" --scale-by-std=0 --soft_reset=1 
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter smin gaussian 1  --track --wandb-project-name="Crafter_PPO" --scale-by-std=0 --soft_reset=1
+sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py crafter none gaussian 1  --track --wandb-project-name="Crafter_PPO" --scale-by-std=0 --soft_reset=1
 
 # random crafter agnet
-# sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 1 --track=True --wandb-project-name="Crafter_PPO"
+sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 1 --track --wandb-project-name="Crafter_PPO" --scale-by-std=1 --soft_reset=0
+sbatch launchers/train_cleanrl scripts/random_agent.py crafter none gaussian 1 --track --wandb-project-name="Crafter_PPO" --scale-by-std=0 --soft_reset=1
 
 # REWARD FREE EXPERIMENTS
 # sbatch launchers/train_cleanrl scripts/cleanrl_ppo.py FourRooms smin multinoulli 1
