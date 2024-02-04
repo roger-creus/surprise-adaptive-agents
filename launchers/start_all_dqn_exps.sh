@@ -120,10 +120,10 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 820 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 1 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 820 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 1 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1 
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 820 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 1 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 820 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 1 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1 
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 820 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
