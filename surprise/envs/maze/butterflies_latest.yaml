@@ -1,37 +1,63 @@
-Version: "0.1"
+Version: '0.1'
 Environment:
   Name: Butterflies
-  Description: |
-    You want to catch all of the butterflies while also avoiding the spiders. Butterflies spawn slowly from cocoons.
-    The butterflies are also eaten by the spiders so you need to be fast to collect them.
+  Description: >
+    You want to catch all of the butterflies while also avoiding the spiders.
+    Butterflies spawn slowly from cocoons.
+
+    The butterflies are also eaten by the spiders so you need to be fast to
+    collect them.
+
     You win the level as soon as there are no butterflies on the screen.
   Observers:
     Sprite2D:
       TileSize: 24
-      BackgroundTile: gvgai/oryx/grass_15.png
-    Block2D:
-      TileSize: 24
+      BackgroundTile: gvgai/oryx/backBiege.png
   Player:
     AvatarObject: catcher
   Termination:
     Win:
-      - eq: [butterfly:count, 0] # If there are no butterflies
+      - eq:
+          - butterfly:count
+          - 0
     Lose:
-      - eq: [catcher:count, 0] # If the catcher gets killed
+      - eq:
+          - _steps
+          - 250
   Levels:
-    - |
-      w w w w w w w w w w w w w w w w w w w w w w w w w w w w
-      w . . 1 . . . . . 1 . . w . . . 0 . 0 . 0 . 0 w 0 0 0 w
-      w . 1 . . . . . . . . . . . . . . . . . . . . w 0 0 0 w
-      w . . . 1 . . . 0 . . . . . A . . . . . . . . w 0 0 0 w
-      w w w w w w w w w w w w . . . . . . . . . . . . . 0 0 w
-      w 0 . . . . . . . . . . . . . . . . . . w . . . . . w w
-      w 0 . . . . . . 1 . . . . . . . . . . . . . . . . . . w
-      w 0 . . . . . . . . . w w w w w . . . . 1 . . . . . 0 w
-      w w w w w . . . . . . . . . . . . . . . . w . . . . . w
-      w . . . . . . . . 0 . 0 . 0 . 0 . 0 . . . w 0 . . . 0 w
-      w w w w w w w w w w w w w w w w w w w w w w w w w w w w
-   
+    - >
+      w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w  
+      w   w   w   w   w   w   w   w   w   w   
+
+      w   .   .   1   .   .   .   .   .   1   .   .   w   .   .   .   .   .  
+      .   .   0   .   .   w   .   .   .   w   
+
+      w   .   1   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   .   .   .   w   .   .   0   w   
+
+      w   .   .   .   1   .   .   .   0   .   .   .   .   .   A   .   .   .  
+      .   .   .   .   .   w   .   .   .   w   
+
+      w   w   w   w   w   w   w   w   w   w   w   w   .   .   .   .   .   .  
+      .   .   .   .   .   .   .   .   .   w   
+
+      w   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   w   .   .   .   .   .   w   w   
+
+      w   .   .   .   .   .   .   .   1   .   .   .   .   .   .   .   .   .  
+      .   .   .   .   .   .   .   .   .   w   
+
+      w   .   .   .   .   .   .   .   .   .   .   w   w   w   w   w   .   .  
+      .   .   1   .   .   .   .   .   .   w   
+
+      w   w   w   w   w   .   .   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   .   w   .   .   .   .   .   w   
+
+      w   .   .   .   .   .   0   .   .   .   .   .   .   .   .   .   .   .  
+      .   .   .   w   0   .   .   .   .   w   
+
+      w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w  
+      w   w   w   w   w   w   w   w   w   w
 Actions:
   - Name: spawn_butterfly
     InputMapping:
@@ -45,27 +71,25 @@ Actions:
                 Action: spawn_butterfly
                 Delay: 50
                 Randomize: true
-
         Dst:
           Object: _empty
-
       - Src:
           Object: cocoon
           Commands:
             - exec:
                 Action: spawn_butterfly
-                Delay: 50
+                Delay: 100
                 Randomize: true
         Dst:
-          Object: [cocoon, butterfly, catcher, wall]
-
-  # Butterfly movement is different to spider movement
+          Object:
+            - cocoon
+            - butterfly
+            - catcher
+            - wall
   - Name: butterfly_random_movement
     InputMapping:
       Internal: true
     Behaviours:
-
-      # The butterfly moves into an empty space
       - Src:
           Object: butterfly
           Commands:
@@ -76,8 +100,6 @@ Actions:
                 Randomize: true
         Dst:
           Object: _empty
-
-      # if the butterfly tries to move into anything but an empty spot
       - Src:
           Object: butterfly
           Commands:
@@ -86,18 +108,19 @@ Actions:
                 Delay: 3
                 Randomize: true
         Dst:
-          Object: [ wall, catcher, butterfly, cocoon ]
+          Object:
+            - wall
+            - catcher
+            - butterfly
+            - cocoon
   - Name: move
     Behaviours:
-      # The catcher move into an empty space
       - Src:
           Object: catcher
           Commands:
             - mov: _dest
         Dst:
           Object: _empty
-
-      # If the catcher moves into a butterfly object, the butterfly is caught YAY!
       - Src:
           Object: catcher
           Commands:
@@ -107,35 +130,29 @@ Actions:
           Object: butterfly
           Commands:
             - remove: true
-
 Objects:
   - Name: wall
-    MapCharacter: 'w'
+    MapCharacter: w
     Observers:
       Sprite2D:
         - TilingMode: WALL_16
           Image:
-            - oryx/oryx_fantasy/wall9-0.png
-            - oryx/oryx_fantasy/wall9-1.png
-            - oryx/oryx_fantasy/wall9-2.png
-            - oryx/oryx_fantasy/wall9-3.png
-            - oryx/oryx_fantasy/wall9-4.png
-            - oryx/oryx_fantasy/wall9-5.png
-            - oryx/oryx_fantasy/wall9-6.png
-            - oryx/oryx_fantasy/wall9-7.png
-            - oryx/oryx_fantasy/wall9-8.png
-            - oryx/oryx_fantasy/wall9-9.png
-            - oryx/oryx_fantasy/wall9-10.png
-            - oryx/oryx_fantasy/wall9-11.png
-            - oryx/oryx_fantasy/wall9-12.png
-            - oryx/oryx_fantasy/wall9-13.png
-            - oryx/oryx_fantasy/wall9-14.png
-            - oryx/oryx_fantasy/wall9-15.png
-      Block2D:
-        - Shape: square
-          Color: [0.7, 0.7, 0.7]
-          Scale: 0.9
-
+            - oryx/oryx_fantasy/wall8-0.png
+            - oryx/oryx_fantasy/wall8-1.png
+            - oryx/oryx_fantasy/wall8-2.png
+            - oryx/oryx_fantasy/wall8-3.png
+            - oryx/oryx_fantasy/wall8-4.png
+            - oryx/oryx_fantasy/wall8-5.png
+            - oryx/oryx_fantasy/wall8-6.png
+            - oryx/oryx_fantasy/wall8-7.png
+            - oryx/oryx_fantasy/wall8-8.png
+            - oryx/oryx_fantasy/wall8-9.png
+            - oryx/oryx_fantasy/wall8-10.png
+            - oryx/oryx_fantasy/wall8-11.png
+            - oryx/oryx_fantasy/wall8-12.png
+            - oryx/oryx_fantasy/wall8-13.png
+            - oryx/oryx_fantasy/wall8-14.png
+            - oryx/oryx_fantasy/wall8-15.png
   - Name: butterfly
     InitialActions:
       - Action: butterfly_random_movement
@@ -145,11 +162,6 @@ Objects:
     Observers:
       Sprite2D:
         - Image: gvgai/newset/butterfly1.png
-      Block2D:
-        - Shape: triangle
-          Color: [0.0, 0.0, 1.0]
-          Scale: 0.3
-
   - Name: cocoon
     MapCharacter: '0'
     InitialActions:
@@ -159,18 +171,8 @@ Objects:
     Observers:
       Sprite2D:
         - Image: gvgai/newset/cocoonb1.png
-      Block2D:
-        - Shape: triangle
-          Color: [0.0, 1.0, 0.0]
-          Scale: 0.5
   - Name: catcher
-    MapCharacter: 'A'
+    MapCharacter: A
     Observers:
       Sprite2D:
-        - Image: gvgai/newset/girl5.png
-      Block2D:
-        - Shape: triangle
-          Color: [1.0, 1.0, 1.0]
-          Scale: 0.8
-      Vector:
-        - Color: [1.0, 1.0, 1.0]
+        - Image: gvgai/newset/girl1.png
