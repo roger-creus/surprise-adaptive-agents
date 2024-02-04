@@ -18,6 +18,7 @@ from gymnasium_wrappers.rendering_wrapper import RenderObservationWrapper
 from surprise.buffers.buffers import GaussianBufferIncremental, BernoulliBuffer, MultinoulliBuffer
 from griddly import GymWrapperFactory, gd
 import os
+import ast
 
 from IPython import embed
 from gymnasium.envs.registration import register as gym_register
@@ -78,17 +79,21 @@ def make_env(args):
 
         elif "crafter" in args.env_id:
             max_steps = 500
-            grayscale = True
+            max_steps = 500
+            grayscale = args.gray_scale
+            channel_dim = 1 if grayscale else 3
+            obs_resize = ast.literal_eval(args.obs_size)
             channel_dim = 1 if grayscale else 3
             env = old_gym.make('CrafterReward-v1')
             # Crafter is based on old gym, we need to convert it to gymnasium api
             env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
             # resize the observation
-            env = ResizeObservationWrapper(env, grayscale=grayscale)
+            env = ResizeObservationWrapper(env, grayscale=grayscale, new_shape=(*obs_resize, channel_dim), new_size=(obs_resize[1], obs_resize[0], channel_dim))
             # stack multiple frames
             env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
             # set the size of theta
-            theta_size = (20, 26, channel_dim) if grayscale else (20, 26, channel_dim)
+            theta_size =  ast.literal_eval(args.theta_size)
+            theta_size = (theta_size[0], theta_size[1], channel_dim) if grayscale else (theta_size[0], theta_size[1], channel_dim)
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = OneHotPartialObsWrapper(env)
