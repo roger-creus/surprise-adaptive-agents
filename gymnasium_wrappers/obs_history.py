@@ -18,24 +18,33 @@ class ObsHistoryWrapper(gym.Wrapper):
 
         buffer (Buffer object) : Buffer that tracks history and fits models
         '''
+        self._env = env
         self._channel_dim = channel_dim
         self._history_length = history_length
-        self._env = FrameStack(env, history_length)
         # Gym spaces
         self.action_space = self._env.action_space
         self.observation_space_old = env.observation_space
         shape_ = list(env.observation_space.low.shape)
+        self.gray_scale = True if shape_[self._channel_dim] == 1 else False
         shape_[self._channel_dim] = shape_[self._channel_dim] * self._history_length 
         self.observation_space = Box(0, 1, shape=shape_ )    
+        self.obs_stack = np.zeros(shape_)
         print(f"observation space in obs history wrapper:{self.observation_space}")
 
     def step(self, action):
         # Take Action
         now = time.time()
         obs, env_rew, envdone, envtrunc ,info = self._env.step(action)
-        obs = (np.array(obs).transpose(1,2,0,3)).reshape(obs.shape[1],  obs.shape[2], -1)
+        # update the image stack
+        if self.gray_scale:
+            self.obs_stack[:, :, :-1] = self.obs_stack[:, :, 1:]
+            self.obs_stack[:, :, -1] = obs.squeeze()
+        else:
+            self.obs_stack[:, :, :-3] = self.obs_stack[:, :, 3:]
+            self.obs_stack[:, :, -3:] = obs
+
         self._time += 1
-        return obs, env_rew, envdone, envtrunc ,info 
+        return self.obs_stack, env_rew, envdone, envtrunc ,info 
     
     def reset(self, seed=None, options=None):
         '''
@@ -43,7 +52,13 @@ class ObsHistoryWrapper(gym.Wrapper):
         '''
         self._time = 0
         obs, info = self._env.reset()
-        obs = (np.array(obs).transpose(1,2,0,3)).reshape(obs.shape[1],  obs.shape[2], -1)
+        if self.gray_scale:
+            self.obs_stack[:, :, :-1] = self.obs_stack[:, :, 1:]
+            self.obs_stack[:, :, -1] = obs.squeeze()
+        else:
+            self.obs_stack[:, :, :-3] = self.obs_stack[:, :, 3:]
+            self.obs_stack[:, :, -3:] = obs
+        obs = self.obs_stack
         return obs, info
     
     def get_obs(self, obs):
@@ -56,6 +71,3 @@ class ObsHistoryWrapper(gym.Wrapper):
         
     def render(self,**kwargs ):
         return self._env.render(**kwargs)
-    
-
-env = gym
