@@ -103,7 +103,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                         obs = np.random.rand(*obs.shape)
                         self.buffer.add(self.encode_obs(obs))
                     else:
-                        break
+                        pass
             random_entropy = self.buffer.entropy()
             random_entropies.append(random_entropy)
             obs, _ = self._env.reset()
@@ -169,6 +169,12 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 envdone = False
                 envtrunc = False
         else:
+            if self.num_eps >= self.max_steps:
+                envdone = True
+                envtrunc = True
+            else:
+                envdone = False
+                envtrunc = False
             if envdone or envtrunc:
                 info["Average_task_return"] = self.task_return
                 info["Average_episode_length"] = self.num_steps
@@ -188,7 +194,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         info["surprise_adapt_reward"] = rew
         info["theta_entropy"] = self.buffer.entropy()
-        print(f"theta_entropy: {self.buffer.entropy()}")
+        # print(f"theta_entropy: {self.buffer.entropy()}")
         info['deaths'] = self.deaths
         
         if self.add_true_rew:
@@ -272,8 +278,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.alpha_count += 1
 
         # log the entropy change
-        print(f"Agent entropy: {self.buffer.entropy()}")
-        print(f"Random entropy: {self.random_entropy}")
+        # print(f"Agent entropy: {self.buffer.entropy()}")
+        # print(f"Random entropy: {self.random_entropy}")
         info["entropy_change"] = (self.buffer.entropy() - self.random_entropy)
 
         self.buffer.reset()
