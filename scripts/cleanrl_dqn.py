@@ -148,7 +148,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         if "task_reward" in infos:
             task_rewards.append(infos["task_reward"][0])
         if "entropy_change" in infos:
-            entr_changes.append(infos["entropy_change"[0]])
+            entr_changes.append(infos["entropy_change"][0])
 
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
