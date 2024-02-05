@@ -42,6 +42,48 @@ class TetrisQNetwork(nn.Module):
             x = obs_features
 
         return self.q_net(x)
+    
+
+class TetrisBigQNetwork(nn.Module):
+    def __init__(self, env, use_theta=False):
+        super().__init__()
+        n_inputs = env.single_observation_space["obs"].shape[-1]
+        policy_inputs = 84
+        
+        self.network = nn.Sequential(
+            nn.Linear(n_inputs, 256),
+            nn.ReLU(),
+            nn.Linear(256, 256),
+            nn.ReLU(),
+            nn.Linear(256, 256),
+            nn.ReLU(),
+        )
+        
+        if use_theta:
+            self.theta_fc = nn.Sequential(
+                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
+                nn.ReLU(),
+                nn.Linear(120, 120),
+                nn.ReLU(),
+                nn.Linear(120, 84),
+                nn.ReLU(),
+            )
+            policy_inputs += 84
+            
+        self.q_net = nn.Linear(policy_inputs, env.single_action_space.n)
+        self.use_theta = use_theta
+
+    def forward(self, x):
+        x_ = x["obs"]
+        y_ = x["theta"]
+        obs_features = self.network(x_.float())
+        if self.use_theta:
+            theta_features = self.theta_fc(y_.float())
+            x = torch.cat([obs_features, theta_features], dim=1)
+        else:
+            x = obs_features
+
+        return self.q_net(x)
 
 class MinigridQNetwork(nn.Module):
     def __init__(self, env, use_theta=False):

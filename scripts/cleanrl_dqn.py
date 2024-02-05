@@ -76,7 +76,10 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     if "Rooms" in args.env_id:
         net = MinigridQNetwork
     elif args.env_id == "tetris" or "griddly" in args.env_id:
-        net = TetrisQNetwork
+        if "Butterflies" in args.env_id:
+            net = TetrisBigQNetwork
+        else:
+            net = TetrisQNetwork
     elif args.env_id == "crafter":
         net = CrafterQNetwork
         crafter_logger = CrafterLogger()
