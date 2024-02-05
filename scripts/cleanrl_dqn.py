@@ -118,6 +118,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     ep_surprise = []
     ep_entropy = []
     task_rewards = []
+    entr_changes = []
     ep_counter = 0
 
     # TRY NOT TO MODIFY: start the game
@@ -146,6 +147,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             ep_entropy.append(infos["theta_entropy"][0])
         if "task_reward" in infos:
             task_rewards.append(infos["task_reward"][0])
+        if "entropy_change" in infos:
+            entr_changes.append(infos["entropy_change"[0]])
 
                 
         # TRY NOT TO MODIFY: record rewards for plotting purposes
@@ -175,8 +178,14 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     if "ucb_alpha_one" in info:
                         writer.add_scalar("charts/ucb_alpha_one", info["ucb_alpha_one"], global_step)
                         writer.add_scalar("charts/ucb_alpha_zero", info["ucb_alpha_zero"], global_step)
+                    if "random_entropy" in info:
+                        writer.add_scalar("charts/random_entropy", info["random_entropy"], global_step)
                 writer.add_scalar("charts/deaths", info["deaths"], global_step)
                 writer.add_scalar("charts/epsilon", epsilon, global_step)
+
+                if len(entr_changes) > 0:
+                    writer.add_scalar("charts/entropy_change", entr_changes[-1], global_step)
+
                 logger_.logs_a([
                     global_step,
                     info["episode"]["r"][0],

@@ -266,6 +266,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.alpha_rolling_average = self.alpha_rolling_average + (1/self.alpha_count) * (self.alpha_t - self.alpha_rolling_average)
         self.alpha_count += 1
 
+        # log the entropy change
+        info["entropy_change"] = (self.buffer.entropy() - self.random_entropy)
+
         self.buffer.reset()
 
         self.num_eps += 1
