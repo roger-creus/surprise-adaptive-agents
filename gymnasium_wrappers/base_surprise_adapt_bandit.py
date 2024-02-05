@@ -86,8 +86,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.alpha_one_mean = val
 
     def _get_random_entropy(self):
-        self._env.reset()
+        obs, info = self._env.reset()
         self.buffer.reset()
+        self.buffer.add(self.encode_obs(obs))
         # number of episodes to evaluate the random entorpy
         num_eps = 5 if not self._soft_reset else 1
         random_entropies = []
@@ -105,8 +106,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                         break
             random_entropy = self.buffer.entropy()
             random_entropies.append(random_entropy)
-            self._env.reset()
+            obs, _ = self._env.reset()
             self.buffer.reset()
+            self.buffer.add(self.encode_obs(obs))
         random_entropy = np.mean(random_entropies)
         return random_entropy
 
@@ -186,6 +188,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         info["surprise_adapt_reward"] = rew
         info["theta_entropy"] = self.buffer.entropy()
+        print(f"theta_entropy: {self.buffer.entropy()}")
         info['deaths'] = self.deaths
         
         if self.add_true_rew:
@@ -269,12 +272,15 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.alpha_count += 1
 
         # log the entropy change
+        print(f"Agent entropy: {self.buffer.entropy()}")
+        print(f"Random entropy: {self.random_entropy}")
         info["entropy_change"] = (self.buffer.entropy() - self.random_entropy)
 
         self.buffer.reset()
 
         self.num_eps += 1
         self.num_steps = 0
+        self.buffer.add(self.encode_obs(obs))
 
         obs = self.get_obs(obs)
         if self.heatmap is not None:
