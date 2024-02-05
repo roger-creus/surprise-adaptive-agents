@@ -1,6 +1,7 @@
 import argparse
 import os
 from distutils.util import strtobool
+import numpy as np
 
 def parse_args_dqn():
     # fmt: off
@@ -80,6 +81,7 @@ def parse_args_dqn():
     parser.add_argument("--theta_size", type=str, default="(20, 26)")
     parser.add_argument("--obs_size", type=str, default="(64, 48)")
     parser.add_argument("--gray_scale", type=int, default=1) 
+    parser.add_argument("--ucb_coeff", type=float, default=np.sqrt(2))
     
     args = parser.parse_args()
     

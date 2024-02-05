@@ -22,12 +22,14 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris none bernoulli 820 --track=True
 
 # Tetris Bandit
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track=True
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --ucb_coeff=2
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --ucb_coeff=5
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --ucb_coeff=1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 8943 --track=True
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 820 --track=True
 
 # Crafter 
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 1 --track=True --soft_reset=1
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 1 --track=True 
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 8943 --track=True --soft_reset=1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter sadapt-bandit gaussian 820 --track=True --soft_reset=1
 
@@ -112,11 +114,11 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 8943 --scale-by-std=0 --soft_reset=1 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
 
 # Butterflies
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 1 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0 --total-timesteps=50000000
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 1 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0 --total-timesteps=50000000
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 820 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0 --total-timesteps=50000000
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0 --total-timesteps=50000000
 
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 1 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0  --total-timesteps=50000000
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 1 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0  --total-timesteps=50000000
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 820 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0 --total-timesteps=50000000
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=1 --soft_reset=0 --total-timesteps=50000000
 
