@@ -55,7 +55,7 @@ class TetrisBigQNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(256, 256),
             nn.ReLU(),
-            nn.Linear(256, 256),
+            nn.Linear(256, 84),
             nn.ReLU(),
         )
         
