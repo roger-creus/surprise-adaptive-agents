@@ -21,7 +21,7 @@ Environment:
     Lose:
       - eq:
           - _steps
-          - 250
+          - 500
   Levels:
     - |
       w w w w w w w w w w w w w w w w w w w w w w w w w w w w

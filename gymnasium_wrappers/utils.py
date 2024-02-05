@@ -79,7 +79,6 @@ def make_env(args):
 
         elif "crafter" in args.env_id:
             max_steps = 500
-            max_steps = 500
             grayscale = args.gray_scale
             channel_dim = 1 if grayscale else 3
             obs_resize = ast.literal_eval(args.obs_size)
@@ -109,7 +108,7 @@ def make_env(args):
             register_griddly_envs()
             griddly_env_name = args.env_id.split('-')[-1]
             max_steps = 500
-            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.SPRITE_2D)
+            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
             
             if griddly_env_name == "MazeEnv":
                 from surprise.envs.maze.maze_env import MazeEnv
