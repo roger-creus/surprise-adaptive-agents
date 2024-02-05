@@ -22,9 +22,9 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris none bernoulli 820 --track=True
 
 # Tetris Bandit
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --ucb_coeff=2
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --ucb_coeff=2
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --ucb_coeff=5
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" 
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" 
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 8943 --track=True
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 820 --track=True
 
