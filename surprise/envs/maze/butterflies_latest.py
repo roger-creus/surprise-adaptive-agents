@@ -14,6 +14,7 @@ class ButterfliesEnv(gym.ObservationWrapper):
         self.env = env
         obs = env.reset()
         self.observation_space = Box(low=0, high=5, shape=(28, 11))
+        self.action_space = self.env.action_space
 
     def observation(self, obs):
         new_obs = np.zeros((1, obs.shape[1], obs.shape[2]))
@@ -23,6 +24,5 @@ class ButterfliesEnv(gym.ObservationWrapper):
         new_obs[0, obs[2,:,:]==1] = 3 
         new_obs[0, obs[3,:,:]==1] = 4 
         new_obs[0, obs[4,:,:]==1] = 5
-        new_obs /= 5
         return new_obs
 

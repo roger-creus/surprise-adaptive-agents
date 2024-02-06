@@ -51,11 +51,11 @@ class TetrisBigQNetwork(nn.Module):
         policy_inputs = 84
         
         self.network = nn.Sequential(
-            nn.Linear(n_inputs, 256),
+            nn.Linear(n_inputs, 512),
             nn.ReLU(),
-            nn.Linear(256, 256),
+            nn.Linear(512, 128),
             nn.ReLU(),
-            nn.Linear(256, 84),
+            nn.Linear(128, 84),
             nn.ReLU(),
         )
         
