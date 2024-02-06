@@ -58,7 +58,7 @@ Actions:
           Commands:
             - exec:
                 Action: spawn_butterfly
-                Delay: 50
+                Delay: 100
                 Randomize: true
         Dst:
           Object: [cocoon, butterfly, catcher, wall]

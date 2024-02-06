@@ -25,6 +25,7 @@ class ButterfliesEnv(gym.ObservationWrapper):
         new_obs[0, obs[0,:,:]==1] = 1
         new_obs[0, obs[1,:,:]==1] = 2
         new_obs[0, obs[2,:,:]==1] = 3 
-        new_obs[0, obs[4,:,:]==1] = 4
+        new_obs[0, obs[3,:,:]==1] = 4 
+        new_obs[0, obs[4,:,:]==1] = 5
         return new_obs
 
