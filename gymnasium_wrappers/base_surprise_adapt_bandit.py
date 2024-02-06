@@ -19,7 +19,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         theta_size = None,
         grayscale = None,
         soft_reset=True,
-        ucb_coeff=np.sqrt(2)
+        ucb_coeff=np.sqrt(2),
+        death_cost = False,
+        exp_rew = False
     ):
         """
         params
@@ -38,6 +40,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self._grayscale = grayscale
         self._soft_reset = soft_reset
         self.ucb_coeff = ucb_coeff
+        self._death_cost = death_cost
+        self._exp_rew = exp_rew
 
         print(f"_theta_size:{self._theta_size}")
         print(f"_grayscale:{self._grayscale}")
@@ -100,7 +104,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 if done or truncated:
                     if self._soft_reset:
                         obs, _ = self._env.reset()
-                        obs = np.random.rand(*obs.shape)
+                        # obs = np.random.rand(*obs.shape)
                         self.buffer.add(self.encode_obs(obs))
                     else:
                         break
@@ -151,7 +155,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         if self._soft_reset:
             if envdone or envtrunc:
                 obs, _ = self._env.reset()
-                obs = np.random.rand(*obs.shape)
+                # obs = np.random.rand(*obs.shape)
                 self.deaths += 1
 
             if self.num_steps >= self.max_steps:
@@ -181,7 +185,11 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
 
+        if self._exp_rew:
+            surprise = np.exp(surprise)
+
         rew = ((-1) ** self.alpha_t) * surprise
+        
 
         # Add observation to buffer
         self.buffer.add(self.encode_obs(obs))
@@ -197,6 +205,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             
         if self.ext_only:
             rew = env_rew        
+
+        if self._death_cost and (envdone or envtrunc):
+            rew = -100
 
         info["surprise"] = surprise
         info["alpha"] = self.alpha_t

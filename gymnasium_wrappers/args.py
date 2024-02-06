@@ -83,6 +83,8 @@ def parse_args_dqn():
     parser.add_argument("--gray_scale", type=int, default=1) 
     parser.add_argument("--ucb_coeff", type=float, default=np.sqrt(2))
     parser.add_argument("--survival_rew", type=int, default=0)
+    parser.add_argument("--death_cost", type=int, default=0)
+    parser.add_argument("--exp_rew", type=int, default=0)
     
     args = parser.parse_args()
     

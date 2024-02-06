@@ -149,7 +149,9 @@ def make_env(args):
                 max_steps=max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                soft_reset=args.soft_reset
+                soft_reset=args.soft_reset,
+                death_cost = args.death_cost,
+                exp_rew = args.exp_rew
             )
         
         elif args.model == "smin":
@@ -162,7 +164,9 @@ def make_env(args):
                 max_steps=max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                soft_reset=args.soft_reset
+                soft_reset=args.soft_reset,
+                death_cost = args.death_cost,
+                exp_rew = args.exp_rew
             )
         
         elif args.model == "sadapt":
@@ -198,7 +202,9 @@ def make_env(args):
                 theta_size = theta_size,
                 grayscale = grayscale,
                 soft_reset=args.soft_reset,
-                ucb_coeff=args.ucb_coeff
+                ucb_coeff=args.ucb_coeff,
+                death_cost = args.death_cost,
+                exp_rew = args.exp_rew
             )
         elif args.model == "none":
             env = BaseSurpriseWrapper(
@@ -212,7 +218,8 @@ def make_env(args):
                 theta_size = theta_size,
                 grayscale = grayscale,
                 soft_reset=args.soft_reset,
-                survival_rew=args.survival_rew
+                survival_rew=args.survival_rew,
+                death_cost = args.death_cost
             )
             
         else:

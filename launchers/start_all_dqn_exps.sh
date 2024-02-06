@@ -93,6 +93,19 @@
 # Survival reward experiment
 sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --survival_rew=1
 
+# death cost
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
+
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=1 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track --soft_reset=1 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1 --track --soft_reset=1 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
+
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --exp_rew=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --exp_rew=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --exp_rew=1
+
 
 # Maze
 # w/o soft-reset

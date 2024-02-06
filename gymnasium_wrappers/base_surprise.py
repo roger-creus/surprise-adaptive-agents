@@ -17,7 +17,9 @@ class BaseSurpriseWrapper(gym.Env):
                  theta_size = None,
                  grayscale = None,
                  soft_reset=True,
-                 survival_rew=False
+                 survival_rew=False,
+                 death_cost = False,
+                 exp_rew = False
                 ):
         '''
         params
@@ -33,6 +35,8 @@ class BaseSurpriseWrapper(gym.Env):
         self._grayscale = grayscale
         self._soft_reset = soft_reset
         self._survival_rew = survival_rew
+        self._death_cost = death_cost
+        self._exp_rew = exp_rew
 
         print(f"_theta_size:{self._theta_size}")
         print(f"_grayscale:{self._grayscale}")
@@ -76,7 +80,7 @@ class BaseSurpriseWrapper(gym.Env):
         if self._soft_reset:
             if envdone:
                 obs, _ = self._env.reset()
-                obs = np.random.rand(*obs.shape)
+                # obs = np.random.rand(*obs.shape)
                 self.deaths += 1
             if self.num_steps == self.max_steps:
                 envdone = True
@@ -112,6 +116,9 @@ class BaseSurpriseWrapper(gym.Env):
         else:
             rew = surprise
         
+        if self._exp_rew:
+            rew = np.exp(rew)
+        
         if self.add_true_rew:
             rew = env_rew + (rew * self.int_rew_scale)
         else:
@@ -121,6 +128,10 @@ class BaseSurpriseWrapper(gym.Env):
             rew = env_rew
         if self._survival_rew:
             rew = 1.
+
+        if self._death_cost and (envdone or envtrunc):
+            rew = -100
+            
                 
         try:
             x, y = self._env.agent_pos
