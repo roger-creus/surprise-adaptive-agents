@@ -211,7 +211,8 @@ def make_env(args):
                 max_steps=max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,
-                soft_reset=args.soft_reset
+                soft_reset=args.soft_reset,
+                survival_rew=args.survival_rew
             )
             
         else:

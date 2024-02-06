@@ -22,7 +22,7 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris none bernoulli 820 --track=True
 
 # Tetris Bandit
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --ucb_coeff=2
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --ucb_coeff=2
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --ucb_coeff=5
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" 
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 8943 --track=True
@@ -89,6 +89,10 @@ sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit berno
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Seaquest smax bernoulli 1 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Seaquest smax bernoulli 820 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Seaquest smax bernoulli 8943 --scale-by-std=1 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --video-log-freq=500000
+
+# Survival reward experiment
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --survival_rew=1
+
 
 # Maze
 # w/o soft-reset

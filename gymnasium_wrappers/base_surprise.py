@@ -16,7 +16,8 @@ class BaseSurpriseWrapper(gym.Env):
                  max_steps = 500,
                  theta_size = None,
                  grayscale = None,
-                 soft_reset=True
+                 soft_reset=True,
+                 survival_rew=False
                 ):
         '''
         params
@@ -31,6 +32,7 @@ class BaseSurpriseWrapper(gym.Env):
         self._theta_size = theta_size
         self._grayscale = grayscale
         self._soft_reset = soft_reset
+        self._survival_rew = survival_rew
 
         print(f"_theta_size:{self._theta_size}")
         print(f"_grayscale:{self._grayscale}")
@@ -117,6 +119,8 @@ class BaseSurpriseWrapper(gym.Env):
             
         if self.ext_only:
             rew = env_rew
+        if self._survival_rew:
+            rew = 1.
                 
         try:
             x, y = self._env.agent_pos
