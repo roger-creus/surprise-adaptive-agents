@@ -94,9 +94,9 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track --wandb-project-name="MinAtar_DQN" --survival_rew=1
 
 # # death cost
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
 
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=1 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track --soft_reset=1 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --death_cost=1
@@ -104,9 +104,17 @@
 
 # # exponential rewards
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --exp_rew=1
-# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --exp_rew=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --exp_rew=1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --exp_rew=1
 
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --death_cost=1
+
+
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --exp_rew=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --exp_rew=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --exp_rew=1
 
 # Maze
 # w/o soft-reset
@@ -149,7 +157,7 @@
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv smin gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=1
 
 # Butterflies extrinsic
-sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv none gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=0
+# sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py griddly-ButterfliesEnv none gaussian 8943 --track --wandb-project-name="butterflies_DQN" --scale-by-std=0 --soft_reset=0
 
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 8943 --track --soft_reset=0 --theta_size="(9,9)" --wandb-project-name="Crafter_DQN_2" --scale-by-std=1 --obs_size="(64,64)"
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py crafter smin gaussian 8943 --track --soft_reset=0 --theta_size="(9,9)" --wandb-project-name="Crafter_DQN_2" --scale-by-std=1 --obs_size="(64,64)" --gray_scale=0
