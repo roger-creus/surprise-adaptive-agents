@@ -13,7 +13,7 @@ class ButterfliesEnv(gym.ObservationWrapper):
         super(ButterfliesEnv, self).__init__(env)
         self.env = env
         obs = env.reset()
-        self.observation_space = Box(low=0, high=4, shape=(28, 11))
+        self.observation_space = Box(low=0, high=5, shape=(28, 11))
         
     def step(self, action):
         obs, rew, done, info = super().step(action)
