@@ -144,6 +144,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
         # TRY NOT TO MODIFY: execute the game and log data.
         next_obs, rewards, terminated, truncated, infos = envs.step(actions)
+        print(obs)
+        print(actions)
 
         if "surprise" in infos:
             ep_surprise.append(infos["surprise"][0])
