@@ -58,7 +58,7 @@ Actions:
           Commands:
             - exec:
                 Action: spawn_butterfly
-                Delay: 100
+                Delay: 1000
                 Randomize: true
         Dst:
           Object: [cocoon, butterfly, catcher, wall]
@@ -170,16 +170,6 @@ Actions:
   # Define the move action
   - Name: move
     Behaviours:
-
-      # If the catcher moves into a spider
-      - Src:
-          Object: catcher
-          Commands:
-            - remove: true
-            - reward: -1
-        Dst:
-          Object: spider
-
       # The catcher move into an empty space
       - Src:
           Object: catcher
