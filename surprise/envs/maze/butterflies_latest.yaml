@@ -21,7 +21,7 @@ Environment:
     Lose:
       - eq:
           - _steps
-          - 500
+          - 250
   Levels:
     - |
       w w w w w w w w w w w w w w w w w w w w w w w w w w w w
@@ -58,7 +58,7 @@ Actions:
           Commands:
             - exec:
                 Action: spawn_butterfly
-                Delay: 1000
+                Delay: 100
                 Randomize: true
         Dst:
           Object: [cocoon, butterfly, catcher, wall]
