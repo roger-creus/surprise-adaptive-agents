@@ -107,6 +107,14 @@ sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1 --
 sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smin bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --exp_rew=1
 # sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py tetris smax bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="Tetris_sadapt_bandit" --exp_rew=1
 
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --death_cost=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --death_cost=1
+
+
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout sadapt-bandit bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --exp_rew=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smin bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --exp_rew=1
+sbatch launchers/train_cleanrl scripts/cleanrl_dqn.py MinAtar/Breakout smax bernoulli 1 --track --soft_reset=0 --scale-by-std=0 --wandb-project-name="MinAtar_DQN2" --exp_rew=1
 
 # Maze
 # w/o soft-reset
