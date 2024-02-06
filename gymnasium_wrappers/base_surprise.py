@@ -111,13 +111,15 @@ class BaseSurpriseWrapper(gym.Env):
         info['deaths'] = self.deaths
         
         # Add observation to buffer
+        if self._exp_rew:
+            surprise = np.exp(surprise)
+
         if self.minimize:
             rew = -surprise
         else:
             rew = surprise
         
-        if self._exp_rew:
-            rew = np.exp(rew)
+        
         
         if self.add_true_rew:
             rew = env_rew + (rew * self.int_rew_scale)
