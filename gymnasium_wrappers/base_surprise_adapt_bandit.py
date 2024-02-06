@@ -3,7 +3,6 @@ import gymnasium as gym
 from gymnasium.spaces import Box, Dict
 import cv2
 from IPython import embed
-from gym.wrappers.normalize import RunningMeanStd
 
 # This is taken from the bandit_final branch
 

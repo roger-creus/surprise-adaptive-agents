@@ -271,9 +271,16 @@ def log_heatmap(env, heatmap, ep_counter, writer, save_path):
     plt.clf()
     
 def register_griddly_envs():
+    env_dict = old_gym.envs.registration.registry.env_specs.copy()
+    for env in env_dict:
+        if 'ButterfliesEnv' in env or 'MazeEnv' in env:
+            print("Remove {} from registry".format(env))
+            del old_gym.envs.registration.registry.env_specs[env]
+
     wrapper = GymWrapperFactory()
     wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env_fully_observed.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies_latest.yaml")
+    
 
 class CrafterLogger:
     '''
