@@ -177,6 +177,10 @@ def parse_args_ppo():
     parser.add_argument("--theta_size", type=str, default="(20, 26)")
     parser.add_argument("--obs_size", type=str, default="(64, 48)")
     parser.add_argument("--gray_scale", type=int, default=1)
+    parser.add_argument("--ucb_coeff", type=float, default=np.sqrt(2))
+    parser.add_argument("--survival_rew", type=int, default=0)
+    parser.add_argument("--death_cost", type=int, default=0)
+    parser.add_argument("--exp_rew", type=int, default=0)
     
     args = parser.parse_args()
     
