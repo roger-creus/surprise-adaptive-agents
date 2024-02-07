@@ -95,7 +95,7 @@ def parse_args_dqn():
 
     # run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_seed:{args.seed}"
 
-    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew} _softreset:{args.soft_reset}_reweard_normalization:{args.scale_by_std}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}_seed:{args.seed}"
+    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.scale_by_std}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}_seed:{args.seed}"
 
     return args, run_name
 
