@@ -14,26 +14,21 @@ Environment:
   Player:
     AvatarObject: catcher
   Termination:
-    Win:
-      - eq:
-          - butterfly:count
-          - 0
-    Lose:
-      - eq:
-          - _steps
-          - 250
+    - eq:
+        - _steps
+        - 500
   Levels:
     - |
       w w w w w w w w w w w w w w w w w w w w w w w w w w w w
-      w . . 1 . . . . . 1 . . w . . . 0 . 0 . 0 . 0 w 0 0 0 w
-      w . 1 . . . . . . . . . . . . . . . . . . . . w 0 0 0 w
-      w . . . 1 . . . 0 . . . . . A . . . . . . . . w 0 0 0 w
-      w w w w w w w w w w w w . . . . . . . . . . . . . 0 0 w
-      w 0 . . . . . . . . . . . . . . . . . . w . . . . . w w
-      w 0 . . . . . . 1 . . . . . . . . . . . . . . . . . . w
-      w 0 . . . . . . . . . w w w w w . . . . 1 . . . . . 0 w
+      w . . . . . . . . . . . . . . . . . . . . . . w . . . w
+      w . . . . . . . . 0 . . . . A . . . . . . . . w . . . w
+      w . . . . . . . . . . . w . . . 0 . . . . . . w . . . w
+      w w w w w w w w w w w w . . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . . . . . . w . . . . . w w
+      w . . . . . . . . . . . . . . . . . . . . . . . . . . w
+      w . . . . . . . . . 0 w w w w w . . . . . 0 . . . . . w
       w w w w w . . . . . . . . . . . . . . . . w . . . . . w
-      w . . . . . . . . 0 . 0 . 0 . 0 . 0 . . . w 0 . . . 0 w
+      w . . . . . . . . . . . . . . . . . . . . w . . . . . w
       w w w w w w w w w w w w w w w w w w w w w w w w w w w w
 
 Actions:
