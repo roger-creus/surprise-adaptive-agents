@@ -14,12 +14,10 @@ class ButterfliesEnv(gym.ObservationWrapper):
         self.env = env
         obs = env.reset()
         self.observation_space = Box(low=0, high=4, shape=(28, 11))
+        self.original_obs = None
         
-    def step(self, action):
-        obs, rew, done, info = super().step(action)
-        return obs, rew, done, {}
-
     def observation(self, obs):
+        self.original_obs = obs
         new_obs = np.zeros((1, obs.shape[1], obs.shape[2]))
         # ignore channel 3, this is the spider channel
         new_obs[0, obs[0,:,:]==1] = 1

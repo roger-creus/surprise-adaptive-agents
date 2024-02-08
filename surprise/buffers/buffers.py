@@ -37,11 +37,13 @@ class BaseBuffer():
 class BernoulliBuffer(BaseBuffer):
     def __init__(self, obs_dim):
         super().__init__()
+        assert len(obs_dim) == 2, "BernoulliBuffer only supports 2D observations - (num_channels, channel_dim), e.g Tetris is (1, 41)"
         self.buffer = np.zeros(obs_dim) 
         self.buffer_size = 1
         self.obs_dim = obs_dim
         
     def add(self, obs):
+        obs = obs.reshape(self.obs_dim)
         self.buffer += obs
         self.buffer_size += 1
 
@@ -52,8 +54,8 @@ class BernoulliBuffer(BaseBuffer):
         return theta
 
     def logprob(self, obs):
+        obs = obs.reshape(self.obs_dim)
         obs = obs.copy()
-        # ForkedPdb().set_trace()
         thetas = self.get_params()
 
         # For numerical stability, clip probs to not be 0 or 1

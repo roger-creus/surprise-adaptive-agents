@@ -71,11 +71,13 @@ def make_env(args):
             env = gym.make(args.env_id, render_mode='rgb_array', max_steps=500, noisy_room=args.noisy_room)
             env = ImgObsWrapper(env)
             max_steps = 500
+            obs_size = env.observation_space.shape
             
         elif "tetris" in args.env_id:
             from surprise.envs.tetris.tetris import TetrisEnv
             env = TetrisEnv()
             max_steps = 500
+            obs_size = (1,env.observation_space.shape[0])
 
         elif "crafter" in args.env_id:
             max_steps = 500
@@ -93,15 +95,21 @@ def make_env(args):
             # set the size of theta
             theta_size =  ast.literal_eval(args.theta_size)
             theta_size = (theta_size[0], theta_size[1], channel_dim) if grayscale else (theta_size[0], theta_size[1], channel_dim)
+            obs_size = np.prod(theta_size)
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = OneHotPartialObsWrapper(env)
             env = ImgObsWrapper(env)
             max_steps = 500
+            obs_size = env.observation_space.shape
             
         elif "MinAtar" in args.env_id:
             env = gym.make(args.env_id+"-v1", render_mode='rgb_array', max_episode_steps=500)
+            from gymnasium_wrappers.wrappers import ImageTranspose
+            env = ImageTranspose(env)
             max_steps = 500
+            o_, _ = env.reset()
+            obs_size = o_.reshape(o_.shape[0], -1).shape
 
         elif "griddly" in args.env_id:
             # for instance griddly-MazeEnv
@@ -109,6 +117,8 @@ def make_env(args):
             griddly_env_name = args.env_id.split('-')[-1]
             max_steps = 500
             env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
+            o_ = env.reset()
+            obs_size = o_.reshape(o_.shape[0], -1).shape
             
             if griddly_env_name == "MazeEnv":
                 from surprise.envs.maze.maze_env import MazeEnv
@@ -127,9 +137,12 @@ def make_env(args):
             print(f"Making {args.env_id}")
             env = gym.make(args.env_id, render_mode='rgb_array', max_episode_steps = 500)
             max_steps = 500
+            obs_size = env.observation_space.shape
         
         ############ Create buffer ############
-        obs_size = np.prod(theta_size) if theta_size else env.observation_space.shape
+        # if only 1 channel of info like tetris, we need to reshape the obs_size
+        # e.g. for griddly envs, this will be (num_channels, channel_dim)
+
         if args.buffer_type == "gaussian":
             buffer = GaussianBufferIncremental(obs_size)
         elif args.buffer_type == "bernoulli":
