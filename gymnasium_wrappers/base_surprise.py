@@ -95,6 +95,9 @@ class BaseSurpriseWrapper(gym.Env):
                 envdone = False
                 envtrunc = False
         else:
+            if self.num_steps == self.max_steps:
+                envdone = True
+                envtrunc = True
             if envdone:
                 info["Average_task_return"] = self.task_return
                 info["Average_episode_length"] = self.num_steps
