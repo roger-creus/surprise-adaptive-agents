@@ -364,7 +364,11 @@ def eval_episode_ppo(ppo_agent, env, device, save_path, global_step):
 
     # save gif with all imags
     from PIL import Image
-    ep_images = [Image.fromarray((img * 255).astype(np.uint8)) for img in ep_images]
+    try:
+        ep_images = [Image.fromarray(img) for img in ep_images]
+    except:
+        ep_images = [Image.fromarray((img * 255).astype(np.uint8)) for img in ep_images]
+
     ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)
 
 

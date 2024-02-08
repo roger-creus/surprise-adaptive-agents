@@ -379,7 +379,7 @@ class TetrisPPOAgent(nn.Module):
         self.use_theta = use_theta
         
         if use_theta:
-            n_inputs += np.prod(env.single_observation_space["theta"].shape)
+            n_inputs += env.single_observation_space["theta"].shape[-1]
         
         self.critic = nn.Sequential(
             layer_init(nn.Linear(n_inputs, hidden_size)),
@@ -399,7 +399,7 @@ class TetrisPPOAgent(nn.Module):
 
     def get_value(self, x):
         x_ = x["obs"]
-        y_ = x["theta"]
+        y_ = x["theta"][:, 0, :]
         
         if self.use_theta:
             x = torch.cat([x_, y_], dim=1)
@@ -409,7 +409,7 @@ class TetrisPPOAgent(nn.Module):
 
     def get_action_and_value(self, x, action=None):
         x_ = x["obs"]
-        y_ = x["theta"]
+        y_ = x["theta"][:, 0, :]
         
         if self.use_theta:
             x = torch.cat([x_, y_], dim=1)
