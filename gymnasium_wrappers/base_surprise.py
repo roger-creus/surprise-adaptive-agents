@@ -110,21 +110,12 @@ class BaseSurpriseWrapper(gym.Env):
 
         # use the original observation for surprise calculation
         # this will be used for griddly envs and compute surprise with the bernoulli buffer
-        try:
-            obs_for_surprise_calc = self._env._env.original_obs
-            if len(obs_for_surprise_calc.shape) == 1:
-                obs_for_surprise_calc = obs_for_surprise_calc[None, :]
-            else:
-                obs_for_surprise_calc = obs_for_surprise_calc.reshape(obs_for_surprise_calc.shape[0], -1)
-        except:
-            obs_for_surprise_calc = obs
-
-        surprise = -self.buffer.logprob(self.encode_obs(obs_for_surprise_calc))
+        surprise = -self.buffer.logprob(self.encode_obs(obs))
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         
 
-        self.buffer.add(self.encode_obs(obs_for_surprise_calc))
+        self.buffer.add(self.encode_obs(obs))
         info['surprise'] = surprise
         info["theta_entropy"] = self.buffer.entropy()
         info['deaths'] = self.deaths

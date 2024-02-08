@@ -157,11 +157,7 @@ class GaussianBufferIncremental(BaseBuffer):
         
         # For numerical stability, clip stds to not be 0
         thresh = 1e-3
-#         print ("thresh: ", thresh)
         stds = np.clip(stds, thresh, None)
-#         print ("stds, means: ", np.mean(stds), np.mean(means))
-#         import pdb; pdb.set_trace()
-        # Gaussian log prob
         logprob = -0.5*np.sum(np.log(2*np.pi*stds)) - np.sum(np.square(obs-means)/(2*np.square(stds)))
         return logprob
 
