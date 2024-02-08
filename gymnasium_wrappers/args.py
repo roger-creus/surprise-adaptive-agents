@@ -90,7 +90,7 @@ def parse_args_dqn():
     
     assert args.num_envs == 1, "vectorized envs are not supported at the moment"
 
-    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_seed:{args.seed}"
+    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.scale_by_std}_seed:{args.seed}"
 
     return args, run_name
 
