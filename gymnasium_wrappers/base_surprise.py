@@ -98,10 +98,9 @@ class BaseSurpriseWrapper(gym.Env):
             if self.num_steps == self.max_steps:
                 envdone = True
                 envtrunc = True
-            if envdone:
-                info["Average_task_return"] = self.task_return
-                info["Average_episode_length"] = self.num_steps
-                info['deaths'] = self.deaths
+            info["Average_task_return"] = self.task_return
+            info["Average_episode_length"] = self.num_steps
+            info['deaths'] = self.deaths
 
 
         surprise = -self.buffer.logprob(self.encode_obs(obs))
