@@ -109,7 +109,7 @@ def make_env(args):
             env = ImageTranspose(env)
             max_steps = 500
             o_, _ = env.reset()
-            obs_size = o_.reshape(o_.shape[0], -1).shape
+            obs_size = o_.shape
 
         elif "griddly" in args.env_id:
             # for instance griddly-MazeEnv
@@ -118,19 +118,19 @@ def make_env(args):
             max_steps = 500
             env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
             o_ = env.reset()
-            obs_size = o_.reshape(o_.shape[0], -1).shape
+            obs_size = o_.shape
+            #obs_size = o_.reshape(o_.shape[0], -1).shape
             
             if griddly_env_name == "MazeEnv":
                 from surprise.envs.maze.maze_env import MazeEnv
                 env = MazeEnv(env)
-                env = old_gym.wrappers.FlattenObservation(env)
+                #env = old_gym.wrappers.FlattenObservation(env)
             elif griddly_env_name == "ButterfliesEnv":
                 from surprise.envs.maze.butterflies_latest import ButterfliesEnv
                 env = ButterfliesEnv(env)
-                env = old_gym.wrappers.FlattenObservation(env)
-
+                #env = old_gym.wrappers.FlattenObservation(env)
                 # discard spiders and cocoons
-                obs_size = (obs_size[0] - 2, obs_size[1])
+                obs_size = (obs_size[0] - 2, obs_size[1], obs_size[2])
             else:
                 raise ValueError(f"Unknown griddly env {griddly_env_name}")
             
@@ -364,7 +364,7 @@ def eval_episode_ppo(ppo_agent, env, device, save_path, global_step):
 
     # save gif with all imags
     from PIL import Image
-    ep_images = [Image.fromarray(img) for img in ep_images]
+    ep_images = [Image.fromarray((img * 255).astype(np.uint8)) for img in ep_images]
     ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)
 
 

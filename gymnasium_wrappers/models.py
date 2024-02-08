@@ -428,6 +428,7 @@ class MinAtarPPOAgent(nn.Module):
         super().__init__()
         self.use_theta = use_theta
         n_input_channels = env.single_observation_space["obs"].shape[0]
+        n_input_channesl_theta = env.single_observation_space["theta"].shape[0]
 
         self.network = nn.Sequential(
             layer_init(nn.Conv2d(n_input_channels, 16, kernel_size=3, stride=1)),
@@ -437,18 +438,17 @@ class MinAtarPPOAgent(nn.Module):
 
         if use_theta:
             self.theta_fc = nn.Sequential(
-                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
+                layer_init(nn.Conv2d(n_input_channesl_theta, 16, kernel_size=3, stride=1)),
                 nn.ReLU(),
-                nn.Linear(120, 84),
-                nn.ReLU(),
+                nn.Flatten(),
             )
 
         with torch.no_grad():
             s_ = env.single_observation_space["obs"].sample()[None]
             n_flatten = self.network(torch.as_tensor(s_).float()).shape[1]
         
-        if use_theta:
-            n_flatten += 84
+            if use_theta:
+                n_flatten += self.network(torch.as_tensor(s_).float()).shape[1]
 
         self.actor = layer_init(nn.Linear(n_flatten, env.single_action_space.n), std=0.01)
         self.critic = layer_init(nn.Linear(n_flatten, 1), std=1)
@@ -471,7 +471,7 @@ class MinAtarPPOAgent(nn.Module):
         y_ = x["theta"]
 
         img_features = self.network(x_.float())
-        
+
         if self.use_theta:
             theta_features = self.theta_fc(y_.float())
             x = torch.cat([img_features, theta_features], dim=1)

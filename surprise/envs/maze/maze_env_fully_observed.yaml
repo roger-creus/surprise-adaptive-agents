@@ -22,20 +22,16 @@ Environment:
           - 250
   Levels:
     - |
-      w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   
-      w   w   .   .   .   .   .   w   w   w   .   .   .   .   x   w   
-      w   w   .   w   w   w   .   w   w   w   .   w   w   w   w   w   
-      w   w   .   w   .   w   .   .   .   .   .   .   .   w   .   w   
-      w   w   .   w   .   w   w   w   w   .   w   w   w   w   .   w   
-      w   .   .   .   .   .   .   w   w   w   w   .   .   .   .   w   
-      w   .   w   w   w   w   .   w   w   w   w   .   w   w   w   w   
-      w   .   .   .   .   w   .   .   .   .   .   .   .   .   .   w   
-      w   w   w   w   w   w   .   w   w   w   w   .   w   w   .   w   
-      w   .   .   .   .   .   .   .   .   .   .   .   .   .   .   w   
-      w   .   w   w   w   w   .   w   w   w   .   w   w   w   .   w   
-      w   .   w   .   w   w   .   w   w   w   .   w   w   w   w   w   
-      w   A   w   .   .   .   .   .   .   .   .   .   .   .   .   w   
-      w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   
+      w   w   .   w   .   w   w   w   w   w
+      w   .   .   .   .   .   .   .   .   w
+      w   w   .   w   w   w   .   w   w   w
+      w   .   .   .   x   w   .   .   .   w
+      w   w   w   w   w   w   .   w   w   w
+      w   .   .   .   .   .   .   .   .   w
+      w   .   w   w   w   w   .   w   w   w
+      w   .   w   .   w   w   .   w   w   w
+      w   A   w   .   .   .   .   .   .   w
+      w   w   w   w   w   w   w   w   w   w
 Actions:
   - Name: move
     Behaviours:

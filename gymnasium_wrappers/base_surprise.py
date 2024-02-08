@@ -56,9 +56,17 @@ class BaseSurpriseWrapper(gym.Env):
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
         
+        # the new theta shape has to be the extact theta.shape but +1 in first dimension
+        len_theta = len(theta)
+        new_theta_shape = (theta.shape[0] + 1, )
+        for i in range(len(theta.shape) - 1):
+            new_theta_shape += (theta.shape[i+1],)
+
+        print(f"new_theta_shape:{new_theta_shape}")
+
         self.observation_space = Dict({
             "obs" : Box(-np.inf, np.inf, shape=self.env_obs_space.shape),
-            "theta": Box(-np.inf, np.inf, shape=(np.prod(theta.shape) + 1,))
+            "theta": Box(-np.inf, np.inf, shape=new_theta_shape)
         })
 
         try:
@@ -160,11 +168,12 @@ class BaseSurpriseWrapper(gym.Env):
         Augment observation, perhaps with generative model params
         '''
         theta = self.buffer.get_params()
-        num_samples = np.ones(1)*self.buffer.buffer_size
+        num_samples = (np.ones(1)*self.buffer.buffer_size) / self.max_steps
         obs = {
             "obs" : obs
         }
-        obs["theta"] = np.concatenate([np.array(theta).flatten(), num_samples])
+        num_samples = np.ones_like(theta[0]) * num_samples
+        obs["theta"] = np.concatenate([theta, num_samples[None, :]], axis=0)
         return obs
 
     def reset(self, seed=None, options=None):

@@ -37,7 +37,6 @@ class BaseBuffer():
 class BernoulliBuffer(BaseBuffer):
     def __init__(self, obs_dim):
         super().__init__()
-        assert len(obs_dim) == 2, "BernoulliBuffer only supports 2D observations - (num_channels, channel_dim), e.g Tetris is (1, 41)"
         self.buffer = np.zeros(obs_dim) 
         self.buffer_size = 1
         self.obs_dim = obs_dim

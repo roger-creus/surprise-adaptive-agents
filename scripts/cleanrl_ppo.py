@@ -59,9 +59,9 @@ if __name__ == "__main__":
     use_theta = args.model in ["smax", "smin", "sadapt", "sadapt-inverse"]
     if "Rooms" in args.env_id:
         net = MinigridPPOAgent
-    elif args.env_id == "tetris" or "griddly" in args.env_id:
+    elif args.env_id == "tetris":
         net = TetrisPPOAgent
-    elif "MinAtar" in args.env_id:
+    elif "MinAtar" in args.env_id or "griddly" in args.env_id:
         net = MinAtarPPOAgent
     elif args.env_id == "crafter":
         net = CrafterPPOAgent
@@ -151,7 +151,7 @@ if __name__ == "__main__":
                     crafter_logger.update_achievements(info["achievements"])
                     crafter_logger.log(writer, global_step)
                 # Skip the envs that are not done
-                if "episode" not in info:
+                if not info or "episode" not in info:
                     c += 1
                     continue       
                  
