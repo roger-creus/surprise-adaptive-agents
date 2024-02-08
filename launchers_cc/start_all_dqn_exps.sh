@@ -55,3 +55,15 @@ sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Breakout --mod
 sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Breakout --model=smin --buffer-type=bernoulli --seed=787 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
 sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Breakout --model=smax --buffer-type=bernoulli --seed=787 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
 sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Breakout --model=sadapt-bandit --buffer-type=bernoulli --seed=787 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
+
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Freeway --model=smin --buffer-type=bernoulli --seed=1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Freeway --model=smax --buffer-type=bernoulli --seed=1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Freeway --model=sadapt-bandit --buffer-type=bernoulli --seed=1 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
+
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Freeway --model=smin --buffer-type=bernoulli --seed=759847 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Freeway --model=smax --buffer-type=bernoulli --seed=759847 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Freeway --model=sadapt-bandit --buffer-type=bernoulli --seed=759847 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
+
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Freeway --model=smin --buffer-type=bernoulli --seed=787 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Freeway --model=smax --buffer-type=bernoulli --seed=787 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
+sbatch launchers_cc/train_cleanrl cleanrl_dqn.py --env-id=MinAtar/Freeway --model=sadapt-bandit --buffer-type=bernoulli --seed=787 --track --soft_reset=0 --scale-by-std=1 --wandb-project-name="MinAtar_DQN_CC"  
