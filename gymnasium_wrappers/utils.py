@@ -128,6 +128,9 @@ def make_env(args):
                 from surprise.envs.maze.butterflies_latest import ButterfliesEnv
                 env = ButterfliesEnv(env)
                 env = old_gym.wrappers.FlattenObservation(env)
+
+                # discard spiders and cocoons
+                obs_size = (obs_size[0] - 2, obs_size[1])
             else:
                 raise ValueError(f"Unknown griddly env {griddly_env_name}")
             
