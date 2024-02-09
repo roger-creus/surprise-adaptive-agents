@@ -21,7 +21,7 @@ class TetrisQNetwork(nn.Module):
         
         if use_theta:
             self.theta_fc = nn.Sequential(
-                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
+                nn.Linear(np.prod(env.single_observation_space["theta"].shape[-1]), 120),
                 nn.ReLU(),
                 nn.Linear(120, 84),
                 nn.ReLU(),
