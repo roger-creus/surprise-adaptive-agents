@@ -193,6 +193,8 @@ class MinAtarQNetwork(nn.Module):
     def __init__(self, envs, use_theta = False):
         super().__init__()
         in_channels = envs.single_observation_space["obs"].shape[0]
+        n_input_channesl_theta = envs.single_observation_space["theta"].shape[0]
+
         self.use_theta = use_theta
         
         self.network = nn.Sequential(
@@ -207,12 +209,14 @@ class MinAtarQNetwork(nn.Module):
 
         if self.use_theta:
             self.theta_fc = nn.Sequential(
-                nn.Linear(np.prod(envs.single_observation_space["theta"].shape), 120),
+                nn.Conv2d(n_input_channesl_theta, 16, kernel_size=3, stride=1),
                 nn.ReLU(),
-                nn.Linear(120, 84),
-                nn.ReLU(),
+                nn.Flatten(),
             )
-            n_flatten += 84
+            
+            with torch.no_grad():
+                t_ = envs.single_observation_space["theta"].sample()[None]
+                n_flatten += self.theta_fc(torch.as_tensor(t_).float()).shape[1]
         
         self.linear = nn.Sequential(
             nn.Linear(n_flatten, 512), 
@@ -232,7 +236,6 @@ class MinAtarQNetwork(nn.Module):
             x = img_features
 
         return self.linear(x)
-
     
 
 def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
@@ -445,10 +448,11 @@ class MinAtarPPOAgent(nn.Module):
 
         with torch.no_grad():
             s_ = env.single_observation_space["obs"].sample()[None]
+            t_ = env.single_observation_space["theta"].sample()[None]
             n_flatten = self.network(torch.as_tensor(s_).float()).shape[1]
         
             if use_theta:
-                n_flatten += self.network(torch.as_tensor(s_).float()).shape[1]
+                n_flatten += self.theta_fc(torch.as_tensor(t_).float()).shape[1]
 
         self.actor = layer_init(nn.Linear(n_flatten, env.single_action_space.n), std=0.01)
         self.critic = layer_init(nn.Linear(n_flatten, 1), std=1)

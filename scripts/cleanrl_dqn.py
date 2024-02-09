@@ -16,7 +16,7 @@ from IPython import embed
 from gymnasium_wrappers.utils import *
 from gymnasium_wrappers.models import *
 from gymnasium_wrappers.args import parse_args_dqn
-from gymnasium.experimental.wrappers import NormalizeRewardV1
+from gym.wrappers.normalize import RunningMeanStd
 
 
 def linear_schedule(start_e: float, end_e: float, duration: int, t: int):
@@ -75,7 +75,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     
     if "Rooms" in args.env_id:
         net = MinigridQNetwork
-    elif args.env_id == "tetris" or "griddly" in args.env_id:
+    elif args.env_id == "tetris":
         if "Butterflies" in args.env_id:
             net = TetrisBigQNetwork
         else:
@@ -83,7 +83,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     elif args.env_id == "crafter":
         net = CrafterQNetwork
         crafter_logger = CrafterLogger()
-    elif "MinAtar" in args.env_id:
+    elif "MinAtar" in args.env_id or "griddly" in args.env_id:
         net = MinAtarQNetwork
     else:
         raise NotImplementedError
@@ -127,7 +127,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
     if args.scale_by_std:
-        rms = NormalizeRewardV1()
+        rms = RunningMeanStd()
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
         epsilon = linear_schedule(args.start_e, args.end_e, args.exploration_fraction * args.total_timesteps, global_step)
