@@ -33,7 +33,7 @@ class TetrisQNetwork(nn.Module):
 
     def forward(self, x):
         x_ = x["obs"]
-        y_ = x["theta"]
+        y_ = x["theta"][:, 0, :]
         obs_features = self.network(x_.float())
         if self.use_theta:
             theta_features = self.theta_fc(y_.float())
