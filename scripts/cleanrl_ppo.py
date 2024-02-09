@@ -61,7 +61,7 @@ if __name__ == "__main__":
         net = MinigridPPOAgent
     elif args.env_id == "tetris":
         net = TetrisPPOAgent
-    elif "MinAtar" in args.env_id or "griddly" in args.env_id:
+    elif "MinAtar" in args.env_id:
         net = MinAtarPPOAgent
     elif args.env_id == "crafter":
         net = CrafterPPOAgent

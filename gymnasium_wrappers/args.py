@@ -76,7 +76,7 @@ def parse_args_dqn():
     parser.add_argument("--scale-by-std", type=int, default=1)
     parser.add_argument("--soft_reset", type=int, default=1)
     # if 0 or less no video capture, this freq is in episodes not timesteps
-    parser.add_argument("--video_freq", type=int, default=-1) 
+    parser.add_argument("--video_freq", type=int, default=1_000) 
     parser.add_argument("--agent", type=str, default="DQN")
     parser.add_argument("--theta_size", type=str, default="(20, 26)")
     parser.add_argument("--obs_size", type=str, default="(64, 48)")

@@ -1,16 +1,16 @@
 # experiment running
 
-Vanilla PPO:
-python scripts/cleanrl_ppo.py --env-id="griddly-ButterfliesEnv" --model="none" --buffer-type="gaussian" --scale-by-std=0 --soft_reset=0 --track
+Vanilla:
+python scripts/cleanrl_ppo.py --env-id="griddly-ButterfliesEnv" --model="none" --buffer-type="bernoulli" --scale-by-std=0 --soft_reset=0 --track
+python scripts/cleanrl_dqn.py --env-id="griddly-ButterfliesEnv" --model="none" --buffer-type="bernoulli" --scale-by-std=0 --soft_reset=0 --track
 
 SMIN
-python scripts/cleanrl_ppo.py --env-id="griddly-ButterfliesEnv" --model="none" --buffer-type="gaussian" --scale-by-std=0 --soft_reset=0 --track
+python scripts/cleanrl_ppo.py --env-id="griddly-ButterfliesEnv" --model="smin" --buffer-type="bernoulli" --scale-by-std=1 --soft_reset=0 --track
+python scripts/cleanrl_dqn.py --env-id="griddly-ButterfliesEnv" --model="smin" --buffer-type="bernoulli" --scale-by-std=1 --soft_reset=0 --track
 
 SMAX
-python scripts/cleanrl_ppo.py --env-id="griddly-ButterfliesEnv" --model="smax" --buffer-type="gaussian" --scale-by-std=0 --soft_reset=0 --track
-
-
-
+python scripts/cleanrl_ppo.py --env-id="griddly-ButterfliesEnv" --model="smax" --buffer-type="bernoulli" --scale-by-std=1 --soft_reset=0 --track
+python scripts/cleanrl_dqn.py --env-id="griddly-ButterfliesEnv" --model="smax" --buffer-type="bernoulli" --scale-by-std=1 --soft_reset=0 --track
 
 # Bayesian Surprise
 
