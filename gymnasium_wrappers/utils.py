@@ -119,16 +119,13 @@ def make_env(args):
             env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
             o_ = env.reset()
             obs_size = o_.shape
-            #obs_size = o_.reshape(o_.shape[0], -1).shape
             
             if griddly_env_name == "MazeEnv":
                 from surprise.envs.maze.maze_env import MazeEnv
                 env = MazeEnv(env)
-                #env = old_gym.wrappers.FlattenObservation(env)
             elif griddly_env_name == "ButterfliesEnv":
                 from surprise.envs.maze.butterflies_latest import ButterfliesEnv
                 env = ButterfliesEnv(env)
-                #env = old_gym.wrappers.FlattenObservation(env)
                 # discard spiders and cocoons
                 obs_size = (obs_size[0] - 2, obs_size[1], obs_size[2])
             else:
@@ -136,6 +133,23 @@ def make_env(args):
             
             env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
         
+        elif "grafter" in args.env_id:
+            from surprise.envs.grafter.grafter.wrapper import GrafterWrapper
+            env = GrafterWrapper(
+                height=32, 
+                width=32, 
+                player_count=1, 
+                generator_seed=args.seed, 
+                player_observer_type="Vector", 
+                global_observer_type="GlobalSprite2D"
+            )
+            obs_size = env.observation_space.shape
+            max_steps = 5_000
+
+            env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
+            from gymnasium_wrappers.wrappers import GrafterStatsWrapper
+            env = GrafterStatsWrapper(env)
+
         else:
             print(f"Making {args.env_id}")
             env = gym.make(args.env_id, render_mode='rgb_array', max_episode_steps = 500)

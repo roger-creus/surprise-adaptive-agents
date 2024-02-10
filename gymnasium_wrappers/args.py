@@ -68,7 +68,7 @@ def parse_args_dqn():
     # OBJECTIVE PARAMS
     parser.add_argument("--model", type=str, default="none",
         help="can be none, smax, smin, sadapt, sadapt-inverse, sadapt-bandit")
-    parser.add_argument("--buffer-type", type=str, default="gaussian",
+    parser.add_argument("--buffer-type", type=str, default="bernoulli",
         help="can be gaussian, or multinoulli")
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)

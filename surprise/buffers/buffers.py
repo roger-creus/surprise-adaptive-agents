@@ -53,6 +53,9 @@ class BernoulliBuffer(BaseBuffer):
         return theta
 
     def logprob(self, obs):
+        # make sure all values in obs are in [0,1]
+        assert np.all(obs >= 0) and np.all(obs <= 1)
+
         obs = obs.reshape(self.obs_dim)
         obs = obs.copy()
         thetas = self.get_params()

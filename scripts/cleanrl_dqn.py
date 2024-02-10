@@ -80,8 +80,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             net = TetrisBigQNetwork
         else:
             net = TetrisQNetwork
-    elif args.env_id == "crafter":
-        net = CrafterQNetwork
+    elif args.env_id == "grafter":
+        net = GrafterQNetwork
         crafter_logger = CrafterLogger()
     elif "MinAtar" in args.env_id or "griddly" in args.env_id:
         net = MinAtarQNetwork
@@ -167,8 +167,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 if "episode" not in info:
                     continue
                 
-                
-                print(f"global_step={global_step}, average_task_return={info['Average_task_return']}, episodic_return={info['episode']['r']}, episodic_surprise={np.mean(ep_surprise)}, episodic_entropy={np.mean(ep_entropy)}")
+                print(f"global_step={global_step}, average_task_return={info['Average_task_return']}, episodic_return={info['episode']['r']}, episodic_len={info['episode']['l']}, episodic_surprise={np.mean(ep_surprise)}, episodic_entropy={np.mean(ep_entropy)}")
                 writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
                 writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
                 writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise), global_step)

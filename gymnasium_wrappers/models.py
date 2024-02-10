@@ -137,38 +137,49 @@ class MinigridQNetwork(nn.Module):
         return self.linear(x)
     
 
-class CrafterQNetwork(nn.Module):
+class GrafterQNetwork(nn.Module):
     def __init__(self, env, use_theta=False):
         super().__init__()
         self.use_theta = use_theta
-        n_input_channels = env.single_observation_space["obs"].shape[-1]
+        n_input_channels = env.single_observation_space["obs"].shape[0]
+        n_input_channesl_theta = env.single_observation_space["theta"].shape[0]
+        n_input_inventory = env.single_observation_space["inv"].shape[0]
 
         self.conv = nn.Sequential(
-            nn.Conv2d(n_input_channels, 16 ,kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(n_input_channels, 64, kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
-            nn.Conv2d(16, 32 ,kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(64, 64 ,kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
-            nn.Conv2d(32, 32 ,kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(32, 32 ,kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(64, 64 ,kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
             nn.Flatten(),
         )
 
+        self.stats_fc = nn.Sequential(
+            nn.Linear(n_input_inventory, 32), 
+            nn.ReLU(),
+            nn.Linear(32, 32),
+            nn.ReLU(), 
+        )
+
         if use_theta:
             self.theta_fc = nn.Sequential(
-                nn.Linear(np.prod(env.single_observation_space["theta"].shape), 120),
+                nn.Conv2d(n_input_channesl_theta, 64, kernel_size=3, stride=2, padding=1),
                 nn.ReLU(),
-                nn.Linear(120, 84),
+                nn.Conv2d(64, 64 ,kernel_size=3, stride=2, padding=1),
                 nn.ReLU(),
+                nn.Conv2d(64, 64 ,kernel_size=3, stride=2, padding=1),
+                nn.ReLU(),
+                nn.Flatten(),
             )
             
         with torch.no_grad():
             s_ = env.single_observation_space["obs"].sample()[None]
-            n_flatten = self.conv(torch.as_tensor(s_).float().permute(0,3,1,2)).shape[1]
+            n_flatten = self.conv(torch.as_tensor(s_).float()).shape[1] + 32
 
-        if use_theta:
-            n_flatten += 84
+            if use_theta:
+                t_ = env.single_observation_space["theta"].sample()[None]
+                n_flatten += self.theta_fc(torch.as_tensor(t_).float()).shape[1]
 
         self.linear = nn.Sequential(
             nn.Linear(n_flatten, 512), 
@@ -179,13 +190,15 @@ class CrafterQNetwork(nn.Module):
     def forward(self, x):
         x_ = x["obs"]
         y_ = x["theta"]
-        img_features = self.conv(x_.permute(0,3,1,2).float())
+        z_ = x["inv"]
+        img_features = self.conv(x_.float())
+        stats_features = self.stats_fc(z_.float())
         
         if self.use_theta:
             theta_features = self.theta_fc(y_.float())
-            x = torch.cat([img_features, theta_features], dim=1)
+            x = torch.cat([img_features, theta_features, stats_features], dim=1)
         else:
-            x = img_features
+            x = torch.cat([img_features, stats_features], dim=1)
 
         return self.linear(x)
     

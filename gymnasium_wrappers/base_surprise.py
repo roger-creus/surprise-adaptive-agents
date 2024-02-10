@@ -64,10 +64,13 @@ class BaseSurpriseWrapper(gym.Env):
 
         print(f"new_theta_shape:{new_theta_shape}")
 
-        self.observation_space = Dict({
-            "obs" : Box(-np.inf, np.inf, shape=self.env_obs_space.shape),
-            "theta": Box(-np.inf, np.inf, shape=new_theta_shape)
-        })
+        # instead of hardcoding the keys. Make sure to add all the keys from the original observation space
+        obs_space = {}
+        for key in self.env_obs_space.spaces.keys():
+            obs_space[key] = self.env_obs_space.spaces[key]
+
+        obs_space["theta"] = Box(-np.inf, np.inf, shape=new_theta_shape)
+        self.observation_space = Dict(obs_space)
 
         try:
             self.heatmap = np.zeros((env.width, env.height))
@@ -76,12 +79,10 @@ class BaseSurpriseWrapper(gym.Env):
             
         print(self.observation_space)
 
-
     def step(self, action):
         obs, env_rew, envdone, envtrunc, info = self._env.step(action)
         info['task_reward'] = env_rew
         self.task_return += env_rew
-
         
         # soft reset
         if self._soft_reset:
@@ -106,7 +107,6 @@ class BaseSurpriseWrapper(gym.Env):
                 info["Average_task_return"] = self.task_return
                 info["Average_episode_length"] = self.num_steps
                 info['deaths'] = self.deaths
-
 
         # use the original observation for surprise calculation
         # this will be used for griddly envs and compute surprise with the bernoulli buffer
@@ -160,12 +160,14 @@ class BaseSurpriseWrapper(gym.Env):
         '''
         theta = self.buffer.get_params()
         num_samples = (np.ones(1)*self.buffer.buffer_size) / self.max_steps
-        obs = {
-            "obs" : obs
-        }
+
+        obs_ = {}
+        for key in self.env_obs_space.spaces.keys():
+            obs_[key] = obs[key]
+
         num_samples = np.ones_like(theta[0]) * num_samples
-        obs["theta"] = np.concatenate([theta, num_samples[None, :]], axis=0)
-        return obs
+        obs_["theta"] = np.concatenate([theta, num_samples[None, :]], axis=0)
+        return obs_
 
     def reset(self, seed=None, options=None):
         obs, info = self._env.reset()
@@ -200,5 +202,7 @@ class BaseSurpriseWrapper(gym.Env):
             theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
             theta_obs = theta_obs.flatten().astype(np.float32)
             return theta_obs
+        elif isinstance(obs, dict):
+            return obs["obs"].astype(np.float32)
         else:
             return obs.astype(np.float32)
