@@ -13,9 +13,10 @@ class ButterfliesEnv(gym.ObservationWrapper):
         super(ButterfliesEnv, self).__init__(env)
         self.env = env
         obs = env.reset()
+        obs_shape = obs.shape
         obs_shape = (3, obs_shape[1], obs_shape[2])
 
-        self.observation_space = Box(low=0, high=3, shape=obs_shape, dtype=np.uint8)
+        self.observation_space = Box(low=0, high=3, shape=obs_shape, dtype=np.float32)
         self.original_obs = None
         
     def observation(self, obs):
