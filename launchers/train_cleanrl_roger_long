@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH --partition=lab-real
+#SBATCH --partition=long
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --gres=gpu:1
-#SBATCH --mem=200G
-#SBATCH --time=70:00:00
+#SBATCH --mem=100G
+#SBATCH --time=18:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH -o /network/scratch/r/roger.creus-castanyer/slurm-%j.out  # Write the log on scratch
 
