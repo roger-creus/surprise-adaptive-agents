@@ -66,8 +66,13 @@ class BaseSurpriseWrapper(gym.Env):
 
         # instead of hardcoding the keys. Make sure to add all the keys from the original observation space
         obs_space = {}
-        for key in self.env_obs_space.spaces.keys():
-            obs_space[key] = self.env_obs_space.spaces[key]
+        if isinstance(self.env_obs_space, Box):
+            obs_space["obs"] = self.env_obs_space
+        elif isinstance(self.env_obs_space, Dict):
+            for key in self.env_obs_space.spaces.keys():
+                obs_space[key] = self.env_obs_space.spaces[key]
+        else:
+            raise ValueError("Observation space not supported")
 
         obs_space["theta"] = Box(-np.inf, np.inf, shape=new_theta_shape)
         self.observation_space = Dict(obs_space)
@@ -162,8 +167,13 @@ class BaseSurpriseWrapper(gym.Env):
         num_samples = (np.ones(1)*self.buffer.buffer_size) / self.max_steps
 
         obs_ = {}
-        for key in self.env_obs_space.spaces.keys():
-            obs_[key] = obs[key]
+        if isinstance(self.env_obs_space, Box):
+            obs_["obs"] = obs
+        elif isinstance(self.env_obs_space, Dict):
+            for key in self.env_obs_space.spaces.keys():
+                obs_[key] = obs[key]
+        else:
+            raise ValueError("Observation space not supported")
 
         num_samples = np.ones_like(theta[0]) * num_samples
         obs_["theta"] = np.concatenate([theta, num_samples[None, :]], axis=0)
