@@ -120,10 +120,10 @@ def make_env(args):
             o_ = env.reset()
             obs_size = o_.shape
             
-            if griddly_env_name == "MazeEnv":
+            if "MazeEnv" in griddly_env_name:
                 from surprise.envs.maze.maze_env import MazeEnv
                 env = MazeEnv(env)
-            elif griddly_env_name == "ButterfliesEnv":
+            elif "ButterfliesEnv" in griddly_env_name:
                 from surprise.envs.maze.butterflies_latest import ButterfliesEnv
                 env = ButterfliesEnv(env)
                 # discard spiders and cocoons
@@ -308,7 +308,8 @@ def register_griddly_envs():
             del old_gym.envs.registration.registry.env_specs[env]
 
     wrapper = GymWrapperFactory()
-    wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env_fully_observed.yaml")
+    wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env.yaml")
+    wrapper.build_gym_from_yaml('MazeEnvLarge', f"{os.getcwd()}/surprise/envs/maze/maze_env_large.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies_latest.yaml")
     
 

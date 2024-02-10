@@ -32,7 +32,7 @@ def parse_args_dqn():
         help="the frequency of logging videos for ppo iterations")
 
     # Algorithm specific arguments
-    parser.add_argument("--env-id", type=str, default="SurpriseAdaptRooms-v0",
+    parser.add_argument("--env-id", type=str, default="grafter",
         help="the id of the environment")
     parser.add_argument("--total-timesteps", type=int, default=5_000_000,
         help="total timesteps of the experiments")

@@ -208,25 +208,51 @@ class MinAtarQNetwork(nn.Module):
         in_channels = envs.single_observation_space["obs"].shape[0]
         n_input_channesl_theta = envs.single_observation_space["theta"].shape[0]
 
+        img_size = envs.single_observation_space["obs"].shape[1]
+
         self.use_theta = use_theta
         
-        self.network = nn.Sequential(
-            nn.Conv2d(in_channels, 16, kernel_size=3, stride=1),
-            nn.ReLU(),
-            nn.Flatten(),
-        )
+        if img_size == 10:
+            self.network = nn.Sequential(
+                nn.Conv2d(in_channels, 16, kernel_size=3, stride=1),
+                nn.ReLU(),
+                nn.Flatten(),
+            )
+        elif img_size == 32:
+            self.network = nn.Sequential(
+                nn.Conv2d(in_channels, 16, kernel_size=3, stride=2, padding=1),
+                nn.ReLU(),
+                nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1),
+                nn.ReLU(),
+                nn.Conv2d(32, 32, kernel_size=3, stride=2, padding=1),
+                nn.ReLU(),
+                nn.Flatten(),
+            )
+        else:
+            raise ValueError("Invalid image size")
         
         with torch.no_grad():
             s_ = envs.single_observation_space["obs"].sample()[None]
             n_flatten = self.network(torch.as_tensor(s_).float()).shape[1]
 
         if self.use_theta:
-            self.theta_fc = nn.Sequential(
-                nn.Conv2d(n_input_channesl_theta, 16, kernel_size=3, stride=1),
-                nn.ReLU(),
-                nn.Flatten(),
-            )
-            
+            if img_size == 10:
+                self.theta_fc = nn.Sequential(
+                    nn.Conv2d(n_input_channesl_theta, 16, kernel_size=3, stride=1),
+                    nn.ReLU(),
+                    nn.Flatten(),
+                )
+            else:
+                self.theta_fc = nn.Sequential(
+                    nn.Conv2d(n_input_channesl_theta, 16, kernel_size=3, stride=2, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1),
+                    nn.ReLU(),
+                    nn.Conv2d(32, 32, kernel_size=3, stride=2, padding=1),
+                    nn.ReLU(),
+                    nn.Flatten(),
+                )
+
             with torch.no_grad():
                 t_ = envs.single_observation_space["theta"].sample()[None]
                 n_flatten += self.theta_fc(torch.as_tensor(t_).float()).shape[1]
