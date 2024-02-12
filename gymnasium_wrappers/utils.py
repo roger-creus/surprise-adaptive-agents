@@ -401,7 +401,6 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
             img = env.envs[0].env._env._env.render(observer="global", mode="rgb_array")
         except:
             img = env.envs[0].render()
-            print("Using render from gymnasium")
             
         # if not img is all 0s, append it to the list
         if not np.all(img == 0):
