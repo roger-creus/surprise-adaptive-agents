@@ -205,9 +205,14 @@ class GrafterQNetwork(nn.Module):
 class MinAtarQNetwork(nn.Module):
     def __init__(self, envs, use_theta = False):
         super().__init__()
+        self.use_player = False
+        
         in_channels = envs.single_observation_space["obs"].shape[0]
+        if "player" in list(envs.single_observation_space.keys()): 
+            in_channels += 1
+            self.use_player = True
+        
         n_input_channesl_theta = envs.single_observation_space["theta"].shape[0]
-
         img_size = envs.single_observation_space["obs"].shape[1]
 
         self.use_theta = use_theta
@@ -233,6 +238,10 @@ class MinAtarQNetwork(nn.Module):
         
         with torch.no_grad():
             s_ = envs.single_observation_space["obs"].sample()[None]
+            if self.use_player:
+                p_ = envs.single_observation_space["player"].sample()[None]
+                s_ = np.concatenate([s_, p_], axis=1)
+            
             n_flatten = self.network(torch.as_tensor(s_).float()).shape[1]
 
         if self.use_theta:
@@ -256,6 +265,7 @@ class MinAtarQNetwork(nn.Module):
             with torch.no_grad():
                 t_ = envs.single_observation_space["theta"].sample()[None]
                 n_flatten += self.theta_fc(torch.as_tensor(t_).float()).shape[1]
+                
         
         self.linear = nn.Sequential(
             nn.Linear(n_flatten, 512), 
@@ -266,6 +276,11 @@ class MinAtarQNetwork(nn.Module):
     def forward(self, x):
         x_ = x["obs"]
         y_ = x["theta"]
+        
+        if self.use_player:
+            z_ = x["player"]
+            x_ = torch.cat([x_, z_], dim=1)
+
         img_features = self.network(x_.float())
         
         if self.use_theta:

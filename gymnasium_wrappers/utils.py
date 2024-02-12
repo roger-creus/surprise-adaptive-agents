@@ -116,7 +116,7 @@ def make_env(args):
             register_griddly_envs()
             griddly_env_name = args.env_id.split('-')[-1]
             max_steps = 500
-            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
+            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.SPRITE_2D)
             o_ = env.reset()
             obs_size = o_.shape
             
@@ -126,8 +126,8 @@ def make_env(args):
             elif "ButterfliesEnv" in griddly_env_name:
                 from surprise.envs.maze.butterflies_latest import ButterfliesEnv
                 env = ButterfliesEnv(env)
-                # discard spiders and cocoons
-                obs_size = (obs_size[0] - 2, obs_size[1], obs_size[2])
+                # discard spiders and cocoons and player
+                obs_size = (obs_size[0] - 3, obs_size[1], obs_size[2])
             else:
                 raise ValueError(f"Unknown griddly env {griddly_env_name}")
             
@@ -398,11 +398,15 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
 
     while True:
         try:
-            ep_images.append(env.envs[0].env.render(mode="rgb_array", observer='global'))
+            img = env.envs[0].env._env._env.render(observer="global", mode="rgb_array")
+            ep_images.append(img)
         except:
-            # for crafter
-            ep_images.append(env.envs[0].render())
+            img = env.envs[0].render()
+            print("Using render from gymnasium")
 
+        # assert not all are 0s
+        assert not np.all(img == 0), "All pixels are 0"
+        
         if isinstance(env.single_observation_space, gym.spaces.Dict):
             obs_ = {k: torch.as_tensor(v).to(device) for k, v in obs.items()}
         else:
@@ -418,11 +422,12 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
         
         if done:
             break
-
+    
     # save gif with all imags
     from PIL import Image
     if "MinAtar" in env_id:
         ep_images = [Image.fromarray((img * 255).astype(np.uint8)) for img in ep_images]
     else:
         ep_images = [Image.fromarray(img) for img in ep_images]
+    
     ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)

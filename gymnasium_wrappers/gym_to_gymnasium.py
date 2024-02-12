@@ -1,5 +1,7 @@
+import gym as gym_old
 import gymnasium as gym
-from gymnasium.spaces import Discrete, Box
+from gymnasium.spaces import Discrete, Box, Dict
+from IPython import embed
 
 
 
@@ -11,7 +13,15 @@ class GymToGymnasium(gym.Env):
         self._render_mode = render_mode
         self._max_steps = max_steps
         self.action_space =  Discrete(env.action_space.n)
-        self.observation_space = Box(low=env.observation_space.low, high=env.observation_space.high, dtype=env.observation_space.dtype, shape=env.observation_space.shape)
+        
+        if isinstance(env.observation_space, gym_old.spaces.Box):
+            self.observation_space = Box(low=env.observation_space.low, high=env.observation_space.high, dtype=env.observation_space.dtype, shape=env.observation_space.shape)
+        elif isinstance(env.observation_space, gym_old.spaces.Discrete):
+            self.observation_space = Discrete(env.observation_space.n)
+        elif isinstance(env.observation_space, gym_old.spaces.Dict) or isinstance(env.observation_space, dict):
+            self.observation_space = Dict({k: Box(low=env.observation_space[k].low, high=env.observation_space[k].high, dtype=env.observation_space[k].dtype, shape=env.observation_space[k].shape) for k in env.observation_space.keys()})
+        else:
+            raise ValueError(f"Unsupported observation space {env.observation_space}")
     
     def reset(self, seed=None, options=None):
         self.t = 0

@@ -14,16 +14,18 @@ class ButterfliesEnv(gym.ObservationWrapper):
         self.env = env
         obs = env.reset()
         obs_shape = obs.shape
-        obs_shape = (3, obs_shape[1], obs_shape[2])
+        obs_shape = (2, obs_shape[1], obs_shape[2])
 
-        self.observation_space = Box(low=0, high=3, shape=obs_shape, dtype=np.float32)
+        self.observation_space = {
+            "obs" : Box(low=0, high=1, shape=obs_shape, dtype=np.uint8),
+            "player" : Box(low=0, high=1, shape=(1, obs_shape[1], obs_shape[2]), dtype=np.uint8)
+        }
         self.original_obs = None
         
     def observation(self, obs):
-        # ignore channel 2 and 3, this is the spider and cocoons channel
-        self.original_obs = np.zeros((3, obs.shape[1], obs.shape[2]))
+        player_channel = obs[1]
+        self.original_obs = np.zeros((2, obs.shape[1], obs.shape[2]))
         self.original_obs[0] = obs[0]
-        self.original_obs[1] = obs[1]
-        self.original_obs[2] = obs[4]
-        return self.original_obs
+        self.original_obs[1] = obs[4]
+        return {"obs" : self.original_obs.astype(np.uint8), "player" : player_channel[None].astype(np.uint8)}
 

@@ -45,7 +45,7 @@ class GrafterStatsWrapper(gym.Wrapper):
 
         self.observation_space = gym.spaces.Dict({
             "inv" : gym.spaces.Box(low=0, high=64, shape=(len(self.inv_variables),), dtype=np.float32),
-            "obs" : env.observation_space,
+            "obs" : gym.spaces.Box(low=0, high=1, shape=env.observation_space.shape, dtype=np.uint8)
         })
 
     def reset(self):
@@ -59,4 +59,4 @@ class GrafterStatsWrapper(gym.Wrapper):
     def _get_obs(self, obs):
         inv = self.env._env.game.get_global_variable(self.inv_variables)
         inv = np.array([inv[key][0] for key in self.inv_variables])
-        return {"inv": inv, "obs": obs}
+        return {"inv": inv, "obs": obs.astype(np.uint8)}

@@ -191,8 +191,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
                 logger_.logs_a([
                     global_step,
-                    info["episode"]["r"][0],
-                    info["episode"]["l"][0],
+                    info["Average_task_return"],
+                    info["Average_episode_length"],
                     np.mean(ep_surprise),
                     np.mean(ep_entropy),
                 ])

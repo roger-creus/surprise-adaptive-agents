@@ -8,7 +8,7 @@ class MazeEnv(gym.ObservationWrapper):
         self.env = env
         obs_ = env.reset()
         new_shape = obs_.shape
-        self.observation_space = gym.spaces.Box(low=0, high=1, shape=new_shape, dtype=obs_.dtype)
+        self.observation_space = gym.spaces.Box(low=0, high=1, shape=new_shape, dtype=np.uint8)
         self.action_space = self.env.action_space
         self.original_obs = None
         

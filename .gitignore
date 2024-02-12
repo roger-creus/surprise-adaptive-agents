@@ -6,6 +6,7 @@ logs_local/*
 *egg*
 wandb/*
 /wandb/*
+/paper_results/*
 
 runs/*
 ./cleanrl_surprise.tar
