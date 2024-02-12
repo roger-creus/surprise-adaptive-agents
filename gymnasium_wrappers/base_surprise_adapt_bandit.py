@@ -106,7 +106,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
     def _get_random_entropy(self):
         obs, info = self._env.reset()
         self.buffer.reset()
-        self.buffer.add(self.encode_obs(obs))
         # number of episodes to evaluate the random entorpy
         num_eps = 5 if not self._soft_reset else 1
         random_entropies = []
@@ -125,7 +124,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             random_entropies.append(random_entropy)
             obs, _ = self._env.reset()
             self.buffer.reset()
-            self.buffer.add(self.encode_obs(obs))
         random_entropy = np.mean(random_entropies)
         return random_entropy
 
@@ -314,7 +312,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         self.num_eps += 1
         self.num_steps = 0
-        self.buffer.add(self.encode_obs(obs))
 
         obs = self.get_obs(obs)
         if self.heatmap is not None:
