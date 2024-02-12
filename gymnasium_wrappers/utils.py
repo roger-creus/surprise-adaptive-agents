@@ -116,7 +116,7 @@ def make_env(args):
             register_griddly_envs()
             griddly_env_name = args.env_id.split('-')[-1]
             max_steps = 500
-            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.SPRITE_2D)
+            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
             o_ = env.reset()
             obs_size = o_.shape
             
@@ -399,14 +399,14 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
     while True:
         try:
             img = env.envs[0].env._env._env.render(observer="global", mode="rgb_array")
-            ep_images.append(img)
         except:
             img = env.envs[0].render()
             print("Using render from gymnasium")
+            
+        # if not img is all 0s, append it to the list
+        if not np.all(img == 0):
+            ep_images.append(img)
 
-        # assert not all are 0s
-        assert not np.all(img == 0), "All pixels are 0"
-        
         if isinstance(env.single_observation_space, gym.spaces.Dict):
             obs_ = {k: torch.as_tensor(v).to(device) for k, v in obs.items()}
         else:
@@ -419,7 +419,7 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
         next_obs, rewards, terminated, truncated, infos = env.step(actions)
         obs = next_obs
         done = terminated or truncated
-        
+
         if done:
             break
     
