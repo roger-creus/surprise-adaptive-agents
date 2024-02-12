@@ -59,12 +59,27 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
 
-        # adding theta and t for consistent MDP (same as SMiRL)
-        # adding history of surprise (either -1 or 1)
-        self.observation_space = Dict({
-            "obs" : Box(-np.inf, np.inf, shape=self.env_obs_space.shape),
-            "theta": Box(-np.inf, np.inf, shape=(np.prod(theta.shape) + 1 + 1,)), # The first 1 is for the timestep and the second is for alpha_t
-        })
+
+        # the new theta shape has to be the extact theta.shape but +2 in first dimension
+        # the additional dimension are the time-step and bandit choice
+        new_theta_shape = (theta.shape[0] + 2, )
+        for i in range(len(theta.shape) - 1):
+            new_theta_shape += (theta.shape[i+1],)
+
+        print(f"new_theta_shape:{new_theta_shape}")
+
+        # instead of hardcoding the keys. Make sure to add all the keys from the original observation space
+        obs_space = {}
+        if isinstance(self.env_obs_space, Box):
+            obs_space["obs"] = self.env_obs_space
+        elif isinstance(self.env_obs_space, Dict):
+            for key in self.env_obs_space.spaces.keys():
+                obs_space[key] = self.env_obs_space.spaces[key]
+        else:
+            raise ValueError("Observation space not supported")
+
+        obs_space["theta"] = Box(-np.inf, np.inf, shape=new_theta_shape)
+        self.observation_space = Dict(obs_space)
             
         # Bandit statistics
         self.alpha_zero_mean = np.nan
@@ -97,10 +112,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         random_entropies = []
         for _ in range(num_eps):
             for _ in range(self.max_steps):
-                obs, rew, done, truncated, info = self._env.step(self.action_space.sample())
+                obs, rew, envdone, envdtrunc, info = self._env.step(self.action_space.sample())
                 self.buffer.add(self.encode_obs(obs))
-                # softreset
-                if done or truncated:
+                if envdone or envdtrunc:
                     if self._soft_reset:
                         obs, _ = self._env.reset()
                         # obs = np.random.rand(*obs.shape)
@@ -156,8 +170,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 obs, _ = self._env.reset()
                 # obs = np.random.rand(*obs.shape)
                 self.deaths += 1
-
-            if self.num_steps >= self.max_steps:
+            if self.num_steps == self.max_steps:
                 envdone = True
                 envtrunc = True
                 if self.deaths > 0:
@@ -179,6 +192,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 if self.ucb_alpha_one: info["ucb_alpha_one"] = self.ucb_alpha_one
                 if self.ucb_alpha_zero: info["ucb_alpha_zero"] = self.ucb_alpha_zero
 
+        
         # Compute surprise as the negative log probability of the observation
         surprise = -self.buffer.logprob(self.encode_obs(obs))
         thresh = 300
@@ -196,6 +210,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         info["surprise_adapt_reward"] = rew
         info["theta_entropy"] = self.buffer.entropy()
         info['deaths'] = self.deaths
+        info["surprise"] = surprise
+        info["alpha"] = self.alpha_t
         
         if self.add_true_rew:
             rew = env_rew + (rew * self.int_rew_scale)
@@ -207,9 +223,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         if self._death_cost and (envdone or envtrunc):
             rew = -100
-
-        info["surprise"] = surprise
-        info["alpha"] = self.alpha_t
 
         # augment next state
         obs = self.get_obs(obs)
@@ -230,12 +243,24 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         Augment observation, perhaps with generative model params, time-step, current surprise momentum.
         """
         theta = self.buffer.get_params()
-        num_samples = np.ones(1) * self.buffer.buffer_size
+        num_samples = np.ones(1) * self.buffer.buffer_size / self.max_steps
         alpha_t = np.ones(1) * self.alpha_t
-        aug_obs = {
-        "obs" : obs,
-        "theta": np.concatenate([np.array(theta).flatten(), num_samples, alpha_t])
-        }
+
+        aug_obs = {}
+        if isinstance(self.env_obs_space, Box):
+            aug_obs["obs"] = obs
+        elif isinstance(self.env_obs_space, Dict):
+            for key in self.env_obs_space.spaces.keys():
+                aug_obs[key] = obs[key]
+        else:
+            raise ValueError("Observation space not supported")
+        
+        num_samples = np.ones_like(theta[0]) * num_samples
+        alpha_t = np.ones_like(theta[0]) * alpha_t
+        aug_obs["theta"] = np.concatenate([theta, 
+                                        num_samples[None, :],
+                                        alpha_t[None, :]], axis=0)
+        
         return aug_obs
 
     def reset(self,  seed=None, options=None):
@@ -317,6 +342,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
             theta_obs = theta_obs.flatten().astype(np.float32)
             return theta_obs
+        elif isinstance(obs, dict):
+            return obs["obs"].astype(np.float32)
         else:
             return obs.astype(np.float32)
         
