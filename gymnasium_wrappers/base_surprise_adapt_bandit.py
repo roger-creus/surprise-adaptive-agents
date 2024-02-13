@@ -241,6 +241,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         Augment observation, perhaps with generative model params, time-step, current surprise momentum.
         """
         theta = self.buffer.get_params()
+        num_samples = (np.ones(1)*self.buffer.buffer_size) / self.max_steps
 
         aug_obs = {}
         if isinstance(self.env_obs_space, Box):
@@ -251,7 +252,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         else:
             raise ValueError("Observation space not supported")
         
-        num_samples = (np.ones_like(theta[0]) * num_samples) / self.max_steps
+        num_samples = (np.ones_like(theta[0]) * num_samples)
         alpha_t = np.ones_like(theta[0]) * alpha_t
 
         aug_obs["theta"] = np.concatenate([theta, 
