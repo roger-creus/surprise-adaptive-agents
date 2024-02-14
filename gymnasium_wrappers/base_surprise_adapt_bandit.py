@@ -59,27 +59,37 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
 
-
         # the new theta shape has to be the extact theta.shape but +2 in first dimension
         # the additional dimension are the time-step and bandit choice
         new_theta_shape = (theta.shape[0] + 2, )
         for i in range(len(theta.shape) - 1):
             new_theta_shape += (theta.shape[i+1],)
 
+        # the new obs shape has to be the extact obs.shape but +1 in first dimension
+        # the additional dimension is the bandit choice
+        obs, _ = env.reset()
+        obs_shape = obs["obs"].shape if isinstance(obs, dict) else obs.shape
+        new_obs_shape = (obs_shape[0] + 1, )
+        for i in range(len(obs_shape) - 1):
+            new_obs_shape += (obs_shape[i+1],)
+
+        print(f"new_obs_shape:{new_obs_shape}")
         print(f"new_theta_shape:{new_theta_shape}")
 
         # instead of hardcoding the keys. Make sure to add all the keys from the original observation space
         obs_space = {}
         if isinstance(self.env_obs_space, Box):
-            obs_space["obs"] = self.env_obs_space
+            obs_space["obs"] = Box(0, 1, shape=new_obs_shape)
         elif isinstance(self.env_obs_space, Dict):
             for key in self.env_obs_space.spaces.keys():
                 obs_space[key] = self.env_obs_space.spaces[key]
+            obs_space["obs"] = Box(0, 1, shape=new_obs_shape)
         else:
             raise ValueError("Observation space not supported")
 
         obs_space["theta"] = Box(-np.inf, np.inf, shape=new_theta_shape)
         self.observation_space = Dict(obs_space)
+        print(f"observation_space:{self.observation_space}")
             
         # Bandit statistics
         self.alpha_zero_mean = np.nan
@@ -107,7 +117,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         obs, info = self._env.reset()
         self.buffer.reset()
         # number of episodes to evaluate the random entorpy
-        num_eps = 5 if not self._soft_reset else 1
+        num_eps = 10
         random_entropies = []
         for _ in range(num_eps):
             for _ in range(self.max_steps):
@@ -116,7 +126,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 if envdone or envdtrunc:
                     if self._soft_reset:
                         obs, _ = self._env.reset()
-                        # obs = np.random.rand(*obs.shape)
                         self.buffer.add(self.encode_obs(obs))
                     else:
                         break
@@ -258,7 +267,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         aug_obs["theta"] = np.concatenate([theta, 
                                         num_samples[None, :],
                                         alpha_t[None, :]], axis=0)
-        
+        aug_obs["obs"] = np.concatenate([aug_obs["obs"], alpha_t[None, :]], axis=0)
         return aug_obs
 
     def reset(self,  seed=None, options=None):
