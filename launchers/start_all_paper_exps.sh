@@ -1,19 +1,3 @@
-
-# ####### DQN #######
-
-# Grafter
-#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
-#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
-#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter none bernoulli 3 --scale-by-std=0 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
-
-#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smin bernoulli 1 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
-#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smin bernoulli 2 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
-#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smin bernoulli 3 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
-
-#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smax bernoulli 1 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
-#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smax bernoulli 2 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
-#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smax bernoulli 3 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
-
 # MazeEnvLarge
 sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnvLarge none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track
 sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnvLarge none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track
@@ -78,6 +62,22 @@ sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-Butterf
 sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax bernoulli 1 --scale-by-std=1 --soft_reset=0 --track
 sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax bernoulli 2 --scale-by-std=1 --soft_reset=0 --track
 sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax bernoulli 3 --scale-by-std=1 --soft_reset=0 --track
+
+
+# Lets not run these yet
+
+# Grafter
+#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
+#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
+#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter none bernoulli 3 --scale-by-std=0 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
+
+#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smin bernoulli 1 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
+#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smin bernoulli 2 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
+#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smin bernoulli 3 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
+
+#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smax bernoulli 1 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
+#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smax bernoulli 2 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
+#sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py grafter smax bernoulli 3 --scale-by-std=1 --soft_reset=0 --track --video_freq=500 --buffer-size=500_000 --total-timesteps=10_000_000
 
 # MinAtar/Breakout
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/Breakout none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track
