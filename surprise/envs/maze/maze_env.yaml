@@ -11,15 +11,8 @@ Environment:
   Termination:
     Win:
       - eq:
-          - exit:count
-          - 0
-    Lose:
-      - eq:
-          - avatar:count
-          - 0
-      - eq:
           - _steps
-          - 250
+          - 500
   Levels:
     - |
       w   w   .   w   .   w   w   w   w   w
