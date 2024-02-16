@@ -41,6 +41,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.ucb_coeff = ucb_coeff
         self._death_cost = death_cost
         self._exp_rew = exp_rew
+        self.pretrain_steps = 1000000
+        self.current_steps = 0
 
         theta = self.buffer.get_params()
         print(f"theta shape:{theta.shape}")
@@ -128,6 +130,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         ucb_alpha_one = None
         if np.isnan(self.alpha_t):
             alpha_t = np.random.binomial(n=1, p=0.5)
+        elif self.current_steps < self.pretrain_steps:
+            alpha_t = np.random.binomial(n=1, p=0.5)
         else:
             if self.alpha_zero_cnt == 0:
                 alpha_t = 0
@@ -147,6 +151,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         return alpha_t, ucb_alpha_zero, ucb_alpha_one
     
     def step(self, action):
+        self.current_steps += 1
         obs, env_rew, envdone, envtrunc, info = self._env.step(action)
         info['task_reward'] = env_rew
         self.task_return += env_rew
@@ -245,8 +250,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             raise ValueError("Observation space not supported")
         
         num_samples = (np.ones(theta.shape[:-1]) * num_samples)[..., None]
-        alpha = -1. if self.alpha_t == 0 else 1.
-        alpha_t = (np.ones(theta.shape[:-1]) * alpha)[..., None]
+        alpha_t = (np.ones(theta.shape[:-1]) * self.alpha_t)[..., None]
 
         theta_obs = np.concatenate([theta,
                                     num_samples,
