@@ -260,7 +260,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
     def reset(self, seed=None, options=None):
         obs, info = self._env.reset()
-        self.buffer.reset()
         self.num_steps = 0
         self.deaths = 0
         self.task_return = 0
