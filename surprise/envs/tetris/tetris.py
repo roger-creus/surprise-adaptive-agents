@@ -10,7 +10,7 @@ import imageio
 import pdb
 
 class TetrisEnv(gym.Env):
-    def __init__(self, width=4, height=10, episode_length=100, render=False,
+    def __init__(self, width=4, height=10, episode_length=200, render=False,
                  reward_func=None, **kwargs):
         # Grid parameters
         self.width = width
@@ -191,6 +191,8 @@ class TetrisEnv(gym.Env):
         if self._render:
             infos["rendering"] = self.render(save=False, mode='rgb_array')
 #             print (infos["rendering"].shape)
+        if self.time == self.episode_length:
+            self.done = True
         return self.get_obs(), r, self.done, self.done, infos
 
     def get_reward(self, obs):
