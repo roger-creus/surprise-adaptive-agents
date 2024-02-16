@@ -56,7 +56,7 @@ def parse_args_dqn():
         help="the ending epsilon for exploration")
     parser.add_argument("--exploration-fraction", type=float, default=0.10,
         help="the fraction of `total-timesteps` it takes from start-e to go end-e")
-    parser.add_argument("--learning-starts", type=int, default=80000,
+    parser.add_argument("--learning-starts", type=int, default=1000,
         help="timestep to start learning")
     parser.add_argument("--train-frequency", type=int, default=4,
         help="the frequency of training")
