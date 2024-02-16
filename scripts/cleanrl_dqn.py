@@ -127,7 +127,11 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
     if args.scale_by_std:
-        rms = RunningMeanStd()
+        if "bandit" not in args.model:
+            rms = RunningMeanStd()
+        else:
+            smax_rms = RunningMeanStd()
+            smin_rms = RunningMeanStd()
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
         epsilon = linear_schedule(args.start_e, args.end_e, args.exploration_fraction * args.total_timesteps, global_step)
@@ -144,6 +148,14 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
         # TRY NOT TO MODIFY: execute the game and log data.
         next_obs, rewards, terminated, truncated, infos = envs.step(actions)
+
+        # extract the bandit choice from the observation
+        if "bandit" in args.model:
+            bandit_choice = int(obs["theta"].reshape(-1)[-1])
+            if bandit_choice == 0:
+                smax_rms.update(np.array([rewards]).flatten())
+            else:
+                smin_rms.update(np.array([rewards]).flatten())
         
 
         if "surprise" in infos:
@@ -223,9 +235,18 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 # reward normalization
                 if args.scale_by_std:
                     # update the rms using rewards from all envs
-                    rms.update(rewards.cpu().numpy())
-                    rewards -= (rms.mean)
-                    rewards /= np.sqrt(rms.var)
+                    if "bandit" not in args.model:
+                        rms.update(rewards.cpu().numpy())
+                        rewards -= (rms.mean)
+                        rewards /= np.sqrt(rms.var)
+                    else:
+                        bandit_choice = data.observations["theta"].reshape(args.batch_size, -1)[:, -1]
+                        smin_rewards = rewards[bandit_choice==1]
+                        smax_rewards = rewards[bandit_choice==0]
+                        smin_rewards = (smin_rewards - smin_rms.mean) / np.sqrt(smin_rms.var)
+                        smax_rewards = (smax_rewards - smax_rms.mean) / np.sqrt(smax_rms.var)
+                        rewards[bandit_choice==1] = smin_rewards 
+                        rewards[bandit_choice==0] = smax_rewards
                 with torch.no_grad():
                     target_max, _ = target_network(data.next_observations).max(dim=1)
                     td_target = rewards + args.gamma * target_max * (1 - data.dones.flatten())
@@ -237,6 +258,14 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     writer.add_scalar("losses/q_values", old_val.mean().item(), global_step)
                     print("SPS:", int(global_step / (time.time() - start_time)))
                     writer.add_scalar("charts/SPS", int(global_step / (time.time() - start_time)), global_step)
+                    if "bandit" in args.model and args.scale_by_std:
+                        # log the statistics of the normalized reward
+                        writer.add_scalar("charts/smin_rewards_normalized", smin_rewards.mean().item(), global_step)
+                        writer.add_scalar("charts/smax_rewards_normalized", smax_rewards.mean().item(), global_step)
+                        writer.add_scalar("charts/smax_rewards_normalized_mean", smax_rms.mean, global_step)
+                        writer.add_scalar("charts/smax_rewards_normalized_std", np.sqrt(smax_rms.var), global_step)
+                        writer.add_scalar("charts/smin_rewards_normalized_mean", smin_rms.mean, global_step)
+                        writer.add_scalar("charts/smin_rewards_normalized_std", np.sqrt(smin_rms.var), global_step)
 
                 # optimize the model
                 optimizer.zero_grad()
