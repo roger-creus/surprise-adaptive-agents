@@ -276,7 +276,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 / np.abs(self.random_entropy)
             )
             info["entropy_change"] = (self.buffer.entropy() - self.random_entropy)
-            print(f"alpha: {self.alpha_t}, entropy: {self.buffer.entropy()}, random: {self.random_entropy}")
+            # print(f"alpha: {self.alpha_t}, entropy: {self.buffer.entropy()}, random: {self.random_entropy}")
             if self.alpha_t == 0:
                 if np.isnan(self.alpha_zero_mean):
                     self.alpha_zero_mean = entropy_change
