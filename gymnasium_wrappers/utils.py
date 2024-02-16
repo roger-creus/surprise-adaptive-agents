@@ -388,7 +388,7 @@ def eval_episode_ppo(ppo_agent, env, device, save_path, global_step):
     ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)
 
 
-def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
+def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none", track=False):
     '''
     Evaluate a DQN agent in an environment and record and save a video
     '''
@@ -430,3 +430,7 @@ def eval_episode_dqn(q_net, env, device, save_path, global_step, env_id="none"):
         ep_images = [Image.fromarray(img) for img in ep_images]
     
     ep_images[0].save(f"{save_path}/episode_{global_step}.gif", save_all=True, append_images=ep_images[1:], optimize=False, duration=40, loop=0)
+    # log video to wandb
+    if track:
+        import wandb
+        wandb.log({f"episode_{global_step}.gif": wandb.Image(f"{save_path}/episode_{global_step}.gif")})
