@@ -134,8 +134,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             elif self.alpha_one_cnt == 0:
                 alpha_t = 1
             else:
-                ucb_alpha_zero = np.sqrt(2 * np.log(self.num_eps) / self.alpha_zero_cnt)
-                ucb_alpha_one =  np.sqrt(2 * np.log(self.num_eps) / self.alpha_one_cnt)
+                ucb_alpha_zero = self.ucb_coeff * np.sqrt(np.log(self.num_eps) / self.alpha_zero_cnt)
+                ucb_alpha_one =  self.ucb_coeff * np.sqrt(np.log(self.num_eps) / self.alpha_one_cnt)
                 alpha_t = np.argmax(
                     [
                         self.alpha_zero_mean
