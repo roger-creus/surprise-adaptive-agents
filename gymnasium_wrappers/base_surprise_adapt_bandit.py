@@ -41,7 +41,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.ucb_coeff = ucb_coeff
         self._death_cost = death_cost
         self._exp_rew = exp_rew
-        self.pretrain_steps = 1000000
+        self.pretrain_steps = 2000000
         self.current_steps = 0
 
         theta = self.buffer.get_params()
