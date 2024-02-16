@@ -245,7 +245,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             raise ValueError("Observation space not supported")
         
         num_samples = (np.ones(theta.shape[:-1]) * num_samples)[..., None]
-        alpha_t = (np.ones(theta.shape[:-1]) * self.alpha_t)[..., None]
+        alpha = -1. if self.alpha_t == 0 else 1.
+        alpha_t = (np.ones(theta.shape[:-1]) * alpha)[..., None]
 
         theta_obs = np.concatenate([theta,
                                     num_samples,
