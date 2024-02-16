@@ -275,21 +275,20 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                     self.alpha_zero_mean = entropy_change
                     self.alpha_zero_cnt += 1
                 else:
-                    self.alpha_zero_cnt += 1
                     self.alpha_zero_mean = (
                         self.alpha_zero_mean * self.alpha_zero_cnt + entropy_change
                     )
+                    self.alpha_zero_cnt += 1
                     self.alpha_zero_mean /= self.alpha_zero_cnt
             else:
                 if np.isnan(self.alpha_one_mean):
                     self.alpha_one_mean = entropy_change
                     self.alpha_one_cnt += 1
                 else:
-                    self.alpha_one_cnt += 1
                     self.alpha_one_mean = (
                         self.alpha_one_mean * self.alpha_one_cnt + entropy_change
                     )
-                    
+                    self.alpha_one_cnt += 1
                     self.alpha_one_mean /= self.alpha_one_cnt
 
         # select new alpha
