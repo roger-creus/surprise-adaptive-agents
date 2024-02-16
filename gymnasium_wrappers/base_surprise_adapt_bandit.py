@@ -41,7 +41,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.ucb_coeff = ucb_coeff
         self._death_cost = death_cost
         self._exp_rew = exp_rew
-        self.pretrain_steps = 2000000
+        self.pretrain_steps = 0
         self.current_steps = 0
 
         theta = self.buffer.get_params()
@@ -275,6 +275,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 np.abs(self.buffer.entropy() - self.random_entropy)
                 / np.abs(self.random_entropy)
             )
+            info["entropy_change"] = (self.buffer.entropy() - self.random_entropy)
+            print(f"alpha: {self.alpha_t}, entropy: {self.buffer.entropy()}, random: {self.random_entropy}")
             if self.alpha_t == 0:
                 if np.isnan(self.alpha_zero_mean):
                     self.alpha_zero_mean = entropy_change
@@ -306,7 +308,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             self.alpha_rolling_average = self.alpha_rolling_average + (1/self.alpha_count) * (self.alpha_t - self.alpha_rolling_average)
             self.alpha_count += 1
 
-        info["entropy_change"] = (self.buffer.entropy() - self.random_entropy)
+        
 
         self.num_eps += 1
         self.num_steps = 0
@@ -329,16 +331,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         """
         Used to encode the observation before putting on the buffer
         """
-        if self._theta_size:
-            # if the image is stack of images then take the first one
-            if self._grayscale:
-                theta_obs = obs[:, :, -1]
-            else:
-                theta_obs = obs[:, :, -3:]
-            theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
-            theta_obs = theta_obs.flatten().astype(np.float32)
-            return theta_obs
-        elif isinstance(obs, dict):
+        if isinstance(obs, dict):
             return obs["obs"].astype(np.float32)
         else:
             return obs.astype(np.float32)
