@@ -126,6 +126,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
 
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
+    eval_episode_dqn(None, eval_envs, device, f"runs/{run_name}", 0, args.env_id, args.track, random=True)
     if args.scale_by_std:
         if "bandit" not in args.model:
             rms = RunningMeanStd()
