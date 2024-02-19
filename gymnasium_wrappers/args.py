@@ -272,6 +272,8 @@ def parse_args_random():
     parser.add_argument("--survival_rew", type=int, default=0)
     parser.add_argument("--death_cost", type=int, default=0)
     parser.add_argument("--exp_rew", type=int, default=0)
+    parser.add_argument("--video-log-freq", type=int, default=500_000,
+        help="the frequency of logging videos for ppo iterations")
     
     args = parser.parse_args()
     
