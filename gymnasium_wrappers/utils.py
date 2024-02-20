@@ -315,7 +315,10 @@ def register_griddly_envs():
     wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env.yaml")
     # In this env s-adapt should choose s-max
     wrapper.build_gym_from_yaml('MazeEnv2', f"{os.getcwd()}/surprise/envs/maze/maze_env2.yaml")
+    # In this env s-adapt should choose s-min
     wrapper.build_gym_from_yaml('MazeEnvLarge', f"{os.getcwd()}/surprise/envs/maze/maze_env_large.yaml")
+    # In this env s-adapt should choose s-max
+    wrapper.build_gym_from_yaml('MazeEnvLarge2', f"{os.getcwd()}/surprise/envs/maze/maze_env_large2.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnvLarge', f"{os.getcwd()}/surprise/envs/maze/butterflies_large.yaml")
     
