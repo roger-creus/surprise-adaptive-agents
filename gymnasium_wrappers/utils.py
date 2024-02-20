@@ -115,7 +115,10 @@ def make_env(args):
             # for instance griddly-MazeEnv
             register_griddly_envs()
             griddly_env_name = args.env_id.split('-')[-1]
-            max_steps = 500
+            if "MazeEnv2" in griddly_env_name:
+                max_steps = 100
+            else:
+                max_steps = 500
             env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
             o_ = env.reset()
             obs_size = o_.shape
@@ -308,7 +311,10 @@ def register_griddly_envs():
             del old_gym.envs.registration.registry.env_specs[env]
 
     wrapper = GymWrapperFactory()
+    # In this env s-adapt should choose s-min
     wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env.yaml")
+    # In this env s-adapt should choose s-max
+    wrapper.build_gym_from_yaml('MazeEnv2', f"{os.getcwd()}/surprise/envs/maze/maze_env2.yaml")
     wrapper.build_gym_from_yaml('MazeEnvLarge', f"{os.getcwd()}/surprise/envs/maze/maze_env_large.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnvLarge', f"{os.getcwd()}/surprise/envs/maze/butterflies_large.yaml")

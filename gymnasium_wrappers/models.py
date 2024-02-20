@@ -217,7 +217,7 @@ class MinAtarQNetwork(nn.Module):
 
         self.use_theta = use_theta
         
-        if img_size == 10:
+        if img_size == 10 or img_size == 16:
             self.network = nn.Sequential(
                 nn.Conv2d(in_channels, 16, kernel_size=3, stride=1),
                 nn.ReLU(),
