@@ -238,7 +238,7 @@ def make_env(args):
                 ucb_coeff=args.ucb_coeff,
                 death_cost = args.death_cost,
                 exp_rew = args.exp_rew,
-                use_surprise=True
+                use_surprise=args.use_surprise
             )
         elif args.model == "none":
             env = BaseSurpriseWrapper(
