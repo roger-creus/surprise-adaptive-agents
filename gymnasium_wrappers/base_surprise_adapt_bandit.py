@@ -19,6 +19,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         ucb_coeff=np.sqrt(2),
         death_cost = False,
         exp_rew = False,
+        use_surprise = True,
     ):
         '''
         params
@@ -43,6 +44,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self._exp_rew = exp_rew
         self.pretrain_steps = 0
         self.current_steps = 0
+        self.use_surprise = use_surprise
 
         theta = self.buffer.get_params()
         print(f"theta shape:{theta.shape}")
@@ -96,21 +98,33 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.alpha_zero_cnt = 0
         self.alpha_one_mean = np.nan
         self.alpha_one_cnt = 0
-        self.random_entropy = self._get_random_entropy()
         self.ucb_alpha_zero = None
         self.ucb_alpha_one = None
         self.alpha_t = np.nan
+
+        self.random_entropy, self.random_surprise = self._get_random_entropy()
+        self.ep_surprise = []
             
         print(self.observation_space)
 
     def _get_random_entropy(self):
         obs, _ = self._env.reset()
         self.buffer.reset()
+        self.buffer.add(self.encode_obs(obs))
+
         num_eps = 100
         random_entropies = []
+        random_surprises = []
         for _ in range(num_eps):
             for t in range(self.max_steps):
                 obs, rew, envdone, envtrunc, info = self._env.step(self.action_space.sample())
+
+                # compute surprise
+                surprise = -self.buffer.logprob(self.encode_obs(obs))
+                thresh = 300
+                surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+                random_surprises.append(surprise)
+
                 self.buffer.add(self.encode_obs(obs))
                 if envdone or envtrunc:
                     if self._soft_reset:
@@ -121,9 +135,11 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             random_entropies.append(random_entropy)
             obs, _ = self._env.reset()
             self.buffer.reset()
+            self.buffer.add(self.encode_obs(obs))
+
         print(f"len(random_entropies): {len(random_entropies)}")
         self.buffer.reset()
-        return np.mean(random_entropies)
+        return np.mean(random_entropies), np.mean(random_surprises)
 
     def _get_alpha(self):
         ucb_alpha_zero = None
@@ -161,6 +177,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         info["alpha_one_mean"] = self.alpha_one_mean
         info["alpha_one_cnt"] = self.alpha_one_cnt
         info["random_entropy"] = self.random_entropy
+        info["random_surprise"] = self.random_surprise
         
         # soft reset
         if self._soft_reset:
@@ -197,6 +214,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         surprise = -self.buffer.logprob(self.encode_obs(obs))
         thresh = 300
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        self.ep_surprise.append(surprise)
         
 
         self.buffer.add(self.encode_obs(obs))
@@ -271,12 +289,20 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         # update the bandit statistics
         if not np.isnan(self.alpha_t):
+            if self.use_surprise:
+                agent_metric = np.mean(self.ep_surprise)
+                random_metric = self.random_surprise
+            else:
+                agent_metric = self.buffer.entropy()
+                random_metric = self.random_entropy
+
             entropy_change = (
-                np.abs(self.buffer.entropy() - self.random_entropy)
-                / np.abs(self.random_entropy)
+                np.abs(agent_metric - random_metric)
+                / np.abs(random_metric)
             )
-            info["entropy_change"] = (self.buffer.entropy() - self.random_entropy)
-            # print(f"alpha: {self.alpha_t}, entropy: {self.buffer.entropy()}, random: {self.random_entropy}")
+
+            info["entropy_change"] = (agent_metric - random_metric)
+
             if self.alpha_t == 0:
                 if np.isnan(self.alpha_zero_mean):
                     self.alpha_zero_mean = entropy_change
