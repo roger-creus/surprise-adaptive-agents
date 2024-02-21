@@ -283,10 +283,13 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
             if global_step % args.video_log_freq == 0:
                 eval_episode_dqn(q_network, eval_envs, device, f"runs/{run_name}", global_step, args.env_id, args.track)
 
-    if args.save_model:
-        model_path = f"runs/{run_name}/{args.exp_name}.cleanrl_model"
-        torch.save(q_network.state_dict(), model_path)
-        print(f"model saved to {model_path}")
+                model_path = f"runs/{run_name}/dqn.pt"
+                torch.save(q_network.state_dict(), model_path)
+                print(f"model saved to {model_path}")
+
+    model_path = f"runs/{run_name}/dqn.pt"
+    torch.save(q_network.state_dict(), model_path)
+    print(f"model saved to {model_path}")
         
     envs.close()
     writer.close()
