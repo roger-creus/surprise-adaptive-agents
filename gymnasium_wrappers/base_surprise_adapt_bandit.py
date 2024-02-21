@@ -48,7 +48,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         theta = self.buffer.get_params()
         print(f"theta shape:{theta.shape}")
-        print(f"Metric for the bandit feedback: {"Surprise" if use_surprise else "Entropy"}")
+        metric = "Surprise" if use_surprise else "Entropy"
+        print(f"Metric for the bandit feedback: {metric}")
 
         # Add true reward to surprise
         self.add_true_rew = add_true_rew
