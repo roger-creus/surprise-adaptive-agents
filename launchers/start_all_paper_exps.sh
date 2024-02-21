@@ -13,10 +13,6 @@
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnvLarge smax bernoulli 2 --scale-by-std=1 --soft_reset=0 --track
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnvLarge smax bernoulli 3 --scale-by-std=1 --soft_reset=0 --track
 
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py griddly-MazeEnvLarge none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py griddly-MazeEnvLarge none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py griddly-MazeEnvLarge none bernoulli 3 --scale-by-std=0 --soft_reset=0 --track
-
 # # # ButterfliesEnvLarge
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnvLarge none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track --total-timesteps=10_000_000
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnvLarge none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track --total-timesteps=10_000_000
@@ -29,11 +25,6 @@
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnvLarge smax bernoulli 1 --scale-by-std=1 --soft_reset=0 --track --total-timesteps=10_000_000
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnvLarge smax bernoulli 2 --scale-by-std=1 --soft_reset=0 --track --total-timesteps=10_000_000
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnvLarge smax bernoulli 3 --scale-by-std=1 --soft_reset=0 --track --total-timesteps=10_000_000
-
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py griddly-ButterfliesEnvLarge none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track --total-timesteps=10_000_000
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py griddly-ButterfliesEnvLarge none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track --total-timesteps=10_000_000
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py griddly-ButterfliesEnvLarge none bernoulli 3 --scale-by-std=0 --soft_reset=0 --track --total-timesteps=10_000_000
-
 
 # # Tetris
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py tetris none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track --total-timesteps=10_000_000
@@ -48,10 +39,6 @@
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py tetris smax bernoulli 2 --scale-by-std=1 --soft_reset=0 --track --total-timesteps=10_000_000
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py tetris smax bernoulli 3 --scale-by-std=1 --soft_reset=0 --track --total-timesteps=10_000_000
 
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py tetris none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track --total-timesteps=10_000_000
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py tetris none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track --total-timesteps=10_000_000
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py tetris none bernoulli 3 --scale-by-std=0 --soft_reset=0 --track --total-timesteps=10_000_000
-
 # # Maze
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnv none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnv none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track
@@ -65,10 +52,6 @@
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnv smax bernoulli 2 --scale-by-std=1 --soft_reset=0 --track
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnv smax bernoulli 3 --scale-by-std=1 --soft_reset=0 --track
 
-# sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnv none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track
-# sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnv none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track
-# sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnv none bernoulli 3 --scale-by-std=0 --soft_reset=0 --track
-
 # # Butterflies
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnv none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnv none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track
@@ -81,10 +64,6 @@
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax bernoulli 1 --scale-by-std=1 --soft_reset=0 --track
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax bernoulli 2 --scale-by-std=1 --soft_reset=0 --track
 # sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-ButterfliesEnv smax bernoulli 3 --scale-by-std=1 --soft_reset=0 --track
-
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py griddly-ButterfliesEnv none bernoulli 1 --scale-by-std=0 --soft_reset=0 --track
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py griddly-ButterfliesEnv none bernoulli 2 --scale-by-std=0 --soft_reset=0 --track
-# sbatch launchers/train_cleanrl_roger_long scripts/random_agent.py griddly-ButterfliesEnv none bernoulli 3 --scale-by-std=0 --soft_reset=0 --track
 
 # MazeEnvLarge2
 sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py griddly-MazeEnvLarge2 none bernoulli 4 --scale-by-std=0 --soft_reset=0 --track  --total-timesteps=10_000_000
