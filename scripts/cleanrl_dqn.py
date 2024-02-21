@@ -38,7 +38,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     
     if args.track:
         import wandb
-
+        
         wandb.init(
             project=args.wandb_project_name,
             entity=args.wandb_entity,
@@ -196,6 +196,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                         writer.add_scalar("charts/ucb_alpha_zero", info["ucb_alpha_zero"], global_step)
                     if "random_entropy" in info:
                         writer.add_scalar("charts/random_entropy", info["random_entropy"], global_step)
+                    if "random_surprise" in info:
+                        writer.add_scalar("charts/random_surprise", info["random_surprise"], global_step)
                 writer.add_scalar("charts/deaths", info["deaths"], global_step)
                 writer.add_scalar("charts/epsilon", epsilon, global_step)
 

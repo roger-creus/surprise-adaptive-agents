@@ -238,7 +238,7 @@ def make_env(args):
                 ucb_coeff=args.ucb_coeff,
                 death_cost = args.death_cost,
                 exp_rew = args.exp_rew,
-                use_surprise=True
+                use_surprise=args.use_surprise
             )
         elif args.model == "none":
             env = BaseSurpriseWrapper(
@@ -312,16 +312,13 @@ def register_griddly_envs():
             del old_gym.envs.registration.registry.env_specs[env]
 
     wrapper = GymWrapperFactory()
-    # In this env s-adapt should choose s-min
     wrapper.build_gym_from_yaml('MazeEnv', f"{os.getcwd()}/surprise/envs/maze/maze_env.yaml")
-    # In this env s-adapt should choose s-max
     wrapper.build_gym_from_yaml('MazeEnv2', f"{os.getcwd()}/surprise/envs/maze/maze_env2.yaml")
-    # In this env s-adapt should choose s-min
     wrapper.build_gym_from_yaml('MazeEnvLarge', f"{os.getcwd()}/surprise/envs/maze/maze_env_large.yaml")
-    # In this env s-adapt should choose s-max
     wrapper.build_gym_from_yaml('MazeEnvLarge2', f"{os.getcwd()}/surprise/envs/maze/maze_env_large2.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnvLarge', f"{os.getcwd()}/surprise/envs/maze/butterflies_large.yaml")
+    wrapper.build_gym_from_yaml('ButterfliesEnvLarge2', f"{os.getcwd()}/surprise/envs/maze/butterflies_large2.yaml")
     
 
 class CrafterLogger:
