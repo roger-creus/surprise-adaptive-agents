@@ -9,4 +9,5 @@ wandb/*
 /paper_results/*
 
 runs/*
+paper_runs/*
 ./cleanrl_surprise.tar

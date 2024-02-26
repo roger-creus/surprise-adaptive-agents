@@ -119,7 +119,7 @@ def make_env(args):
                 max_steps = 100
             else:
                 max_steps = 500
-            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
+            env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.SPRITE_2D)
             o_ = env.reset()
             obs_size = o_.shape
             
