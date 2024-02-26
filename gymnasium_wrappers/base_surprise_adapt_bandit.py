@@ -350,6 +350,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         
         self.buffer.reset()
         obs = self.get_obs(obs)
+        self.buffer.add(self.encode_obs(obs))
         return obs, info
 
     def render(self, **kwargs):
