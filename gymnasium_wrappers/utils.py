@@ -118,7 +118,7 @@ def make_env(args):
             if "MazeEnv2" in griddly_env_name:
                 max_steps = 100
             else:
-                max_steps = 500
+                max_steps = 250
             env = old_gym.make(f"GDY-{griddly_env_name}-v0", player_observer_type=gd.ObserverType.VECTOR, global_observer_type=gd.ObserverType.VECTOR)
             o_ = env.reset()
             obs_size = o_.shape
