@@ -50,3 +50,13 @@ sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/Breakou
 sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/SpaceInvaders sadapt-bandit bernoulli 1 --scale-by-std=1 --soft_reset=0 --track  --use_surprise=1 --total-timesteps=10_000_000
 sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/SpaceInvaders sadapt-bandit bernoulli 2 --scale-by-std=1 --soft_reset=0 --track  --use_surprise=1 --total-timesteps=10_000_000
 sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/SpaceInvaders sadapt-bandit bernoulli 3 --scale-by-std=1 --soft_reset=0 --track  --use_surprise=1 --total-timesteps=10_000_000
+
+# MinAtar/Freeway
+sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/Freeway sadapt-bandit bernoulli 1 --scale-by-std=1 --soft_reset=1 --track  --use_surprise=1 --total-timesteps=10_000_000 
+sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/Freeway sadapt-bandit bernoulli 2 --scale-by-std=1 --soft_reset=1 --track  --use_surprise=1 --total-timesteps=10_000_000 
+sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/Freeway sadapt-bandit bernoulli 3 --scale-by-std=1 --soft_reset=1 --track  --use_surprise=1 --total-timesteps=10_000_000 
+
+# MinAtar/Seaques
+sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/Seaquest sadapt-bandit bernoulli 1 --scale-by-std=1 --soft_reset=1 --track  --use_surprise=1 --total-timesteps=10_000_000 
+sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/Seaquest sadapt-bandit bernoulli 2 --scale-by-std=1 --soft_reset=1 --track  --use_surprise=1 --total-timesteps=10_000_000 
+sbatch launchers/train_cleanrl_roger_long scripts/cleanrl_dqn.py MinAtar/Seaquest sadapt-bandit bernoulli 3 --scale-by-std=1 --soft_reset=1 --track  --use_surprise=1 --total-timesteps=10_000_000 
