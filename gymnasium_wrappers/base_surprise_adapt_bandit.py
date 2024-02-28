@@ -109,22 +109,29 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             
         print(self.observation_space)
 
+
+    def calculate_surprise(self, obs):
+        surprise = -self.buffer.logprob(self.encode_obs(obs))
+        thresh = 300
+        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        return surprise
+
+
     def _get_random_entropy(self):
+        random_entropies = []
+        random_surprises = []
+        random_surprises_mean = []
         obs, _ = self._env.reset()
         self.buffer.reset()
         self.buffer.add(self.encode_obs(obs))
-
+        surprise = self.calculate_surprise(obs)
+        random_surprises.append(surprise)
         num_eps = 100
-        random_entropies = []
-        random_surprises = []
         for _ in range(num_eps):
             for t in range(self.max_steps):
                 obs, rew, envdone, envtrunc, info = self._env.step(self.action_space.sample())
-
                 # compute surprise
-                surprise = -self.buffer.logprob(self.encode_obs(obs))
-                thresh = 300
-                surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+                surprise = self.calculate_surprise(obs)
                 random_surprises.append(surprise)
 
                 self.buffer.add(self.encode_obs(obs))
@@ -134,14 +141,18 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                     else:
                         break
             random_entropy = self.buffer.entropy()
+            random_surprises_mean.append(np.mean(random_surprises))
             random_entropies.append(random_entropy)
             obs, _ = self._env.reset()
             self.buffer.reset()
             self.buffer.add(self.encode_obs(obs))
-
+            random_surprises.clear()
+            surprise = self.calculate_surprise(obs)
+            random_surprises.append(surprise)
         print(f"len(random_entropies): {len(random_entropies)}")
+        print(f"len(random_surprises_mean): {len(random_surprises_mean)}")
         self.buffer.reset()
-        return np.mean(random_entropies), np.mean(random_surprises)
+        return np.mean(random_entropies), np.mean(random_surprises_mean)
 
     def _get_alpha(self):
         ucb_alpha_zero = None
@@ -213,9 +224,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
         # use the original observation for surprise calculation
         # this will be used for griddly envs and compute surprise with the bernoulli buffer
-        surprise = -self.buffer.logprob(self.encode_obs(obs))
-        thresh = 300
-        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        surprise = self.calculate_surprise(obs)
         self.ep_surprise.append(surprise)
         
 
@@ -351,6 +360,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.buffer.reset()
         obs = self.get_obs(obs)
         self.buffer.add(self.encode_obs(obs))
+        self.ep_surprise.clear()
+        surprise = self.calculate_surprise(obs)
+        self.ep_surprise.append(surprise)
         return obs, info
 
     def render(self, **kwargs):
