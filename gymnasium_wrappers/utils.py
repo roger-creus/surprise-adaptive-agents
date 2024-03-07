@@ -23,6 +23,14 @@ import ast
 from IPython import embed
 from gymnasium.envs.registration import register as gym_register
 
+from stable_baselines3.common.atari_wrappers import (
+    ClipRewardEnv,
+    EpisodicLifeEnv,
+    FireResetEnv,
+    MaxAndSkipEnv,
+    NoopResetEnv,
+)
+
 
 class RecordEpisodeStatistics(gym.Wrapper):
     def __init__(self, env, deque_size=100):
@@ -155,6 +163,29 @@ def make_env(args):
             from gymnasium_wrappers.wrappers import GrafterStatsWrapper
             env = GrafterStatsWrapper(env)
 
+        elif "Atari" in args.env_id:
+            atari_env_name = args.env_id.split('-')[-1]
+            max_steps = 500
+            env = gym.make(f"{atari_env_name}NoFrameskip-v4", render_mode='rgb_array', max_episode_steps=max_steps)
+            env = NoopResetEnv(env, noop_max=30)
+            env = MaxAndSkipEnv(env, skip=4)
+            env = EpisodicLifeEnv(env)
+            if "FIRE" in env.unwrapped.get_action_meanings():
+                env = FireResetEnv(env)
+            env = ClipRewardEnv(env)
+            env = gym.wrappers.ResizeObservation(env, (64, 64))
+            env = gym.wrappers.GrayScaleObservation(env, keep_dim=True)
+            # env = gym.wrappers.FrameStack(env, 4)
+            print(env.observation_space.sample().shape)
+            grayscale = True
+            channel_dim = 1 if grayscale else 3
+            env = ObsHistoryWrapper(env, history_length=4, stack_channels=True, channel_dim=2)
+            theta_size =  ast.literal_eval(args.theta_size)
+            theta_size = (theta_size[0], theta_size[1], channel_dim) if grayscale else (theta_size[0], theta_size[1], channel_dim)
+            obs_size = theta_size
+            print("Atari theta size")
+            print(obs_size)
+
         else:
             print(f"Making {args.env_id}")
             env = gym.make(args.env_id, render_mode='rgb_array', max_episode_steps = 500)
@@ -232,7 +263,7 @@ def make_env(args):
                 env, 
                 buffer,
                 add_true_rew=args.add_true_rew,
-                int_rew_scale=1.0,
+                int_rew_scale=args.int_rew_scale,
                 max_steps = max_steps,
                 theta_size = theta_size,
                 grayscale = grayscale,

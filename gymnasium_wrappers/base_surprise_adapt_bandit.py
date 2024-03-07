@@ -358,11 +358,11 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             self.heatmap = None
         
         self.buffer.reset()
-        obs = self.get_obs(obs)
         self.buffer.add(self.encode_obs(obs))
-        self.ep_surprise.clear()
         surprise = self.calculate_surprise(obs)
+        self.ep_surprise.clear()
         self.ep_surprise.append(surprise)
+        obs = self.get_obs(obs)
         return obs, info
 
     def render(self, **kwargs):
@@ -372,7 +372,19 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         """
         Used to encode the observation before putting on the buffer
         """
-        if isinstance(obs, dict):
+        # print(f"obs shape: {obs.shape}")
+        if self._theta_size:
+            # if the image is stack of images then take the first one
+            if self._grayscale:
+                theta_obs = obs[:, :, -1] [:, :, None]
+            else:
+                theta_obs = obs[:, :, -3:]
+            # print(f"theta shape before resize: {theta_obs.shape}")
+            theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
+            theta_obs = theta_obs.astype(np.float32)[:, :, None]
+            # print(f"theta_obs.shape:{theta_obs.shape}")
+            return theta_obs
+        elif isinstance(obs, dict):
             return obs["obs"].astype(np.float32)
         else:
             return obs.astype(np.float32)
