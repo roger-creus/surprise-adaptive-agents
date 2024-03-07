@@ -352,6 +352,12 @@ def register_griddly_envs():
     wrapper.build_gym_from_yaml('ButterfliesEnv', f"{os.getcwd()}/surprise/envs/maze/butterflies.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnvLarge', f"{os.getcwd()}/surprise/envs/maze/butterflies_large.yaml")
     wrapper.build_gym_from_yaml('ButterfliesEnvLarge2', f"{os.getcwd()}/surprise/envs/maze/butterflies_large2.yaml")
+    wrapper.build_gym_from_yaml('ButterfliesEnvLarge3', f"{os.getcwd()}/surprise/envs/maze/butterflies_large3.yaml")
+    wrapper.build_gym_from_yaml('ButterfliesEnvLarge4', f"{os.getcwd()}/surprise/envs/maze/butterflies_large4.yaml")
+    wrapper.build_gym_from_yaml('ButterfliesEnvLarge5', f"{os.getcwd()}/surprise/envs/maze/butterflies_large5.yaml")
+    wrapper.build_gym_from_yaml('ButterfliesEnvLarge6', f"{os.getcwd()}/surprise/envs/maze/butterflies_large6.yaml")
+    wrapper.build_gym_from_yaml('ButterfliesEnvLarge7', f"{os.getcwd()}/surprise/envs/maze/butterflies_large7.yaml")
+    wrapper.build_gym_from_yaml('ButterfliesEnvLarge8', f"{os.getcwd()}/surprise/envs/maze/butterflies_large8.yaml")
     
 
 class CrafterLogger:
