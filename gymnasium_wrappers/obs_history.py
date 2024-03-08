@@ -26,6 +26,7 @@ class ObsHistoryWrapper(gym.Wrapper):
         self.observation_space_old = env.observation_space
         shape_ = list(env.observation_space.low.shape)
         self.gray_scale = True if shape_[self._channel_dim] == 1 else False
+        self.channel_dim = shape_[self._channel_dim]
         shape_[self._channel_dim] = shape_[self._channel_dim] * self._history_length 
         self.observation_space = Box(0, 1, shape=shape_ )    
         self.obs_stack = np.zeros(shape_)
@@ -40,8 +41,8 @@ class ObsHistoryWrapper(gym.Wrapper):
             self.obs_stack[:, :, :-1] = self.obs_stack[:, :, 1:]
             self.obs_stack[:, :, -1] = obs.squeeze()
         else:
-            self.obs_stack[:, :, :-3] = self.obs_stack[:, :, 3:]
-            self.obs_stack[:, :, -3:] = obs
+            self.obs_stack[:, :, :-self.channel_dim] = self.obs_stack[:, :, self.channel_dim:]
+            self.obs_stack[:, :, -self.channel_dim:] = obs
 
         self._time += 1
         return self.obs_stack, env_rew, envdone, envtrunc ,info 
@@ -56,8 +57,8 @@ class ObsHistoryWrapper(gym.Wrapper):
             self.obs_stack[:, :, :-1] = self.obs_stack[:, :, 1:]
             self.obs_stack[:, :, -1] = obs.squeeze()
         else:
-            self.obs_stack[:, :, :-3] = self.obs_stack[:, :, 3:]
-            self.obs_stack[:, :, -3:] = obs
+            self.obs_stack[:, :, :-self.channel_dim] = self.obs_stack[:, :, self.channel_dim:]
+            self.obs_stack[:, :, -self.channel_dim:] = obs
         obs = self.obs_stack
         return obs, info
     

@@ -85,6 +85,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         crafter_logger = CrafterLogger()
     elif "MinAtar" in args.env_id or "griddly" in args.env_id:
         net = MinAtarQNetwork
+    elif "Atari" in args.env_id:
+        net = AtariQNetwork
     else:
         raise NotImplementedError
     
@@ -151,7 +153,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         next_obs, rewards, terminated, truncated, infos = envs.step(actions)
 
         # extract the bandit choice from the observation
-        if "bandit" in args.model:
+        if "bandit" in args.model and args.scale_by_std:
             bandit_choice = int(obs["theta"].reshape(-1)[-1])
             if bandit_choice == 0:
                 smax_rms.update(np.array([rewards]).flatten())
