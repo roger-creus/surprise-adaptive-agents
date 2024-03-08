@@ -210,6 +210,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     info["Average_episode_length"],
                     np.mean(ep_surprise),
                     np.mean(ep_entropy),
+                    info["alpha_rolling_average"] if args.model == "sadapt-bandit" else 0,
                 ])
 
                 if ep_counter % 1000 == 0 and "Rooms" in args.env_id:

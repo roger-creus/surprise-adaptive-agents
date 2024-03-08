@@ -272,7 +272,8 @@ def make_csv_logger(csv_path):
         'ep_return',
         "ep_length",
         "ep_surprise",
-        "ep_entropy"
+        "ep_entropy",
+        "rolling_alpha"
     ]
     log_level = ['logs_a']
     logger_ = csv_logger.CsvLogger(
