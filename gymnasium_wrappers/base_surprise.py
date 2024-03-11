@@ -56,12 +56,14 @@ class BaseSurpriseWrapper(gym.Env):
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
         
-        # the new theta shape has to be the extact theta.shape but +1 in first dimension
-        len_theta = len(theta)
-        new_theta_shape = (theta.shape[0] + 1, )
-        for i in range(len(theta.shape) - 1):
-            new_theta_shape += (theta.shape[i+1],)
-
+        # the new theta shape has to be the extact theta.shape but +1 in channel dimension
+        # the additional dimension is the time-step
+        new_theta_shape = (theta.shape[0], )
+        for i in range(1, len(theta.shape)):
+            if i == len(theta.shape)-1:
+                new_theta_shape += (theta.shape[i] + 1, ) # in the last index (the channel dim) add 1 channels
+            else:
+                new_theta_shape += (theta.shape[i], )
         print(f"new_theta_shape:{new_theta_shape}")
 
         # instead of hardcoding the keys. Make sure to add all the keys from the original observation space
@@ -166,18 +168,27 @@ class BaseSurpriseWrapper(gym.Env):
         theta = self.buffer.get_params()
         num_samples = (np.ones(1)*self.buffer.buffer_size) / self.max_steps
 
-        obs_ = {}
+        aug_obs = {}
         if isinstance(self.env_obs_space, Box):
-            obs_["obs"] = obs
+            aug_obs["obs"] = obs
         elif isinstance(self.env_obs_space, Dict):
             for key in self.env_obs_space.spaces.keys():
-                obs_[key] = obs[key]
+                aug_obs[key] = obs[key]
         else:
             raise ValueError("Observation space not supported")
+        
+        num_samples = (np.ones(theta.shape[:-1]) * num_samples)[..., None]
 
-        num_samples = np.ones_like(theta[0]) * num_samples
-        obs_["theta"] = np.concatenate([theta, num_samples[None, :]], axis=0)
-        return obs_
+        theta_obs = np.concatenate([theta,
+                                    num_samples,
+                                    ], axis=-1)
+        
+        # print(f"theta shape before cat: {theta.shape}")
+        # print(f"theta shape after cat: {theta_obs.shape}")
+
+        aug_obs["theta"] = theta_obs
+        
+        return aug_obs
 
     def reset(self, seed=None, options=None):
         obs, info = self._env.reset()
@@ -203,14 +214,17 @@ class BaseSurpriseWrapper(gym.Env):
         """
         Used to encode the observation before putting on the buffer
         """
+        # print(f"obs shape: {obs.shape}")
         if self._theta_size:
             # if the image is stack of images then take the first one
             if self._grayscale:
-                theta_obs = obs[:, :, -1]
+                theta_obs = obs[:, :, -1] [:, :, None]
             else:
                 theta_obs = obs[:, :, -3:]
+            # print(f"theta shape before resize: {theta_obs.shape}")
             theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
-            theta_obs = theta_obs.flatten().astype(np.float32)
+            theta_obs = theta_obs.astype(np.float32)[:, :, None]
+            # print(f"theta_obs.shape:{theta_obs.shape}")
             return theta_obs
         elif isinstance(obs, dict):
             return obs["obs"].astype(np.float32)

@@ -165,7 +165,7 @@ def make_env(args):
 
         elif "Atari" in args.env_id:
             atari_env_name = args.env_id.split('-')[-1]
-            max_steps = 500
+            max_steps = 108_000
             env = gym.make(f"{atari_env_name}NoFrameskip-v4", render_mode='rgb_array', max_episode_steps=max_steps)
             env = NoopResetEnv(env, noop_max=30)
             env = MaxAndSkipEnv(env, skip=4)
@@ -175,7 +175,6 @@ def make_env(args):
             env = ClipRewardEnv(env)
             env = gym.wrappers.ResizeObservation(env, (64, 64))
             env = gym.wrappers.GrayScaleObservation(env, keep_dim=True)
-            # env = gym.wrappers.FrameStack(env, 4)
             print(env.observation_space.sample().shape)
             grayscale = True
             channel_dim = 1 if grayscale else 3

@@ -67,8 +67,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
         
-        # the new theta shape has to be the extact theta.shape but +2 in first dimension
-        # the additional dimension are the time-step and bandit choice
+        # the new theta shape has to be the extact theta.shape but +2 in channel dimension
+        # the additional dimensions are the time-step and bandit choice
         new_theta_shape = (theta.shape[0], )
         for i in range(1, len(theta.shape)):
             if i == len(theta.shape)-1:
