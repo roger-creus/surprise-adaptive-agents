@@ -290,7 +290,8 @@ def make_env(args):
                 grayscale = grayscale,
                 soft_reset=args.soft_reset,
                 survival_rew=args.survival_rew,
-                death_cost = args.death_cost
+                death_cost = args.death_cost,
+                threshold=threshold
             )
             
         else:
