@@ -200,6 +200,9 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                         writer.add_scalar("charts/random_entropy", info["random_entropy"], global_step)
                     if "random_surprise" in info:
                         writer.add_scalar("charts/random_surprise", info["random_surprise"], global_step)
+                    if "alpha_one_mean" in info:
+                        writer.add_scalar("charts/alpha_one_mean", info["alpha_one_mean"], global_step)
+                        writer.add_scalar("charts/alpha_zero_mean", info["alpha_zero_mean"], global_step)
                 writer.add_scalar("charts/deaths", info["deaths"], global_step)
                 writer.add_scalar("charts/epsilon", epsilon, global_step)
 

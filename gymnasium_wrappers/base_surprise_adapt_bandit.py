@@ -20,6 +20,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         death_cost = False,
         exp_rew = False,
         use_surprise = True,
+        threshold=300
     ):
         '''
         params
@@ -45,6 +46,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.pretrain_steps = 0
         self.current_steps = 0
         self.use_surprise = use_surprise
+        self._threshold = threshold
 
         theta = self.buffer.get_params()
         print(f"theta shape:{theta.shape}")
@@ -112,7 +114,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
 
     def calculate_surprise(self, obs):
         surprise = -self.buffer.logprob(self.encode_obs(obs))
-        thresh = 300
+        thresh = self._threshold
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         return surprise
 
@@ -210,6 +212,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 info["alpha_rolling_average"] = self.alpha_rolling_average
                 if self.ucb_alpha_one: info["ucb_alpha_one"] = self.ucb_alpha_one
                 if self.ucb_alpha_zero: info["ucb_alpha_zero"] = self.ucb_alpha_zero
+                if not np.isnan(self.alpha_one_mean): info["alpha_one_mean"] = self.alpha_one_mean
+                if not np.isnan(self.alpha_zero_mean): info["alpha_zero_mean"] = self.alpha_zero_mean
             else:
                 envdone = False
                 envtrunc = False
@@ -221,6 +225,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 info["alpha_rolling_average"] = self.alpha_rolling_average
                 if self.ucb_alpha_one: info["ucb_alpha_one"] = self.ucb_alpha_one
                 if self.ucb_alpha_zero: info["ucb_alpha_zero"] = self.ucb_alpha_zero
+                if not np.isnan(self.alpha_one_mean): info["alpha_one_mean"] = self.alpha_one_mean
+                if not np.isnan(self.alpha_zero_mean): info["alpha_zero_mean"] = self.alpha_zero_mean
 
         # use the original observation for surprise calculation
         # this will be used for griddly envs and compute surprise with the bernoulli buffer
@@ -284,10 +290,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         theta_obs = np.concatenate([theta,
                                     num_samples,
                                     alpha_t], axis=-1)
-        
-        # print(f"theta shape before cat: {theta.shape}")
-        # print(f"theta shape after cat: {theta_obs.shape}")
-
         aug_obs["theta"] = theta_obs
         
         return aug_obs
@@ -372,17 +374,14 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         """
         Used to encode the observation before putting on the buffer
         """
-        # print(f"obs shape: {obs.shape}")
         if self._theta_size:
             # if the image is stack of images then take the first one
             if self._grayscale:
                 theta_obs = obs[:, :, -1] [:, :, None]
             else:
                 theta_obs = obs[:, :, -3:]
-            # print(f"theta shape before resize: {theta_obs.shape}")
             theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
             theta_obs = theta_obs.astype(np.float32)[:, :, None]
-            # print(f"theta_obs.shape:{theta_obs.shape}")
             return theta_obs
         elif isinstance(obs, dict):
             return obs["obs"].astype(np.float32)

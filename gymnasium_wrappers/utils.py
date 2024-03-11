@@ -69,6 +69,7 @@ def make_env(args):
     def thunk():
         theta_size = None
         grayscale = None
+        threshold = 300
         ############ Create environment ############
         if "Adapt" in args.env_id:
             gym_register(
@@ -182,6 +183,7 @@ def make_env(args):
             theta_size =  ast.literal_eval(args.theta_size)
             theta_size = (theta_size[0], theta_size[1], channel_dim) if grayscale else (theta_size[0], theta_size[1], channel_dim)
             obs_size = theta_size
+            threshold = 60_000
             print("Atari theta size")
             print(obs_size)
 
@@ -216,7 +218,8 @@ def make_env(args):
                 grayscale = grayscale,
                 soft_reset=args.soft_reset,
                 death_cost = args.death_cost,
-                exp_rew = args.exp_rew
+                exp_rew = args.exp_rew,
+                threshold=threshold
             )
         
         elif args.model == "smin":
@@ -231,7 +234,8 @@ def make_env(args):
                 grayscale = grayscale,
                 soft_reset=args.soft_reset,
                 death_cost = args.death_cost,
-                exp_rew = args.exp_rew
+                exp_rew = args.exp_rew,
+                threshold=threshold
             )
         
         elif args.model == "sadapt":
@@ -270,7 +274,8 @@ def make_env(args):
                 ucb_coeff=args.ucb_coeff,
                 death_cost = args.death_cost,
                 exp_rew = args.exp_rew,
-                use_surprise=args.use_surprise
+                use_surprise=args.use_surprise,
+                threshold=threshold
             )
         elif args.model == "none":
             env = BaseSurpriseWrapper(

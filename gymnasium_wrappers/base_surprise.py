@@ -18,7 +18,8 @@ class BaseSurpriseWrapper(gym.Env):
                  soft_reset=True,
                  survival_rew=False,
                  death_cost = False,
-                 exp_rew = False
+                 exp_rew = False,
+                 threshold=300
                 ):
         '''
         params
@@ -36,6 +37,7 @@ class BaseSurpriseWrapper(gym.Env):
         self._survival_rew = survival_rew
         self._death_cost = death_cost
         self._exp_rew = exp_rew
+        self._threshold = threshold
 
         print(f"_theta_size:{self._theta_size}")
         print(f"_grayscale:{self._grayscale}")
@@ -118,7 +120,7 @@ class BaseSurpriseWrapper(gym.Env):
         # use the original observation for surprise calculation
         # this will be used for griddly envs and compute surprise with the bernoulli buffer
         surprise = -self.buffer.logprob(self.encode_obs(obs))
-        thresh = 300
+        thresh = self._threshold
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         
 
@@ -182,10 +184,6 @@ class BaseSurpriseWrapper(gym.Env):
         theta_obs = np.concatenate([theta,
                                     num_samples,
                                     ], axis=-1)
-        
-        # print(f"theta shape before cat: {theta.shape}")
-        # print(f"theta shape after cat: {theta_obs.shape}")
-
         aug_obs["theta"] = theta_obs
         
         return aug_obs
@@ -214,17 +212,15 @@ class BaseSurpriseWrapper(gym.Env):
         """
         Used to encode the observation before putting on the buffer
         """
-        # print(f"obs shape: {obs.shape}")
         if self._theta_size:
             # if the image is stack of images then take the first one
             if self._grayscale:
                 theta_obs = obs[:, :, -1] [:, :, None]
             else:
                 theta_obs = obs[:, :, -3:]
-            # print(f"theta shape before resize: {theta_obs.shape}")
+
             theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
             theta_obs = theta_obs.astype(np.float32)[:, :, None]
-            # print(f"theta_obs.shape:{theta_obs.shape}")
             return theta_obs
         elif isinstance(obs, dict):
             return obs["obs"].astype(np.float32)
