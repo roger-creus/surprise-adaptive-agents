@@ -183,7 +183,7 @@ def make_env(args):
             theta_size =  ast.literal_eval(args.theta_size)
             theta_size = (theta_size[0], theta_size[1], channel_dim) if grayscale else (theta_size[0], theta_size[1], channel_dim)
             obs_size = theta_size
-            threshold = 60_000
+            threshold = 80_000
             print("Atari theta size")
             print(obs_size)
 
