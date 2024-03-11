@@ -252,8 +252,8 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                         bandit_choice = data.observations["theta"].reshape(args.batch_size, -1)[:, -1]
                         smin_rewards = rewards[bandit_choice==1]
                         smax_rewards = rewards[bandit_choice==0]
-                        smin_rewards = (smin_rewards - smin_rms.mean) / np.sqrt(smin_rms.var)
-                        smax_rewards = (smax_rewards - smax_rms.mean) / np.sqrt(smax_rms.var)
+                        smin_rewards = (smin_rewards - smin_rms.mean.item()) / np.sqrt(smin_rms.var.item())
+                        smax_rewards = (smax_rewards - smax_rms.mean.item()) / np.sqrt(smax_rms.var.item())
                         rewards[bandit_choice==1] = smin_rewards 
                         rewards[bandit_choice==0] = smax_rewards
                 with torch.no_grad():
