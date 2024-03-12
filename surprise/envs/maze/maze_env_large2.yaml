@@ -13,81 +13,81 @@ Environment:
       - eq:
           - _steps
           - 500
-  Levels:   
+  Levels:
     - >
       w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w  
       w   w   w   w   w   w   w   w   w   w   w   w   w   w   
 
-      w   w   w   w   w   w   w   w   w   w   w   .   w   w   w   w   w   w  
+      w   A   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w  
       w   w   w   w   w   w   .   .   .   .   .   .   .   w   
 
-      w   w   w   w   w   w   w   .   .   .   .   .   .   .   .   .   .   .  
+      w   .   w   w   w   w   w   .   .   .   .   .   .   .   .   .   .   .  
       .   .   .   .   .   .   .   w   w   w   w   .   w   w   
 
-      w   w   w   w   .   w   w   .   w   .   w   w   w   w   w   w   w   w  
+      w   .   w   w   .   w   w   .   w   w   w   w   w   w   w   w   w   w  
       w   w   w   w   .   .   .   w   .   .   .   .   w   w   
 
-      w   w   w   w   .   w   w   .   w   w   w   w   w   w   .   .   .   .  
+      w   .   w   w   .   w   w   .   w   w   w   w   w   w   .   .   .   .  
       .   .   .   .   .   w   w   w   w   .   .   .   w   w   
 
-      w   .   .   .   .   .   .   .   w   w   w   .   .   .   .   w   w   w  
+      w   .   w   .   .   .   .   .   w   w   w   .   .   .   .   w   w   w  
       w   .   w   w   w   w   .   .   .   .   .   .   w   w   
 
-      w   w   w   w   w   w   w   .   w   w   w   .   w   w   w   w   w   w  
+      w   .   w   w   w   w   w   w   w   w   w   .   w   w   w   w   w   w  
       w   .   w   .   .   .   .   .   w   w   w   w   w   w   
 
-      w   A   .   w   .   .   .   .   .   .   .   .   .   .   .   .   w   w  
+      w   .   w   w   .   .   .   .   .   .   .   .   .   .   .   .   w   w  
       w   .   w   w   w   .   .   w   w   .   .   .   .   w   
 
-      w   .   .   w   .   w   .   w   w   w   w   w   w   w   w   .   w   w  
+      w   .   w   w   w   w   w   w   w   w   w   w   w   w   w   .   w   w  
       w   .   .   .   w   w   w   w   .   .   .   .   .   w   
 
       w   .   w   w   w   w   w   w   w   w   .   .   .   .   .   .   w   w  
       w   .   .   .   .   .   .   w   .   .   .   .   .   w   
 
-      w   .   w   w   w   w   .   w   w   w   .   w   w   w   .   .   w   .  
+      w   .   w   w   w   w   w   w   w   w   .   w   w   w   .   .   w   .  
       .   .   .   .   .   .   .   .   .   .   .   .   .   w   
 
-      w   .   w   w   w   w   .   w   w   w   .   w   w   w   w   .   w   .  
-      .   w   w   w   w   w   .   .   w   w   .   .   .   w   
+      w   .   w   w   w   w   w   w   w   w   .   w   w   w   w   .   w   .  
+      w   w   w   w   w   w   .   .   w   w   .   .   .   w   
 
-      w   .   .   .   .   .   .   .   w   .   .   .   .   .   .   .   w   .  
-      .   w   .   .   .   w   .   .   .   w   w   .   .   w   
+      w   .   w   .   .   .   .   .   w   .   .   .   .   .   .   .   w   .  
+      w   w   .   .   .   w   .   .   .   w   w   .   .   w   
 
-      w   w   w   w   w   w   w   .   w   .   .   .   .   .   .   w   w   .  
-      .   w   .   .   .   w   .   .   .   w   w   .   .   w   
+      w   .   w   w   w   w   w   .   w   .   .   .   .   .   .   w   w   .  
+      w   w   .   .   .   w   .   .   .   w   w   .   .   w   
 
-      w   .   .   .   .   .   w   .   w   w   w   w   w   .   .   .   .   .  
+      w   .   w   .   .   .   w   .   w   w   w   w   w   .   .   .   .   .  
       w   w   .   .   .   w   .   .   .   w   .   .   .   w   
 
-      w   .   .   .   .   .   w   .   .   .   .   .   w   .   .   .   .   .  
+      w   .   w   .   .   .   w   .   .   .   .   .   w   w   w   w   w   .  
       w   .   .   .   w   w   .   .   w   w   .   .   .   w   
 
-      w   .   .   .   .   .   w   .   .   .   .   .   .   .   .   .   .   .  
+      w   .   w   .   .   .   w   w   w   .   .   .   .   .   .   .   .   .  
       .   .   .   w   w   .   .   w   w   .   .   .   .   w   
 
-      w   .   .   w   w   w   w   .   .   .   .   w   w   w   w   w   .   .  
-      .   .   .   w   .   .   .   w   .   .   .   .   x   w   
+      w   .   w   w   w   w   w   .   w   .   .   w   w   w   w   w   w   w  
+      w   .   .   w   .   .   .   w   .   .   .   .   x   w   
 
-      w   .   .   w   .   .   .   .   .   .   w   w   .   .   .   w   .   .  
-      w   .   .   .   .   .   w   w   .   .   .   .   .   w   
-
-      w   .   .   .   .   .   .   .   .   .   w   .   .   .   .   w   .   w  
+      w   .   .   .   .   .   .   w   w   .   w   w   .   .   .   w   w   w  
       w   w   .   .   .   .   w   w   .   .   .   .   .   w   
 
-      w   .   .   .   .   .   w   .   .   w   w   .   .   .   .   w   w   w  
-      w   w   w   .   .   .   .   w   .   .   .   .   .   w   
+      w   w   w   w   w   w   .   .   .   .   w   .   .   .   .   w   w   w  
+      w   w   w   .   .   .   w   w   .   .   .   .   .   w   
 
-      w   .   .   w   w   .   w   .   .   w   .   .   .   .   .   .   .   .  
+      w   .   .   w   w   w   w   w   .   w   w   .   .   .   .   w   w   w  
+      w   w   w   w   .   .   .   w   .   .   .   .   .   w   
+
+      w   .   .   w   w   .   w   w   .   w   .   .   .   .   .   .   .   .  
       .   .   w   w   .   .   .   w   .   .   .   .   .   w   
 
-      w   .   .   .   w   .   w   .   .   w   w   w   w   .   .   .   .   .  
+      w   .   .   .   w   .   w   w   .   w   w   w   w   .   .   .   .   .  
       .   .   .   w   w   .   .   w   .   .   w   w   w   w   
 
-      w   .   .   .   w   .   w   .   .   .   .   .   w   w   w   w   .   .  
+      w   .   .   .   w   .   w   w   .   .   .   .   w   w   w   w   .   .  
       .   .   .   w   w   w   w   w   .   .   w   .   .   w   
 
-      w   .   w   w   w   .   w   w   .   .   .   .   .   .   .   w   w   w  
+      w   .   w   w   w   .   w   w   w   w   w   .   .   .   .   w   w   w  
       .   .   .   .   w   .   .   .   .   .   .   .   .   w   
 
       w   .   w   .   .   .   .   w   w   w   w   .   .   .   .   .   .   w  

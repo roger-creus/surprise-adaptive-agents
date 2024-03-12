@@ -18,7 +18,8 @@ class BaseSurpriseWrapper(gym.Env):
                  soft_reset=True,
                  survival_rew=False,
                  death_cost = False,
-                 exp_rew = False
+                 exp_rew = False,
+                 threshold=300
                 ):
         '''
         params
@@ -36,6 +37,7 @@ class BaseSurpriseWrapper(gym.Env):
         self._survival_rew = survival_rew
         self._death_cost = death_cost
         self._exp_rew = exp_rew
+        self._threshold = threshold
 
         print(f"_theta_size:{self._theta_size}")
         print(f"_grayscale:{self._grayscale}")
@@ -56,12 +58,14 @@ class BaseSurpriseWrapper(gym.Env):
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
         
-        # the new theta shape has to be the extact theta.shape but +1 in first dimension
-        len_theta = len(theta)
-        new_theta_shape = (theta.shape[0] + 1, )
-        for i in range(len(theta.shape) - 1):
-            new_theta_shape += (theta.shape[i+1],)
-
+        # the new theta shape has to be the extact theta.shape but +1 in channel dimension
+        # the additional dimension is the time-step
+        new_theta_shape = (theta.shape[0], )
+        for i in range(1, len(theta.shape)):
+            if i == len(theta.shape)-1:
+                new_theta_shape += (theta.shape[i] + 1, ) # in the last index (the channel dim) add 1 channels
+            else:
+                new_theta_shape += (theta.shape[i], )
         print(f"new_theta_shape:{new_theta_shape}")
 
         # instead of hardcoding the keys. Make sure to add all the keys from the original observation space
@@ -116,7 +120,7 @@ class BaseSurpriseWrapper(gym.Env):
         # use the original observation for surprise calculation
         # this will be used for griddly envs and compute surprise with the bernoulli buffer
         surprise = -self.buffer.logprob(self.encode_obs(obs))
-        thresh = 300
+        thresh = self._threshold
         surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
         
 
@@ -166,18 +170,23 @@ class BaseSurpriseWrapper(gym.Env):
         theta = self.buffer.get_params()
         num_samples = (np.ones(1)*self.buffer.buffer_size) / self.max_steps
 
-        obs_ = {}
+        aug_obs = {}
         if isinstance(self.env_obs_space, Box):
-            obs_["obs"] = obs
+            aug_obs["obs"] = obs
         elif isinstance(self.env_obs_space, Dict):
             for key in self.env_obs_space.spaces.keys():
-                obs_[key] = obs[key]
+                aug_obs[key] = obs[key]
         else:
             raise ValueError("Observation space not supported")
+        
+        num_samples = (np.ones(theta.shape[:-1]) * num_samples)[..., None]
 
-        num_samples = np.ones_like(theta[0]) * num_samples
-        obs_["theta"] = np.concatenate([theta, num_samples[None, :]], axis=0)
-        return obs_
+        theta_obs = np.concatenate([theta,
+                                    num_samples,
+                                    ], axis=-1)
+        aug_obs["theta"] = theta_obs
+        
+        return aug_obs
 
     def reset(self, seed=None, options=None):
         obs, info = self._env.reset()
@@ -206,11 +215,12 @@ class BaseSurpriseWrapper(gym.Env):
         if self._theta_size:
             # if the image is stack of images then take the first one
             if self._grayscale:
-                theta_obs = obs[:, :, -1]
+                theta_obs = obs[:, :, -1] [:, :, None]
             else:
                 theta_obs = obs[:, :, -3:]
+
             theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
-            theta_obs = theta_obs.flatten().astype(np.float32)
+            theta_obs = theta_obs.astype(np.float32)[:, :, None]
             return theta_obs
         elif isinstance(obs, dict):
             return obs["obs"].astype(np.float32)

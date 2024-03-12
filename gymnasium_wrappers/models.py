@@ -292,6 +292,67 @@ class MinAtarQNetwork(nn.Module):
         return self.linear(x)
     
 
+class AtariQNetwork(nn.Module):
+    def __init__(self, envs, use_theta=False):
+        super().__init__()
+        in_channels = envs.single_observation_space["obs"].shape[-1]
+        theta_in_channels = envs.single_observation_space["theta"].shape[-1]
+        self.network = nn.Sequential(
+            nn.Conv2d(in_channels, 32, 8, stride=4),
+            nn.ReLU(),
+            nn.Conv2d(32, 64, 4, stride=2),
+            nn.ReLU(),
+            nn.Conv2d(64, 64, 3, stride=1),
+            nn.ReLU(),
+            nn.Flatten(),
+        )
+
+        with torch.no_grad():
+            s_ = envs.single_observation_space["obs"].sample()[None]
+            n_flatten = self.network(torch.as_tensor(s_).float().permute(0,3,1,2)).shape[1]
+
+        self.use_theta = use_theta
+        if use_theta:
+            self.theta_network = nn.Sequential(
+                nn.Conv2d(theta_in_channels, 32, 8, stride=4),
+                nn.ReLU(),
+                nn.Conv2d(32, 64, 4, stride=2),
+                nn.ReLU(),
+                # nn.Conv2d(64, 64, 3, stride=1),
+                # nn.ReLU(),
+                nn.Flatten(),
+            )
+
+            with torch.no_grad():
+                t_ = envs.single_observation_space["theta"].sample()[None]
+                n_flatten += self.theta_network(torch.as_tensor(t_).float().permute(0,3,1,2)).shape[1]
+
+
+        self.linear = nn.Sequential(
+            nn.Linear(n_flatten, 512), 
+            nn.ReLU(),
+            nn.Linear(512, envs.single_action_space.n), 
+        )
+
+
+    def forward(self, x):
+        x_ = x["obs"]
+        y_ = x["theta"]
+        x_ = x_ / 255.0
+        y_ = y_ / 255.0
+
+        img_features = self.network(x_.float().permute(0,3,1,2))
+
+        if self.use_theta:
+            theta_features = self.theta_network(y_.float().permute(0,3,1,2))
+            x = torch.cat([img_features, theta_features], dim=1)
+        else:
+            x = img_features
+
+        return self.linear(x)
+
+
+
 def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
     torch.nn.init.orthogonal_(layer.weight, std)
     torch.nn.init.constant_(layer.bias, bias_const)

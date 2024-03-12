@@ -16,7 +16,7 @@ def parse_args_dqn():
         help="if toggled, cuda will be enabled by default")
     parser.add_argument("--track", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="if toggled, this experiment will be tracked with Weights and Biases")
-    parser.add_argument("--wandb-project-name", type=str, default="Final_DQN",
+    parser.add_argument("--wandb-project-name", type=str, default="Final_DQN_s_adapt_2",
         help="the wandb's project name")
     parser.add_argument("--wandb-entity", type=str, default=None,
         help="the entity (team) of wandb's project")
@@ -56,7 +56,7 @@ def parse_args_dqn():
         help="the ending epsilon for exploration")
     parser.add_argument("--exploration-fraction", type=float, default=0.10,
         help="the fraction of `total-timesteps` it takes from start-e to go end-e")
-    parser.add_argument("--learning-starts", type=int, default=1000,
+    parser.add_argument("--learning-starts", type=int, default=10000,
         help="timestep to start learning")
     parser.add_argument("--train-frequency", type=int, default=4,
         help="the frequency of training")
@@ -72,7 +72,7 @@ def parse_args_dqn():
         help="can be gaussian, or multinoulli")
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
-    parser.add_argument("--add-true-rew", type=bool, default=False)
+    parser.add_argument("--add-true-rew", type=int, default=0)
     parser.add_argument("--scale-by-std", type=int, default=1)
     parser.add_argument("--soft_reset", type=int, default=1)
     # if 0 or less no video capture, this freq is in episodes not timesteps
@@ -86,6 +86,7 @@ def parse_args_dqn():
     parser.add_argument("--death_cost", type=int, default=0)
     parser.add_argument("--exp_rew", type=int, default=0)
     parser.add_argument("--use_surprise", type=int, default=0)
+    parser.add_argument("--int_rew_scale", type=float, default=1)
     
     args = parser.parse_args()
     
@@ -96,7 +97,7 @@ def parse_args_dqn():
 
     # run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_seed:{args.seed}"
 
-    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.scale_by_std}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}_seed:{args.seed}"
+    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.scale_by_std}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}_buffer_size:{args.buffer_size}_use_surprise_{args.use_surprise}_train_freq:{args.train_frequency}_int_rew_scale:{args.int_rew_scale}_seed:{args.seed}"
 
     return args, run_name
 
@@ -191,7 +192,7 @@ def parse_args_ppo():
     args.batch_size = int(args.num_envs * args.num_steps)
     args.minibatch_size = int(args.batch_size // args.num_minibatches)
     # fmt: on
-    run_name = f"ppo_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.scale_by_std}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}_seed:{args.seed}"
+    run_name = f"ppo_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.scale_by_std}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}__seed:{args.seed}"
     return args, run_name
 
 

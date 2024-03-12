@@ -20,6 +20,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         death_cost = False,
         exp_rew = False,
         use_surprise = True,
+        threshold=300
     ):
         '''
         params
@@ -45,6 +46,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.pretrain_steps = 0
         self.current_steps = 0
         self.use_surprise = use_surprise
+        self._threshold = threshold
 
         theta = self.buffer.get_params()
         print(f"theta shape:{theta.shape}")
@@ -67,8 +69,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.action_space = env.action_space
         self.env_obs_space = env.observation_space
         
-        # the new theta shape has to be the extact theta.shape but +2 in first dimension
-        # the additional dimension are the time-step and bandit choice
+        # the new theta shape has to be the extact theta.shape but +2 in channel dimension
+        # the additional dimensions are the time-step and bandit choice
         new_theta_shape = (theta.shape[0], )
         for i in range(1, len(theta.shape)):
             if i == len(theta.shape)-1:
@@ -109,22 +111,29 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             
         print(self.observation_space)
 
+
+    def calculate_surprise(self, obs):
+        surprise = -self.buffer.logprob(self.encode_obs(obs))
+        thresh = self._threshold
+        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        return surprise
+
+
     def _get_random_entropy(self):
+        random_entropies = []
+        random_surprises = []
+        random_surprises_mean = []
         obs, _ = self._env.reset()
         self.buffer.reset()
         self.buffer.add(self.encode_obs(obs))
-
+        surprise = self.calculate_surprise(obs)
+        random_surprises.append(surprise)
         num_eps = 100
-        random_entropies = []
-        random_surprises = []
         for _ in range(num_eps):
             for t in range(self.max_steps):
                 obs, rew, envdone, envtrunc, info = self._env.step(self.action_space.sample())
-
                 # compute surprise
-                surprise = -self.buffer.logprob(self.encode_obs(obs))
-                thresh = 300
-                surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+                surprise = self.calculate_surprise(obs)
                 random_surprises.append(surprise)
 
                 self.buffer.add(self.encode_obs(obs))
@@ -134,14 +143,18 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                     else:
                         break
             random_entropy = self.buffer.entropy()
+            random_surprises_mean.append(np.mean(random_surprises))
             random_entropies.append(random_entropy)
             obs, _ = self._env.reset()
             self.buffer.reset()
             self.buffer.add(self.encode_obs(obs))
-
+            random_surprises.clear()
+            surprise = self.calculate_surprise(obs)
+            random_surprises.append(surprise)
         print(f"len(random_entropies): {len(random_entropies)}")
+        print(f"len(random_surprises_mean): {len(random_surprises_mean)}")
         self.buffer.reset()
-        return np.mean(random_entropies), np.mean(random_surprises)
+        return np.mean(random_entropies), np.mean(random_surprises_mean)
 
     def _get_alpha(self):
         ucb_alpha_zero = None
@@ -199,6 +212,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 info["alpha_rolling_average"] = self.alpha_rolling_average
                 if self.ucb_alpha_one: info["ucb_alpha_one"] = self.ucb_alpha_one
                 if self.ucb_alpha_zero: info["ucb_alpha_zero"] = self.ucb_alpha_zero
+                if not np.isnan(self.alpha_one_mean): info["alpha_one_mean"] = self.alpha_one_mean
+                if not np.isnan(self.alpha_zero_mean): info["alpha_zero_mean"] = self.alpha_zero_mean
             else:
                 envdone = False
                 envtrunc = False
@@ -210,12 +225,12 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 info["alpha_rolling_average"] = self.alpha_rolling_average
                 if self.ucb_alpha_one: info["ucb_alpha_one"] = self.ucb_alpha_one
                 if self.ucb_alpha_zero: info["ucb_alpha_zero"] = self.ucb_alpha_zero
+                if not np.isnan(self.alpha_one_mean): info["alpha_one_mean"] = self.alpha_one_mean
+                if not np.isnan(self.alpha_zero_mean): info["alpha_zero_mean"] = self.alpha_zero_mean
 
         # use the original observation for surprise calculation
         # this will be used for griddly envs and compute surprise with the bernoulli buffer
-        surprise = -self.buffer.logprob(self.encode_obs(obs))
-        thresh = 300
-        surprise = np.clip(surprise, a_min=-thresh, a_max=thresh) / thresh
+        surprise = self.calculate_surprise(obs)
         self.ep_surprise.append(surprise)
         
 
@@ -275,10 +290,6 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         theta_obs = np.concatenate([theta,
                                     num_samples,
                                     alpha_t], axis=-1)
-        
-        # print(f"theta shape before cat: {theta.shape}")
-        # print(f"theta shape after cat: {theta_obs.shape}")
-
         aug_obs["theta"] = theta_obs
         
         return aug_obs
@@ -349,6 +360,10 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
             self.heatmap = None
         
         self.buffer.reset()
+        self.buffer.add(self.encode_obs(obs))
+        surprise = self.calculate_surprise(obs)
+        self.ep_surprise.clear()
+        self.ep_surprise.append(surprise)
         obs = self.get_obs(obs)
         return obs, info
 
@@ -359,7 +374,16 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         """
         Used to encode the observation before putting on the buffer
         """
-        if isinstance(obs, dict):
+        if self._theta_size:
+            # if the image is stack of images then take the first one
+            if self._grayscale:
+                theta_obs = obs[:, :, -1] [:, :, None]
+            else:
+                theta_obs = obs[:, :, -3:]
+            theta_obs = cv2.resize(theta_obs, dsize=tuple(self._theta_size[:2]), interpolation=cv2.INTER_AREA)
+            theta_obs = theta_obs.astype(np.float32)[:, :, None]
+            return theta_obs
+        elif isinstance(obs, dict):
             return obs["obs"].astype(np.float32)
         else:
             return obs.astype(np.float32)
