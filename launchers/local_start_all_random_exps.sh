@@ -73,7 +73,38 @@
 #wait
 
 # MinAtar/Asterix
-python scripts/random_agent.py --env-id=MinAtar/Asterix --model=none --buffer-type=bernoulli --seed=1 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
-python scripts/random_agent.py --env-id=MinAtar/Asterix --model=none --buffer-type=bernoulli --seed=2 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
-python scripts/random_agent.py --env-id=MinAtar/Asterix --model=none --buffer-type=bernoulli --seed=3 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100  
+# python scripts/random_agent.py --env-id=MinAtar/Asterix --model=none --buffer-type=bernoulli --seed=1 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+# python scripts/random_agent.py --env-id=MinAtar/Asterix --model=none --buffer-type=bernoulli --seed=2 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+# python scripts/random_agent.py --env-id=MinAtar/Asterix --model=none --buffer-type=bernoulli --seed=3 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100  
+# wait
+
+
+# ButterfliesEnvLarge3
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge3 --model=none --buffer-type=bernoulli --seed=1 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge3 --model=none --buffer-type=bernoulli --seed=2 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge3 --model=none --buffer-type=bernoulli --seed=3 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100
+wait
+
+# ButterfliesEnvLarge4
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge4 --model=none --buffer-type=bernoulli --seed=1 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge4 --model=none --buffer-type=bernoulli --seed=2 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge4 --model=none --buffer-type=bernoulli --seed=3 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100
+wait
+
+# ButterfliesEnvLarge5
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge5 --model=none --buffer-type=bernoulli --seed=1 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge5 --model=none --buffer-type=bernoulli --seed=2 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge5 --model=none --buffer-type=bernoulli --seed=3 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100
+wait
+
+# ButterfliesEnvLarge6
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge6 --model=none --buffer-type=bernoulli --seed=1 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge6 --model=none --buffer-type=bernoulli --seed=2 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge6 --model=none --buffer-type=bernoulli --seed=3 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100
+wait
+
+# ButterfliesEnvLarge8
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge8 --model=none --buffer-type=bernoulli --seed=1 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge8 --model=none --buffer-type=bernoulli --seed=2 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100 &
+python scripts/random_agent.py --env-id=griddly-ButterfliesEnvLarge8 --model=none --buffer-type=bernoulli --seed=3 --scale-by-std=0 --soft_reset=0 --total-timesteps=10_000 --buffer-size=100
 wait
