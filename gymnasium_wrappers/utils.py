@@ -89,7 +89,7 @@ def make_env(args):
             obs_size = (1,env.observation_space.shape[0])
 
         elif "crafter" in args.env_id:
-            max_steps = 500
+            max_steps = 100_000
             grayscale = args.gray_scale
             channel_dim = 1 if grayscale else 3
             obs_resize = ast.literal_eval(args.obs_size)
@@ -100,11 +100,15 @@ def make_env(args):
             # resize the observation
             env = ResizeObservationWrapper(env, grayscale=grayscale, new_shape=(*obs_resize, channel_dim), new_size=(obs_resize[1], obs_resize[0], channel_dim))
             # stack multiple frames
-            env = ObsHistoryWrapper(env, history_length=3, stack_channels=True, channel_dim=2)
-            # set the size of theta
+            grayscale = True
+            channel_dim = 1 if grayscale else 3
+            env = ObsHistoryWrapper(env, history_length=4, stack_channels=True, channel_dim=2)
             theta_size =  ast.literal_eval(args.theta_size)
             theta_size = (theta_size[0], theta_size[1], channel_dim) if grayscale else (theta_size[0], theta_size[1], channel_dim)
-            obs_size = np.prod(theta_size)
+            obs_size = theta_size
+            threshold = 80_000
+            # set the size of theta
+            obs_size = theta_size
         elif "FourRooms" in args.env_id:
             env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
             env = OneHotPartialObsWrapper(env)
@@ -219,7 +223,8 @@ def make_env(args):
                 soft_reset=args.soft_reset,
                 death_cost = args.death_cost,
                 exp_rew = args.exp_rew,
-                threshold=threshold
+                threshold=threshold,
+                add_random_obs=args.add_random_obs
             )
         
         elif args.model == "smin":
@@ -235,7 +240,8 @@ def make_env(args):
                 soft_reset=args.soft_reset,
                 death_cost = args.death_cost,
                 exp_rew = args.exp_rew,
-                threshold=threshold
+                threshold=threshold,
+                add_random_obs=args.add_random_obs
             )
         
         elif args.model == "sadapt":
@@ -275,7 +281,9 @@ def make_env(args):
                 death_cost = args.death_cost,
                 exp_rew = args.exp_rew,
                 use_surprise=args.use_surprise,
-                threshold=threshold
+                threshold=threshold,
+                add_random_obs=args.add_random_obs,
+                bandit_step_size=args.bandit_step_size
             )
         elif args.model == "none":
             env = BaseSurpriseWrapper(

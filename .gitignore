@@ -13,3 +13,5 @@ paper_runs/*
 ./cleanrl_surprise.tar
 paper_plots/*
 butterflies/*
+.DS_Store
+.DS_Store

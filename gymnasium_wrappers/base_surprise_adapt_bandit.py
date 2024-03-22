@@ -20,7 +20,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         death_cost = False,
         exp_rew = False,
         use_surprise = True,
-        threshold=300
+        threshold=300,
+        add_random_obs=False,
+        bandit_step_size=0
     ):
         '''
         params
@@ -47,6 +49,8 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         self.current_steps = 0
         self.use_surprise = use_surprise
         self._threshold = threshold
+        self._add_random_obs = add_random_obs
+        self._bandit_step_size = bandit_step_size
 
         theta = self.buffer.get_params()
         print(f"theta shape:{theta.shape}")
@@ -135,11 +139,14 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                 # compute surprise
                 surprise = self.calculate_surprise(obs)
                 random_surprises.append(surprise)
-
                 self.buffer.add(self.encode_obs(obs))
                 if envdone or envtrunc:
                     if self._soft_reset:
                         obs, _ = self._env.reset()
+                        if self._add_random_obs:
+                            obs = np.random.rand(*obs.shape)
+                            self.buffer.add(self.encode_obs(obs))
+                        # print("I am in soft reset in the random entropy method")
                     else:
                         break
             random_entropy = self.buffer.entropy()
@@ -198,7 +205,9 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         if self._soft_reset:
             if envdone:
                 obs, _ = self._env.reset()
-                # obs = np.random.rand(*obs.shape)
+                if self._add_random_obs:
+                    obs = np.random.rand(*obs.shape)
+                # print("I am in soft reset in the step method")
                 self.deaths += 1
             if self.num_steps == self.max_steps:
                 envdone = True
@@ -295,6 +304,7 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
         return aug_obs
 
     def reset(self, seed=None, options=None):
+        # bandit_step_size = 0.1
         obs, info = self._env.reset()
         self.num_steps = 0
         self.deaths = 0
@@ -321,21 +331,29 @@ class BaseSurpriseAdaptBanditWrapper(gym.Env):
                     self.alpha_zero_mean = entropy_change
                     self.alpha_zero_cnt += 1
                 else:
-                    self.alpha_zero_mean = (
-                        self.alpha_zero_mean * self.alpha_zero_cnt + entropy_change
-                    )
-                    self.alpha_zero_cnt += 1
-                    self.alpha_zero_mean /= self.alpha_zero_cnt
+                    if self._bandit_step_size <= 0:
+                        self.alpha_zero_mean = (
+                            self.alpha_zero_mean * self.alpha_zero_cnt + entropy_change
+                        )
+                        self.alpha_zero_cnt += 1
+                        self.alpha_zero_mean /= self.alpha_zero_cnt
+                    else:
+                        self.alpha_zero_cnt += 1
+                        self.alpha_zero_mean = self.alpha_zero_mean + self._bandit_step_size * (entropy_change - self.alpha_zero_mean)
             else:
                 if np.isnan(self.alpha_one_mean):
                     self.alpha_one_mean = entropy_change
                     self.alpha_one_cnt += 1
                 else:
-                    self.alpha_one_mean = (
-                        self.alpha_one_mean * self.alpha_one_cnt + entropy_change
-                    )
-                    self.alpha_one_cnt += 1
-                    self.alpha_one_mean /= self.alpha_one_cnt
+                    if self._bandit_step_size <= 0:
+                        self.alpha_one_mean = (
+                            self.alpha_one_mean * self.alpha_one_cnt + entropy_change
+                        )
+                        self.alpha_one_cnt += 1
+                        self.alpha_one_mean /= self.alpha_one_cnt
+                    else:
+                        self.alpha_one_cnt += 1
+                        self.alpha_one_mean = self.alpha_one_mean + self._bandit_step_size * (entropy_change - self.alpha_one_mean)
 
         # select new alpha
         self.alpha_t,  self.ucb_alpha_zero, self.ucb_alpha_one = self._get_alpha()

@@ -87,6 +87,8 @@ def parse_args_dqn():
     parser.add_argument("--exp_rew", type=int, default=0)
     parser.add_argument("--use_surprise", type=int, default=0)
     parser.add_argument("--int_rew_scale", type=float, default=1)
+    parser.add_argument("--add_random_obs", type=int, default=0)
+    parser.add_argument("--bandit_step_size", type=float, default=-1)
     
     args = parser.parse_args()
     

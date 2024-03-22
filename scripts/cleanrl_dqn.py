@@ -85,8 +85,9 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         crafter_logger = CrafterLogger()
     elif "MinAtar" in args.env_id or "griddly" in args.env_id:
         net = MinAtarQNetwork
-    elif "Atari" in args.env_id:
+    elif "Atari" or "crafter" in args.env_id:
         net = AtariQNetwork
+        crafter_logger = CrafterLogger()
     else:
         raise NotImplementedError
     
@@ -187,6 +188,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
                 writer.add_scalar("charts/episodic_surprise", np.mean(ep_surprise), global_step)
                 writer.add_scalar("charts/episodic_entropy", np.mean(ep_entropy), global_step)
+                writer.add_scalar("charts/episodic_entropy_last_timestep", ep_entropy[-1], global_step)
                 writer.add_scalar("charts/task_reward", np.mean(task_rewards), global_step)
                 writer.add_scalar("charts/average_task_return", info["Average_task_return"], global_step)
                 writer.add_scalar("charts/average_episode_length", info["Average_episode_length"], global_step)
