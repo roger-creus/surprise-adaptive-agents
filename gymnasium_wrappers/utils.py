@@ -5,9 +5,7 @@ import logging
 import matplotlib.pyplot as plt
 import minatar
 import torch
-import crafter
 import numpy as np
-from minigrid.wrappers import ImgObsWrapper, FullyObsWrapper, OneHotPartialObsWrapper
 from gymnasium_wrappers.base_surprise import BaseSurpriseWrapper
 from gymnasium_wrappers.base_sadapt import BaseSurpriseAdaptWrapper
 from gymnasium_wrappers.base_surprise_adapt_bandit import BaseSurpriseAdaptBanditWrapper
@@ -70,52 +68,12 @@ def make_env(args):
         theta_size = None
         grayscale = None
         threshold = 300
-        ############ Create environment ############
-        if "Adapt" in args.env_id:
-            gym_register(
-                id='SurpriseAdaptRooms-v0',
-                entry_point='surprise.envs.minigrid.envs.surprise_adapt_rooms:SurpriseAdaptRoomsEnv'
-            )
-            
-            env = gym.make(args.env_id, render_mode='rgb_array', max_steps=500, noisy_room=args.noisy_room)
-            env = ImgObsWrapper(env)
-            max_steps = 500
-            obs_size = env.observation_space.shape
-            
-        elif "tetris" in args.env_id:
+        ############ Create environment ############            
+        if "tetris" in args.env_id:
             from surprise.envs.tetris.tetris import TetrisEnv
             env = TetrisEnv()
             max_steps = 500
-            obs_size = (1,env.observation_space.shape[0])
-
-        elif "crafter" in args.env_id:
-            max_steps = 100_000
-            grayscale = args.gray_scale
-            channel_dim = 1 if grayscale else 3
-            obs_resize = ast.literal_eval(args.obs_size)
-            channel_dim = 1 if grayscale else 3
-            env = old_gym.make('CrafterReward-v1')
-            # Crafter is based on old gym, we need to convert it to gymnasium api
-            env = GymToGymnasium(env, render_mode="rgb_array", max_steps=max_steps)
-            # resize the observation
-            env = ResizeObservationWrapper(env, grayscale=grayscale, new_shape=(*obs_resize, channel_dim), new_size=(obs_resize[1], obs_resize[0], channel_dim))
-            # stack multiple frames
-            grayscale = True
-            channel_dim = 1 if grayscale else 3
-            env = ObsHistoryWrapper(env, history_length=4, stack_channels=True, channel_dim=2)
-            theta_size =  ast.literal_eval(args.theta_size)
-            theta_size = (theta_size[0], theta_size[1], channel_dim) if grayscale else (theta_size[0], theta_size[1], channel_dim)
-            obs_size = theta_size
-            threshold = 80_000
-            # set the size of theta
-            obs_size = theta_size
-        elif "FourRooms" in args.env_id:
-            env = gym.make("MiniGrid-FourRooms-v0", render_mode='rgb_array', max_steps=500)
-            env = OneHotPartialObsWrapper(env)
-            env = ImgObsWrapper(env)
-            max_steps = 500
-            obs_size = env.observation_space.shape
-            
+            obs_size = (1,env.observation_space.shape[0])    
         elif "MinAtar" in args.env_id:
             env = gym.make(args.env_id+"-v1", render_mode='rgb_array', max_episode_steps=500)
             from gymnasium_wrappers.wrappers import ImageTranspose

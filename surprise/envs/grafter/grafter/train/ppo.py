@@ -29,7 +29,7 @@ def parse_args():
         help="if toggled, cuda will be enabled by default")
     parser.add_argument("--track", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="if toggled, this experiment will be tracked with Weights and Biases")
-    parser.add_argument("--wandb-project-name", type=str, default="cleanRL",
+    parser.add_argument("--wandb_project_name", type=str, default="cleanRL",
         help="the wandb's project name")
     parser.add_argument("--wandb-entity", type=str, default=None,
         help="the entity (team) of wandb's project")
@@ -37,7 +37,7 @@ def parse_args():
         help="weather to capture videos of the agent performances (check out `videos` folder)")
 
     # Algorithm specific arguments
-    parser.add_argument("--total-timesteps", type=int, default=500000,
+    parser.add_argument("--total_timesteps", type=int, default=500000,
         help="total timesteps of the experiments")
     parser.add_argument("--learning-rate", type=float, default=2.5e-4,
         help="the learning rate of the optimizer")

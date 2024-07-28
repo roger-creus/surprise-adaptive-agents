@@ -6,74 +6,74 @@ import numpy as np
 def parse_args_dqn():
     # fmt: off
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp-name", type=str, default=os.path.basename(__file__).rstrip(".py"),
+    parser.add_argument("--exp_name", type=str, default=os.path.basename(__file__).rstrip(".py"),
         help="the name of this experiment")
     parser.add_argument("--seed", type=int, default=1,
         help="seed of the experiment")
-    parser.add_argument("--torch-deterministic", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
+    parser.add_argument("--torch_deterministic", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
         help="if toggled, `torch.backends.cudnn.deterministic=False`")
     parser.add_argument("--cuda", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
         help="if toggled, cuda will be enabled by default")
     parser.add_argument("--track", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="if toggled, this experiment will be tracked with Weights and Biases")
-    parser.add_argument("--wandb-project-name", type=str, default="Final_DQN_s_adapt_2",
+    parser.add_argument("--wandb_project_name", type=str, default="Final_DQN_s_adapt_2",
         help="the wandb's project name")
-    parser.add_argument("--wandb-entity", type=str, default=None,
+    parser.add_argument("--wandb_entity", type=str, default=None,
         help="the entity (team) of wandb's project")
-    parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
+    parser.add_argument("--capture_video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="whether to capture videos of the agent performances (check out `videos` folder)")
-    parser.add_argument("--save-model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
+    parser.add_argument("--save_model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="whether to save model into the `runs/{run_name}` folder")
-    parser.add_argument("--upload-model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
+    parser.add_argument("--upload_model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="whether to upload the saved model to huggingface")
-    parser.add_argument("--hf-entity", type=str, default="",
+    parser.add_argument("--hf_entity", type=str, default="",
         help="the user or org name of the model repository from the Hugging Face Hub")
-    parser.add_argument("--video-log-freq", type=int, default=500_000,
+    parser.add_argument("--video_log_freq", type=int, default=500_000,
         help="the frequency of logging videos for ppo iterations")
 
     # Algorithm specific arguments
-    parser.add_argument("--env-id", type=str, default="grafter",
+    parser.add_argument("--env_id", type=str, default="grafter",
         help="the id of the environment")
-    parser.add_argument("--total-timesteps", type=int, default=5_000_000,
+    parser.add_argument("--total_timesteps", type=int, default=5_000_000,
         help="total timesteps of the experiments")
-    parser.add_argument("--learning-rate", type=float, default=1e-4,
+    parser.add_argument("--learning_rate", type=float, default=1e-4,
         help="the learning rate of the optimizer")
-    parser.add_argument("--num-envs", type=int, default=1,
+    parser.add_argument("--num_envs", type=int, default=1,
         help="the number of parallel game environments")
-    parser.add_argument("--buffer-size", type=int, default=1_000_000,
+    parser.add_argument("--buffer_size", type=int, default=1_000_000,
         help="the replay memory buffer size")
     parser.add_argument("--gamma", type=float, default=0.99,
         help="the discount factor gamma")
     parser.add_argument("--tau", type=float, default=1.,
         help="the target network update rate")
-    parser.add_argument("--target-network-frequency", type=int, default=1_000,
+    parser.add_argument("--target_network_frequency", type=int, default=1_000,
         help="the timesteps it takes to update the target network")
-    parser.add_argument("--batch-size", type=int, default=32,
+    parser.add_argument("--batch_size", type=int, default=32,
         help="the batch size of sample from the reply memory")
-    parser.add_argument("--start-e", type=float, default=1,
+    parser.add_argument("--start_e", type=float, default=1,
         help="the starting epsilon for exploration")
-    parser.add_argument("--end-e", type=float, default=0.01,
+    parser.add_argument("--end_e", type=float, default=0.01,
         help="the ending epsilon for exploration")
-    parser.add_argument("--exploration-fraction", type=float, default=0.10,
-        help="the fraction of `total-timesteps` it takes from start-e to go end-e")
-    parser.add_argument("--learning-starts", type=int, default=10000,
+    parser.add_argument("--exploration_fraction", type=float, default=0.10,
+        help="the fraction of `total_timesteps` it takes from start_e to go end_e")
+    parser.add_argument("--learning_starts", type=int, default=10000,
         help="timestep to start learning")
-    parser.add_argument("--train-frequency", type=int, default=4,
+    parser.add_argument("--train_frequency", type=int, default=4,
         help="the frequency of training")
     
     # ENV PARAMS
-    parser.add_argument("--noisy-room", type=int, default=2,
+    parser.add_argument("--noisy_room", type=int, default=2,
         help="can be none, smax, smin, sadapt, sadapt-inverse")
     
     # OBJECTIVE PARAMS
     parser.add_argument("--model", type=str, default="none",
         help="can be none, smax, smin, sadapt, sadapt-inverse, sadapt-bandit")
-    parser.add_argument("--buffer-type", type=str, default="bernoulli",
+    parser.add_argument("--buffer_type", type=str, default="bernoulli",
         help="can be gaussian, or multinoulli")
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
-    parser.add_argument("--add-true-rew", type=int, default=0)
-    parser.add_argument("--scale-by-std", type=int, default=1)
+    parser.add_argument("--add_true_rew", type=int, default=0)
+    parser.add_argument("--scale_by_std", type=int, default=1)
     parser.add_argument("--soft_reset", type=int, default=1)
     # if 0 or less no video capture, this freq is in episodes not timesteps
     parser.add_argument("--video_freq", type=int, default=2_500) 
@@ -107,33 +107,33 @@ def parse_args_dqn():
 def parse_args_ppo():
     # fmt: off
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp-name", type=str, default=os.path.basename(__file__).rstrip(".py"),
+    parser.add_argument("--exp_name", type=str, default=os.path.basename(__file__).rstrip(".py"),
         help="the name of this experiment")
     parser.add_argument("--seed", type=int, default=1,
         help="seed of the experiment")
-    parser.add_argument("--torch-deterministic", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
+    parser.add_argument("--torch_deterministic", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
         help="if toggled, `torch.backends.cudnn.deterministic=False`")
     parser.add_argument("--cuda", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
         help="if toggled, cuda will be enabled by default")
     parser.add_argument("--track", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="if toggled, this experiment will be tracked with Weights and Biases")
-    parser.add_argument("--wandb-project-name", type=str, default="Crafter_PPO",
+    parser.add_argument("--wandb_project_name", type=str, default="Crafter_PPO",
         help="the wandb's project name")
-    parser.add_argument("--wandb-entity", type=str, default=None,
+    parser.add_argument("--wandb_entity", type=str, default=None,
         help="the entity (team) of wandb's project")
-    parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
+    parser.add_argument("--capture_video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="whether to capture videos of the agent performances (check out `videos` folder)")
-    parser.add_argument("--video-log-freq", type=int, default=200,
+    parser.add_argument("--video_log_freq", type=int, default=200,
         help="the frequency of logging videos for ppo iterations")
 
     # Algorithm specific arguments
-    parser.add_argument("--env-id", type=str, default="MinAtar/SpaceInvaders",
+    parser.add_argument("--env_id", type=str, default="MinAtar/SpaceInvaders",
         help="the id of the environment")
-    parser.add_argument("--total-timesteps", type=int, default=10000000,
+    parser.add_argument("--total_timesteps", type=int, default=10000000,
         help="total timesteps of the experiments")
-    parser.add_argument("--learning-rate", type=float, default=2.5e-4,
+    parser.add_argument("--learning_rate", type=float, default=2.5e-4,
         help="the learning rate of the optimizer")
-    parser.add_argument("--num-envs", type=int, default=8,
+    parser.add_argument("--num_envs", type=int, default=8,
         help="the number of parallel game environments")
     parser.add_argument("--num-steps", type=int, default=128,
         help="the number of steps to run in each environment per policy rollout")
@@ -163,18 +163,18 @@ def parse_args_ppo():
         help="the target KL divergence threshold")
     
     # ENV PARAMS
-    parser.add_argument("--noisy-room", type=int, default=2,
+    parser.add_argument("--noisy_room", type=int, default=2,
         help="can be none, smax, smin, sadapt, sadapt-inverse")
     
     # OBJECTIVE PARAMS
     parser.add_argument("--model", type=str, default="none",
         help="can be none, smax, smin, sadapt, sadapt-inverse")
-    parser.add_argument("--buffer-type", type=str, default="gaussian",
+    parser.add_argument("--buffer_type", type=str, default="gaussian",
         help="can be gaussian, or multinoulli")
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
-    parser.add_argument("--add-true-rew", type=bool, default=False)
-    parser.add_argument("--scale-by-std", type=int, default=1)
+    parser.add_argument("--add_true_rew", type=bool, default=False)
+    parser.add_argument("--scale_by_std", type=int, default=1)
     parser.add_argument("--soft_reset", type=int, default=1)
     parser.add_argument("--video_freq", type=int, default=-1) 
     parser.add_argument("--agent", type=str, default="PPO") 
@@ -201,72 +201,72 @@ def parse_args_ppo():
 def parse_args_random():
     # fmt: off
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp-name", type=str, default=os.path.basename(__file__).rstrip(".py"),
+    parser.add_argument("--exp_name", type=str, default=os.path.basename(__file__).rstrip(".py"),
         help="the name of this experiment")
     parser.add_argument("--seed", type=int, default=1,
         help="seed of the experiment")
-    parser.add_argument("--torch-deterministic", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
+    parser.add_argument("--torch_deterministic", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
         help="if toggled, `torch.backends.cudnn.deterministic=False`")
     parser.add_argument("--cuda", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
         help="if toggled, cuda will be enabled by default")
     parser.add_argument("--track", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="if toggled, this experiment will be tracked with Weights and Biases")
-    parser.add_argument("--wandb-project-name", type=str, default="Tetris",
+    parser.add_argument("--wandb_project_name", type=str, default="Tetris",
         help="the wandb's project name")
-    parser.add_argument("--wandb-entity", type=str, default=None,
+    parser.add_argument("--wandb_entity", type=str, default=None,
         help="the entity (team) of wandb's project")
-    parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
+    parser.add_argument("--capture_video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="whether to capture videos of the agent performances (check out `videos` folder)")
-    parser.add_argument("--save-model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
+    parser.add_argument("--save_model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="whether to save model into the `runs/{run_name}` folder")
-    parser.add_argument("--upload-model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
+    parser.add_argument("--upload_model", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="whether to upload the saved model to huggingface")
-    parser.add_argument("--hf-entity", type=str, default="",
+    parser.add_argument("--hf_entity", type=str, default="",
         help="the user or org name of the model repository from the Hugging Face Hub")
 
     # Algorithm specific arguments
-    parser.add_argument("--env-id", type=str, default="SurpriseAdaptRooms-v0",
+    parser.add_argument("--env_id", type=str, default="SurpriseAdaptRooms-v0",
         help="the id of the environment")
-    parser.add_argument("--total-timesteps", type=int, default=10_000_000,
+    parser.add_argument("--total_timesteps", type=int, default=10_000_000,
         help="total timesteps of the experiments")
-    parser.add_argument("--learning-rate", type=float, default=1e-4,
+    parser.add_argument("--learning_rate", type=float, default=1e-4,
         help="the learning rate of the optimizer")
-    parser.add_argument("--num-envs", type=int, default=1,
+    parser.add_argument("--num_envs", type=int, default=1,
         help="the number of parallel game environments")
-    parser.add_argument("--buffer-size", type=int, default=1000000,
+    parser.add_argument("--buffer_size", type=int, default=1000000,
         help="the replay memory buffer size")
     parser.add_argument("--gamma", type=float, default=0.99,
         help="the discount factor gamma")
     parser.add_argument("--tau", type=float, default=1.,
         help="the target network update rate")
-    parser.add_argument("--target-network-frequency", type=int, default=1000,
+    parser.add_argument("--target_network_frequency", type=int, default=1000,
         help="the timesteps it takes to update the target network")
-    parser.add_argument("--batch-size", type=int, default=32,
+    parser.add_argument("--batch_size", type=int, default=32,
         help="the batch size of sample from the reply memory")
-    parser.add_argument("--start-e", type=float, default=1,
+    parser.add_argument("--start_e", type=float, default=1,
         help="the starting epsilon for exploration")
-    parser.add_argument("--end-e", type=float, default=0.01,
+    parser.add_argument("--end_e", type=float, default=0.01,
         help="the ending epsilon for exploration")
-    parser.add_argument("--exploration-fraction", type=float, default=0.35,
-        help="the fraction of `total-timesteps` it takes from start-e to go end-e")
-    parser.add_argument("--learning-starts", type=int, default=80000,
+    parser.add_argument("--exploration_fraction", type=float, default=0.35,
+        help="the fraction of `total_timesteps` it takes from start_e to go end_e")
+    parser.add_argument("--learning_starts", type=int, default=80000,
         help="timestep to start learning")
-    parser.add_argument("--train-frequency", type=int, default=4,
+    parser.add_argument("--train_frequency", type=int, default=4,
         help="the frequency of training")
     
     # ENV PARAMS
-    parser.add_argument("--noisy-room", type=int, default=2,
+    parser.add_argument("--noisy_room", type=int, default=2,
         help="can be none, smax, smin, sadapt, sadapt-inverse")
     
     # OBJECTIVE PARAMS
     parser.add_argument("--model", type=str, default="none",
         help="can be none, smax, smin, sadapt, sadapt-inverse, sadapt-bandit")
-    parser.add_argument("--buffer-type", type=str, default="gaussian",
+    parser.add_argument("--buffer_type", type=str, default="gaussian",
         help="can be gaussian, or multinoulli")
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
-    parser.add_argument("--add-true-rew", type=bool, default=False)
-    parser.add_argument("--scale-by-std", type=int, default=1)
+    parser.add_argument("--add_true_rew", type=bool, default=False)
+    parser.add_argument("--scale_by_std", type=int, default=1)
     parser.add_argument("--soft_reset", type=int, default=1)
     parser.add_argument("--video_freq", type=int, default=-1) 
     parser.add_argument("--agent", type=str, default="Random") 
@@ -276,7 +276,7 @@ def parse_args_random():
     parser.add_argument("--survival_rew", type=int, default=0)
     parser.add_argument("--death_cost", type=int, default=0)
     parser.add_argument("--exp_rew", type=int, default=0)
-    parser.add_argument("--video-log-freq", type=int, default=500_000,
+    parser.add_argument("--video_log_freq", type=int, default=500_000,
         help="the frequency of logging videos for ppo iterations")
     
     args = parser.parse_args()
