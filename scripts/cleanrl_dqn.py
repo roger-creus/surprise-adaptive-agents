@@ -130,7 +130,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
     # TRY NOT TO MODIFY: start the game
     obs, _ = envs.reset(seed=args.seed)
     eval_episode_dqn(None, eval_envs, device, f"runs/{run_name}", 0, args.env_id, args.track, random=True)
-    if args.scale_by_std:
+    if args.normalize_int_reward:
         if "bandit" not in args.model:
             rms = RunningMeanStd()
         else:
@@ -154,7 +154,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
         next_obs, rewards, terminated, truncated, infos = envs.step(actions)
 
         # extract the bandit choice from the observation
-        if "bandit" in args.model and args.scale_by_std:
+        if "bandit" in args.model and args.normalize_int_reward:
             bandit_choice = int(obs["theta"].reshape(-1)[-1])
             if bandit_choice == 0:
                 smax_rms.update(np.array([rewards]).flatten())
@@ -244,7 +244,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                 data = rb.sample(args.batch_size)
                 rewards = data.rewards.flatten()
                 # reward normalization
-                if args.scale_by_std:
+                if args.normalize_int_reward:
                     # update the rms using rewards from all envs
                     if "bandit" not in args.model:
                         rms.update(rewards.cpu().numpy())
@@ -269,7 +269,7 @@ poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-
                     writer.add_scalar("losses/q_values", old_val.mean().item(), global_step)
                     print("SPS:", int(global_step / (time.time() - start_time)))
                     writer.add_scalar("charts/SPS", int(global_step / (time.time() - start_time)), global_step)
-                    if "bandit" in args.model and args.scale_by_std:
+                    if "bandit" in args.model and args.normalize_int_reward:
                         # log the statistics of the normalized reward
                         writer.add_scalar("charts/smin_rewards_normalized", smin_rewards.mean().item(), global_step)
                         writer.add_scalar("charts/smax_rewards_normalized", smax_rewards.mean().item(), global_step)

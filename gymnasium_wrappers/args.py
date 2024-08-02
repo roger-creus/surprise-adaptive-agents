@@ -61,34 +61,43 @@ def parse_args_dqn():
     parser.add_argument("--train_frequency", type=int, default=4,
         help="the frequency of training")
     
-    # ENV PARAMS
-    parser.add_argument("--noisy_room", type=int, default=2,
-        help="can be none, smax, smin, sadapt, sadapt-inverse")
     
-    # OBJECTIVE PARAMS
+    # Suprprise PARAMS
     parser.add_argument("--model", type=str, default="none",
-        help="can be none, smax, smin, sadapt, sadapt-inverse, sadapt-bandit")
+        help="The surprise reward to use, can be none, smax, smin, sadapt-bandit")
     parser.add_argument("--buffer_type", type=str, default="bernoulli",
-        help="can be gaussian, or multinoulli")
-    parser.add_argument("--surprise_window_len", type=int, default=10)
-    parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
-    parser.add_argument("--add_true_rew", type=int, default=0)
-    parser.add_argument("--scale_by_std", type=int, default=1)
-    parser.add_argument("--soft_reset", type=int, default=1)
+        help="The modelling distribution of the state marginalm can be gaussian, bernoulli, or multinoulli")
+    parser.add_argument("--add_true_rew", type=int, default=0, 
+        help="Add the task reward to the intrinsc reward")
+    parser.add_argument("--normalize_int_reward", type=int, default=1, 
+        help="Normalize the intrinsic reward using the running mean and std")
+    parser.add_argument("--soft_reset", type=int, default=1, 
+                        help="Use soft-reset to keep the episode length fixed")
     # if 0 or less no video capture, this freq is in episodes not timesteps
-    parser.add_argument("--video_freq", type=int, default=2_500) 
-    parser.add_argument("--agent", type=str, default="DQN")
-    parser.add_argument("--theta_size", type=str, default="(20, 26)")
-    parser.add_argument("--obs_size", type=str, default="(64, 48)")
-    parser.add_argument("--gray_scale", type=int, default=1) 
-    parser.add_argument("--ucb_coeff", type=float, default=np.sqrt(2))
-    parser.add_argument("--survival_rew", type=int, default=0)
-    parser.add_argument("--death_cost", type=int, default=0)
-    parser.add_argument("--exp_rew", type=int, default=0)
-    parser.add_argument("--use_surprise", type=int, default=0)
-    parser.add_argument("--int_rew_scale", type=float, default=1)
-    parser.add_argument("--add_random_obs", type=int, default=0)
-    parser.add_argument("--bandit_step_size", type=float, default=-1)
+    parser.add_argument("--video_freq", type=int, default=2_500, 
+                        help="Video logging frequencey") 
+    parser.add_argument("--agent", type=str, default="DQN", 
+                        help="RL agent")
+    parser.add_argument("--theta_size", type=str, default="(20, 26)",
+                        help="Shape of the sufficient statstic (for image based tasks)")
+    parser.add_argument("--obs_size", type=str, default="(64, 48)", 
+                        help="Shape of the observation(for image based tasks)")
+    parser.add_argument("--gray_scale", type=int, default=1, 
+                        help="Gray scale the image observation") 
+    parser.add_argument("--ucb_coeff", type=float, default=np.sqrt(2),
+                        help="Bandit UCB coefficient")
+    parser.add_argument("--survival_rew", type=int, default=0, 
+                        help="Add a survival reward, 1 for each timestep the agent is alive")
+    parser.add_argument("--death_cost", type=int, default=0, 
+                        help="Add a death cost of -100")
+    parser.add_argument("--exp_rew", type=int, default=0, 
+                        help="Exponentiate the reward")
+    parser.add_argument("--use_surprise", type=int, default=0, 
+                        help="Use suprise in the bandit feedback, instead of the entropy")
+    parser.add_argument("--int_rew_scale", type=float, default=1, 
+                        help="Weighting term on the intrinsic reward")
+    parser.add_argument("--bandit_step_size", type=float, default=-1, 
+                        help="Bandit update step size, this is for experimenting with non stationary bandit updates")
     
     args = parser.parse_args()
     
@@ -99,7 +108,7 @@ def parse_args_dqn():
 
     # run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_seed:{args.seed}"
 
-    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.scale_by_std}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}_buffer_size:{args.buffer_size}_use_surprise_{args.use_surprise}_train_freq:{args.train_frequency}_int_rew_scale:{args.int_rew_scale}_seed:{args.seed}"
+    run_name = f"dqn_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.normalize_int_reward}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}_buffer_size:{args.buffer_size}_use_surprise_{args.use_surprise}_train_freq:{args.train_frequency}_int_rew_scale:{args.int_rew_scale}_seed:{args.seed}"
 
     return args, run_name
 
@@ -174,7 +183,7 @@ def parse_args_ppo():
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
     parser.add_argument("--add_true_rew", type=bool, default=False)
-    parser.add_argument("--scale_by_std", type=int, default=1)
+    parser.add_argument("--normalize_int_reward", type=int, default=1)
     parser.add_argument("--soft_reset", type=int, default=1)
     parser.add_argument("--video_freq", type=int, default=-1) 
     parser.add_argument("--agent", type=str, default="PPO") 
@@ -194,7 +203,7 @@ def parse_args_ppo():
     args.batch_size = int(args.num_envs * args.num_steps)
     args.minibatch_size = int(args.batch_size // args.num_minibatches)
     # fmt: on
-    run_name = f"ppo_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.scale_by_std}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}__seed:{args.seed}"
+    run_name = f"ppo_{args.env_id}_{args.model}_buffer:{args.buffer_type}_withExtrinsic:{args.add_true_rew}_softreset:{args.soft_reset}_reweard_normalization:{args.normalize_int_reward}_exp_rew:{args.exp_rew}_death_cost:{args.death_cost}_survival_rew:{args.survival_rew}__seed:{args.seed}"
     return args, run_name
 
 
@@ -266,7 +275,7 @@ def parse_args_random():
     parser.add_argument("--surprise_window_len", type=int, default=10)
     parser.add_argument("--surprise_change_threshold", type=float, default=0.0)
     parser.add_argument("--add_true_rew", type=bool, default=False)
-    parser.add_argument("--scale_by_std", type=int, default=1)
+    parser.add_argument("--normalize_int_reward", type=int, default=1)
     parser.add_argument("--soft_reset", type=int, default=1)
     parser.add_argument("--video_freq", type=int, default=-1) 
     parser.add_argument("--agent", type=str, default="Random") 

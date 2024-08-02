@@ -12,7 +12,7 @@ Environment:
     Win:
       - eq:
           - _steps
-          - 500
+          - 256
   Levels:
     - >
       w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w   w  

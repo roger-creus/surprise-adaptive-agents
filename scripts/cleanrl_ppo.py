@@ -101,7 +101,7 @@ if __name__ == "__main__":
     update_idx = 0
     
     # reward norm
-    if args.scale_by_std:
+    if args.normalize_int_reward:
         reward_rms = RunningMeanStd()
 
     for update in range(1, num_updates + 1):
@@ -185,7 +185,7 @@ if __name__ == "__main__":
                 c += 1
 
         # reward normalization
-        if args.scale_by_std:
+        if args.normalize_int_reward:
             curiosity_reward_per_env = rewards.cpu().data.numpy()
             reward_rms.update(curiosity_reward_per_env.flatten())
             rewards -= reward_rms.mean
