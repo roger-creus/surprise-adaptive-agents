@@ -32,7 +32,7 @@ def parse_args_dqn():
         help="the frequency of logging videos for ppo iterations")
 
     # Algorithm specific arguments
-    parser.add_argument("--env_id", type=str, default="grafter",
+    parser.add_argument("--env_id", type=str, default="griddly-ButterfliesEnvLarge",
         help="the id of the environment")
     parser.add_argument("--total_timesteps", type=int, default=5_000_000,
         help="total timesteps of the experiments")
@@ -126,7 +126,7 @@ def parse_args_ppo():
         help="if toggled, cuda will be enabled by default")
     parser.add_argument("--track", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="if toggled, this experiment will be tracked with Weights and Biases")
-    parser.add_argument("--wandb_project_name", type=str, default="Crafter_PPO",
+    parser.add_argument("--wandb_project_name", type=str, default="PPO",
         help="the wandb's project name")
     parser.add_argument("--wandb_entity", type=str, default=None,
         help="the entity (team) of wandb's project")

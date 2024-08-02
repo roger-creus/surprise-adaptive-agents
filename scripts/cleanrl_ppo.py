@@ -57,15 +57,11 @@ if __name__ == "__main__":
     assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
 
     use_theta = args.model in ["smax", "smin", "sadapt", "sadapt-inverse"]
-    if "Rooms" in args.env_id:
-        net = MinigridPPOAgent
-    elif args.env_id == "tetris":
+
+    if args.env_id == "tetris":
         net = TetrisPPOAgent
     elif "MinAtar" in args.env_id:
         net = MinAtarPPOAgent
-    elif args.env_id == "crafter":
-        net = CrafterPPOAgent
-        crafter_logger = CrafterLogger()
     else:
         raise NotImplementedError
 
@@ -146,10 +142,7 @@ if __name__ == "__main__":
 
             c = 0
             for info in infos["final_info"]:
-                # update crafter logs
-                if "crafter" in args.env_id:
-                    crafter_logger.update_achievements(info["achievements"])
-                    crafter_logger.log(writer, global_step)
+                
                 # Skip the envs that are not done
                 if not info or "episode" not in info:
                     c += 1
