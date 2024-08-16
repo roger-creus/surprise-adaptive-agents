@@ -4,5 +4,15 @@ logs/*
 logs_local/*
 /logs_local/*
 *egg*
+wandb/*
+/wandb/*
+/paper_results/*
 
-
+runs/*
+paper_runs/*
+./cleanrl_surprise.tar
+paper_plots/*
+butterflies/*
+.DS_Store
+.DS_Store
+launchers/

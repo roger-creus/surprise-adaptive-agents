@@ -1,25 +1,17 @@
-import gym
+import gym as gym
+import numpy as np
+from IPython import embed
 
-class MazeEnvFullyObserved(gym.Env):
-    #metadata = {'render.modes': ['human']}
-
-    def __init__(self):
-        super(MazeEnvFullyObserved, self).__init__()
-
-    def step(self, action):
-        state, rew, done, info = self.env.step(action)
-        return state, rew, done, {}
-
-    def reset(self):
-        return self.env.reset()
-
-    def render(self, mode='human'):
-        return self.env.render(mode)
-
-    def close(self):
-        return self.env.close()
-
-    def set_env(self, env):
+class MazeEnv(gym.ObservationWrapper):
+    def __init__(self, env):
+        super().__init__(env)
         self.env = env
-        self.observation_space = self.env.observation_space
+        obs_ = env.reset()
+        new_shape = obs_.shape
+        self.observation_space = gym.spaces.Box(low=0, high=1, shape=new_shape, dtype=np.uint8)
         self.action_space = self.env.action_space
+        self.original_obs = None
+        
+    def observation(self, obs):
+        self.original_obs = obs
+        return self.original_obs
